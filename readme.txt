@@ -67,9 +67,13 @@ No. If the web server or PHP itself is down, nothing on the site can run. Only y
 
 Another plugin or a person placed a file with the same name in `wp-content`. Be Right Back leaves it untouched. Open the Advanced tab to replace it if you want to.
 
-= I enabled WP_DEBUG_DISPLAY and the PHP error page does not show. =
+= Does the plugin need output buffering in PHP? =
 
-When WP_DEBUG_DISPLAY is enabled and PHP runs without output buffering, PHP prints the raw error and sends the headers before WordPress can act, so WordPress never loads any error page, branded or not. This is how WordPress works. The settings page and Site Health detect this situation and explain how to fix it: disable WP_DEBUG_DISPLAY on a live site, or set output_buffering to 4096 in the PHP configuration. With output buffering enabled (the case on most hosts) the branded page shows, with the technical details added at the bottom.
+No. The database and maintenance pages never depend on it, and the PHP error page works without it as long as PHP does not print errors on screen, which is the normal configuration of a live site.
+
+There is one combination WordPress cannot handle: errors printed on screen (usually because WP_DEBUG_DISPLAY is enabled) together with output buffering off. PHP then sends the raw error and the headers before WordPress runs its handler, so no error page, branded or not, can be shown. The settings page and Site Health detect this combination and explain the two fixes: disable WP_DEBUG_DISPLAY on a live site, or set output_buffering to 4096 in the PHP configuration.
+
+More generally, WordPress can only show an error page when the fatal error happens before the page started being sent to the browser. That is the case for most fatal errors, which occur while plugins load or during init.
 
 = Does the plugin send emails or contact any service? =
 
@@ -81,8 +85,9 @@ Yes. The three files are shared by every site of the network, so the settings li
 
 == Screenshots ==
 
-1. The database error page as visitors see it.
-2. The settings page with the status box and the live preview.
+1. The database error page as visitors see it: logo, site name, message, retry button and incident line.
+2. The settings page: status of the three files, logo, colors and fonts.
+3. One tab per page, with the live preview rendered exactly as visitors will see it.
 
 == Changelog ==
 

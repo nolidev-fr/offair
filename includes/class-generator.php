@@ -152,13 +152,18 @@ class Generator {
 			return $this->bodies[ $key ];
 		}
 
+		// Pages are written in the language of the site, not in the language
+		// of the administrator who happens to save the settings.
+		$switched = determine_locale() !== get_locale() && switch_to_locale( get_locale() );
+
 		/**
-		 * Filters the settings right before a page is compiled.
+		 * Filters the settings right before a page is compiled. Empty texts
+		 * have already been replaced by their translated defaults.
 		 *
 		 * @param array  $settings Full settings array.
 		 * @param string $key      Screen being compiled: db, maintenance or php.
 		 */
-		$settings = apply_filters( 'be_right_back_settings', $this->settings->get(), $key );
+		$settings = apply_filters( 'be_right_back_settings', $this->settings->resolve(), $key );
 
 		$args = $this->template_vars( $key, $settings );
 		$html = $this->render( $key, $args );
@@ -173,6 +178,10 @@ class Generator {
 		$html = apply_filters( 'be_right_back_dropin_html', $html, $key, $args );
 
 		$this->bodies[ $key ] = $this->prologue( $key, $settings ) . $html;
+
+		if ( $switched ) {
+			restore_previous_locale();
+		}
 
 		return $this->bodies[ $key ];
 	}
@@ -284,7 +293,7 @@ class Generator {
 			'site_name'     => $site_name,
 			'title'         => (string) $screen['title'],
 			'message_html'  => self::paragraphs( $screen['message'] ),
-			'button_label'  => (string) $screen['button_label'],
+			'button_label'  => empty( $screen['show_button'] ) ? '' : (string) $screen['button_label'],
 			'contact_html'  => self::autolink( $general['contact_line'] ),
 			'logo'          => $this->branding->logo( $general['logo_id'] ),
 			'favicon'       => $this->branding->favicon(),
@@ -299,6 +308,7 @@ class Generator {
 			'heading_font'  => $general['heading_font'],
 			'ornament'      => $general['ornament'],
 			'refresh_delay' => (int) $screen['refresh_delay'],
+			'show_meta'     => ! empty( $screen['show_meta'] ),
 			'status_code'   => $status,
 			'status_label'  => isset( $status_labels[ $key ] ) ? $status_labels[ $key ] : $status_labels['php'],
 			'timezone'      => wp_timezone_string(),

@@ -10,7 +10,9 @@
 		var frame;
 
 		function activate( id ) {
-			if ( ! $panels.filter( '#' + id ).length ) {
+			id = ( id || '' ).replace( /[^a-z0-9-]/gi, '' );
+
+			if ( ! id || ! $panels.filter( '#' + id ).length ) {
 				id = $panels.first().attr( 'id' );
 			}
 

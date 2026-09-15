@@ -35,6 +35,7 @@ defined( 'ABSPATH' ) || exit;
 	<?php endif; ?>
 	<?php echo $args['runtime']['notice']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PHP snippet written by the plugin, escaped at request time. ?>
 	<?php echo $args['runtime']['detail']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PHP snippet written by the plugin, escaped at request time. ?>
+	<?php if ( ! empty( $args['show_meta'] ) ) : ?>
 	<p class="brb-meta">
 		<?php
 		printf(
@@ -46,3 +47,4 @@ defined( 'ABSPATH' ) || exit;
 		);
 		?>
 	</p>
+	<?php endif; ?>

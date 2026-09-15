@@ -71,6 +71,7 @@ final class Plugin {
 		$this->dropins   = new Dropins();
 		$this->generator = new Generator( $this->settings, $this->dropins, $this->branding );
 
+		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'maybe_upgrade' ) );
 
 		new Site_Health( $this );
@@ -82,6 +83,14 @@ final class Plugin {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'be-right-back', new CLI( $this ) );
 		}
+	}
+
+	/**
+	 * Loads the translations shipped in the languages directory. Language
+	 * packs from translate.wordpress.org take precedence when present.
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'be-right-back', false, dirname( BE_RIGHT_BACK_BASENAME ) . '/languages' );
 	}
 
 	/**

@@ -27,6 +27,12 @@ class Settings {
 	const SCREENS = array( 'db', 'maintenance', 'php' );
 
 	/**
+	 * Per-screen text fields that fall back to the translated default when
+	 * left empty.
+	 */
+	const TEXT_FIELDS = array( 'title', 'message', 'button_label' );
+
+	/**
 	 * Capability required to manage the plugin.
 	 *
 	 * @return string
@@ -86,9 +92,12 @@ class Settings {
 	}
 
 	/**
-	 * Default settings. Texts are translated at the time the pages are
-	 * generated, so a French site gets French pages once the language pack
-	 * is installed.
+	 * Default settings.
+	 *
+	 * The texts are translated when this method runs. Empty text fields in
+	 * the saved settings mean "use the default", which is resolved at
+	 * generation time in the language of the site (see resolve()), so a
+	 * French site gets French pages without anyone typing them.
 	 *
 	 * @return array
 	 */
@@ -112,6 +121,8 @@ class Settings {
 				'button_label'  => $button,
 				'refresh_delay' => 60,
 				'retry_after'   => 300,
+				'show_button'   => true,
+				'show_meta'     => true,
 			),
 			'maintenance' => array(
 				'enabled'       => true,
@@ -120,6 +131,8 @@ class Settings {
 				'button_label'  => $button,
 				'refresh_delay' => 60,
 				'retry_after'   => 300,
+				'show_button'   => true,
+				'show_meta'     => true,
 			),
 			'php'         => array(
 				'enabled'       => true,
@@ -128,6 +141,8 @@ class Settings {
 				'button_label'  => $button,
 				'refresh_delay' => 60,
 				'retry_after'   => 300,
+				'show_button'   => true,
+				'show_meta'     => true,
 				'status_code'   => 503,
 			),
 		);
@@ -150,6 +165,28 @@ class Settings {
 		}
 
 		return $merged;
+	}
+
+	/**
+	 * Settings with empty texts replaced by the defaults in the current
+	 * language. This is what the pages are generated from.
+	 *
+	 * @param array|null $settings Settings to resolve, defaults to the saved ones.
+	 * @return array
+	 */
+	public function resolve( $settings = null ) {
+		$settings = is_array( $settings ) ? $settings : $this->get();
+		$defaults = $this->defaults();
+
+		foreach ( self::SCREENS as $key ) {
+			foreach ( self::TEXT_FIELDS as $field ) {
+				if ( ! isset( $settings[ $key ][ $field ] ) || '' === trim( (string) $settings[ $key ][ $field ] ) ) {
+					$settings[ $key ][ $field ] = $defaults[ $key ][ $field ];
+				}
+			}
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -178,6 +215,13 @@ class Settings {
 		}
 
 		$settings = $this->defaults();
+
+		// Texts stay empty so they keep following the language of the site.
+		foreach ( self::SCREENS as $key ) {
+			foreach ( self::TEXT_FIELDS as $field ) {
+				$settings[ $key ][ $field ] = '';
+			}
+		}
 
 		$settings['general']['logo_id'] = $branding->detect_logo_id();
 
@@ -238,7 +282,9 @@ class Settings {
 			$screen  = $input[ $key ];
 			$section = &$clean[ $key ];
 
-			$section['enabled'] = ! empty( $screen['enabled'] );
+			$section['enabled']     = ! empty( $screen['enabled'] );
+			$section['show_button'] = ! empty( $screen['show_button'] );
+			$section['show_meta']   = ! empty( $screen['show_meta'] );
 
 			if ( isset( $screen['title'] ) ) {
 				$section['title'] = sanitize_text_field( $screen['title'] );

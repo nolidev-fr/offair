@@ -1,0 +1,583 @@
+# Copyright (C) 2026 Nolidev
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Be Right Back 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/nolidev-fr/be-right-back/issues\n"
+"Last-Translator: Nolidev <contact@nolidev.fr>\n"
+"Language-Team: Nolidev <contact@nolidev.fr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-15T17:41:04+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: be-right-back\n"
+
+#. Plugin Name of the plugin
+#: be-right-back.php
+#: includes/class-admin-page.php:117
+#: includes/class-admin-page.php:118
+#: includes/class-admin-page.php:287
+#: includes/class-site-health.php:97
+msgid "Be Right Back"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: be-right-back.php
+msgid "https://github.com/nolidev-fr/be-right-back"
+msgstr ""
+
+#. Description of the plugin
+#: be-right-back.php
+msgid "Friendly branded pages when your site is down: database errors, fatal errors and maintenance mode. Works even when WordPress cannot load."
+msgstr ""
+
+#. Author of the plugin
+#: be-right-back.php
+msgid "Nolidev"
+msgstr ""
+
+#. Author URI of the plugin
+#: be-right-back.php
+msgid "https://nolidev.fr"
+msgstr ""
+
+#: includes/class-admin-page.php:143
+msgid "Choose a logo"
+msgstr ""
+
+#: includes/class-admin-page.php:144
+msgid "Use this logo"
+msgstr ""
+
+#: includes/class-admin-page.php:156
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin-page.php:175
+msgid "Settings saved and pages regenerated."
+msgstr ""
+
+#: includes/class-admin-page.php:188
+msgid "Pages regenerated."
+msgstr ""
+
+#: includes/class-admin-page.php:200
+msgid "Pages removed from wp-content. They will be written again the next time you save or regenerate."
+msgstr ""
+
+#: includes/class-admin-page.php:224
+msgid "The preview could not be written to a temporary file."
+msgstr ""
+
+#: includes/class-admin-page.php:233
+msgid "Sample error shown by the preview. Real errors appear here only when WP_DEBUG_DISPLAY is enabled."
+msgstr ""
+
+#: includes/class-admin-page.php:288
+msgid "Branded pages shown to visitors when the database is unreachable, when WordPress updates itself and when a fatal PHP error occurs. The pages are written to wp-content so they work even when WordPress cannot load."
+msgstr ""
+
+#: includes/class-admin-page.php:291
+msgid "On a network the three pages are shared by every site. These settings apply to the whole network."
+msgstr ""
+
+#: includes/class-admin-page.php:298
+msgid "General"
+msgstr ""
+
+#: includes/class-admin-page.php:302
+msgid "Advanced"
+msgstr ""
+
+#: includes/class-admin-page.php:321
+msgid "Save and regenerate pages"
+msgstr ""
+
+#: includes/class-admin-page.php:367
+#: includes/class-admin-page.php:530
+msgid "Page"
+msgstr ""
+
+#: includes/class-admin-page.php:368
+msgid "File"
+msgstr ""
+
+#: includes/class-admin-page.php:369
+msgid "State"
+msgstr ""
+
+#: includes/class-admin-page.php:370
+msgid "Written by"
+msgstr ""
+
+#: includes/class-admin-page.php:383
+msgid "Blocked by the PHP configuration"
+msgstr ""
+
+#. translators: 1: plugin version, 2: generation date.
+#: includes/class-admin-page.php:391
+#, php-format
+msgid "Be Right Back %1$s on %2$s"
+msgstr ""
+
+#: includes/class-admin-page.php:397
+msgid "Another plugin or a person. It is never overwritten without your say."
+msgstr ""
+
+#: includes/class-admin-page.php:403
+#: includes/class-admin-page.php:611
+msgid "Preview"
+msgstr ""
+
+#: includes/class-admin-page.php:404
+msgid "Download"
+msgstr ""
+
+#: includes/class-admin-page.php:411
+msgid "The PHP error page cannot be shown with the current PHP configuration. Open the PHP error tab for the explanation and the fix."
+msgstr ""
+
+#: includes/class-admin-page.php:414
+msgid "wp-content is writable: the pages are rewritten automatically whenever you save."
+msgstr ""
+
+#: includes/class-admin-page.php:416
+msgid "wp-content is not writable, so the pages cannot be written automatically. Download the three files and upload them to wp-content with FTP or SFTP. Remember to upload them again after changing the settings."
+msgstr ""
+
+#: includes/class-admin-page.php:433
+msgid "Logo"
+msgstr ""
+
+#: includes/class-admin-page.php:438
+msgid "Choose from the media library"
+msgstr ""
+
+#: includes/class-admin-page.php:439
+#: includes/class-admin-page.php:657
+msgid "Remove"
+msgstr ""
+
+#: includes/class-admin-page.php:441
+msgid "Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP."
+msgstr ""
+
+#: includes/class-admin-page.php:446
+msgid "Displayed name"
+msgstr ""
+
+#: includes/class-admin-page.php:451
+msgid "Shown above the title. Leave empty to use the site title."
+msgstr ""
+
+#: includes/class-admin-page.php:455
+msgid "Primary color"
+msgstr ""
+
+#: includes/class-admin-page.php:460
+msgid "Used for the name, the ornament and the button."
+msgstr ""
+
+#: includes/class-admin-page.php:464
+msgid "Background color"
+msgstr ""
+
+#: includes/class-admin-page.php:470
+msgid "Heading font"
+msgstr ""
+
+#: includes/class-admin-page.php:474
+msgid "Serif (Georgia, Palatino)"
+msgstr ""
+
+#: includes/class-admin-page.php:475
+msgid "Sans-serif (system font)"
+msgstr ""
+
+#: includes/class-admin-page.php:477
+msgid "System fonts only: nothing is loaded from the network."
+msgstr ""
+
+#: includes/class-admin-page.php:480
+msgid "Ornament"
+msgstr ""
+
+#: includes/class-admin-page.php:484
+msgid "Wave"
+msgstr ""
+
+#: includes/class-admin-page.php:485
+msgid "Line"
+msgstr ""
+
+#: includes/class-admin-page.php:486
+msgid "None"
+msgstr ""
+
+#: includes/class-admin-page.php:490
+msgid "Contact line"
+msgstr ""
+
+#: includes/class-admin-page.php:494
+msgid "Need help? Write to hello@example.com"
+msgstr ""
+
+#: includes/class-admin-page.php:495
+msgid "Plain text shown under the button. Email addresses and web addresses become links."
+msgstr ""
+
+#: includes/class-admin-page.php:513
+msgid "Shown when WordPress cannot connect to the database. Answers with HTTP 503 so search engines treat the outage as temporary."
+msgstr ""
+
+#: includes/class-admin-page.php:514
+msgid "Shown while WordPress updates itself, a theme or a plugin. Answers with HTTP 503."
+msgstr ""
+
+#: includes/class-admin-page.php:515
+msgid "Shown when a fatal PHP error stops the page. Technical details are added only when WP_DEBUG_DISPLAY is enabled."
+msgstr ""
+
+#: includes/class-admin-page.php:521
+msgid "Leave empty to use the default text in the language of the site."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-admin-page.php:534
+#, php-format
+msgid "Write wp-content/%s"
+msgstr ""
+
+#: includes/class-admin-page.php:537
+msgid "Title"
+msgstr ""
+
+#: includes/class-admin-page.php:546
+msgid "Message"
+msgstr ""
+
+#: includes/class-admin-page.php:549
+msgid "Plain text. Leave a blank line between paragraphs."
+msgstr ""
+
+#: includes/class-admin-page.php:553
+msgid "Retry button"
+msgstr ""
+
+#: includes/class-admin-page.php:556
+msgid "Show a button that reloads the page"
+msgstr ""
+
+#: includes/class-admin-page.php:559
+msgid "Button label"
+msgstr ""
+
+#: includes/class-admin-page.php:568
+msgid "Automatic refresh"
+msgstr ""
+
+#: includes/class-admin-page.php:575
+#: includes/class-admin-page.php:587
+msgid "seconds"
+msgstr ""
+
+#: includes/class-admin-page.php:576
+msgid "The page reloads itself after this delay. 0 disables it."
+msgstr ""
+
+#: includes/class-admin-page.php:580
+msgid "Retry-After header"
+msgstr ""
+
+#: includes/class-admin-page.php:588
+msgid "Tells search engines and monitoring tools when to come back. 0 omits the header."
+msgstr ""
+
+#: includes/class-admin-page.php:592
+msgid "Incident line"
+msgstr ""
+
+#: includes/class-admin-page.php:595
+msgid "Show the local time of the incident and the HTTP status under the message"
+msgstr ""
+
+#: includes/class-admin-page.php:599
+msgid "HTTP status"
+msgstr ""
+
+#: includes/class-admin-page.php:603
+msgid "503 Service Unavailable (recommended)"
+msgstr ""
+
+#: includes/class-admin-page.php:604
+msgid "500 Internal Server Error (WordPress default)"
+msgstr ""
+
+#: includes/class-admin-page.php:606
+msgid "503 tells search engines the problem is temporary and sends Retry-After. 500 signals a permanent error."
+msgstr ""
+
+#: includes/class-admin-page.php:612
+msgid "Rendered from the saved settings, exactly as a visitor will see it. Save to refresh it."
+msgstr ""
+
+#: includes/class-admin-page.php:614
+msgid "Open the preview in a new tab"
+msgstr ""
+
+#: includes/class-admin-page.php:628
+msgid "This page cannot be shown with the current PHP configuration."
+msgstr ""
+
+#: includes/class-admin-page.php:633
+msgid "Current values:"
+msgstr ""
+
+#: includes/class-admin-page.php:648
+msgid "Regenerate"
+msgstr ""
+
+#: includes/class-admin-page.php:649
+msgid "Rewrites the pages from the saved settings. Useful after changing the site title, the timezone or the logo file."
+msgstr ""
+
+#: includes/class-admin-page.php:653
+msgid "Also replace files in wp-content that were not written by this plugin"
+msgstr ""
+
+#: includes/class-admin-page.php:654
+msgid "Regenerate pages now"
+msgstr ""
+
+#: includes/class-admin-page.php:658
+msgid "Deletes the pages written by this plugin. WordPress shows its default screens again until you save or regenerate."
+msgstr ""
+
+#: includes/class-admin-page.php:659
+msgid "Remove the pages from wp-content?"
+msgstr ""
+
+#: includes/class-admin-page.php:662
+msgid "Remove pages from wp-content"
+msgstr ""
+
+#: includes/class-admin-page.php:665
+msgid "Manual installation"
+msgstr ""
+
+#: includes/class-admin-page.php:666
+msgid "When wp-content is not writable, download the files and upload them to wp-content yourself."
+msgstr ""
+
+#: includes/class-admin-page.php:673
+msgid "WP-CLI"
+msgstr ""
+
+#: includes/class-admin-page.php:679
+msgid "Deactivation and uninstall"
+msgstr ""
+
+#: includes/class-admin-page.php:680
+msgid "Deactivating the plugin removes the three pages from wp-content and keeps your settings. Uninstalling removes the pages and the settings. Files not written by this plugin are never touched."
+msgstr ""
+
+#: includes/class-admin-page.php:831
+msgid "You are not allowed to manage Be Right Back."
+msgstr ""
+
+#: includes/class-admin-page.php:846
+msgid "Unknown page."
+msgstr ""
+
+#. translators: %s: directory path.
+#: includes/class-dropins.php:178
+#, php-format
+msgid "The directory %s is not writable."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-dropins.php:193
+#, php-format
+msgid "Could not write %s."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-dropins.php:209
+#, php-format
+msgid "Could not replace %s."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-dropins.php:238
+#, php-format
+msgid "%s was not written by Be Right Back and was left untouched."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-dropins.php:248
+#, php-format
+msgid "Could not delete %s."
+msgstr ""
+
+#: includes/class-environment.php:71
+msgid "PHP prints errors on screen because WP_DEBUG_DISPLAY is enabled in wp-config.php, and it does not buffer its output (the PHP directive output_buffering is off)."
+msgstr ""
+
+#: includes/class-environment.php:73
+msgid "PHP prints errors on screen (the PHP directive display_errors is on) and does not buffer its output (the PHP directive output_buffering is off)."
+msgstr ""
+
+#: includes/class-environment.php:78
+msgid "On a fatal error, PHP therefore sends the raw error message and the HTTP headers before WordPress runs its error handler, so WordPress never loads wp-content/php-error.php. Visitors see the raw PHP error with an HTTP 200 status instead of this page. The database and maintenance pages are not affected."
+msgstr ""
+
+#: includes/class-environment.php:79
+msgid "To fix it, either disable WP_DEBUG_DISPLAY (recommended on a live site) or set output_buffering to 4096 in the PHP configuration (php.ini, .user.ini or the hosting panel)."
+msgstr ""
+
+#: includes/class-generator.php:111
+msgid "Up to date"
+msgstr ""
+
+#: includes/class-generator.php:112
+msgid "Needs regeneration"
+msgstr ""
+
+#: includes/class-generator.php:113
+msgid "Missing"
+msgstr ""
+
+#: includes/class-generator.php:114
+msgid "Not written by this plugin"
+msgstr ""
+
+#: includes/class-generator.php:115
+msgid "Disabled"
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-generator.php:222
+#, php-format
+msgid "wp-content/%s already exists and was not written by Be Right Back, so it was left untouched. Use the Advanced tab to replace it."
+msgstr ""
+
+#: includes/class-generator.php:284
+msgid "Database temporarily unavailable (HTTP 503)."
+msgstr ""
+
+#: includes/class-generator.php:285
+msgid "Scheduled maintenance in progress (HTTP 503)."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/class-generator.php:287
+#, php-format
+msgid "Technical error (HTTP %d)."
+msgstr ""
+
+#: includes/class-generator.php:458
+msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
+msgstr ""
+
+#: includes/class-settings.php:88
+msgid "Database error"
+msgstr ""
+
+#: includes/class-settings.php:89
+msgid "Maintenance"
+msgstr ""
+
+#: includes/class-settings.php:90
+msgid "PHP error"
+msgstr ""
+
+#: includes/class-settings.php:105
+msgid "Try again"
+msgstr ""
+
+#: includes/class-settings.php:119
+msgid "We'll be right back"
+msgstr ""
+
+#: includes/class-settings.php:120
+msgid ""
+"Our site is taking a short break because of a technical problem. It usually comes back within a few minutes.\n"
+"\n"
+"This page refreshes on its own. Thank you for your patience."
+msgstr ""
+
+#: includes/class-settings.php:129
+msgid "Back in a minute"
+msgstr ""
+
+#: includes/class-settings.php:130
+msgid ""
+"We are installing an update. The site will be back in a moment.\n"
+"\n"
+"This page refreshes on its own. Thank you for your patience."
+msgstr ""
+
+#: includes/class-settings.php:139
+msgid "Something went wrong"
+msgstr ""
+
+#: includes/class-settings.php:140
+msgid ""
+"A technical error prevents us from displaying this page right now. Please try again in a few minutes.\n"
+"\n"
+"Thank you for your patience."
+msgstr ""
+
+#: includes/class-site-health.php:43
+msgid "Be Right Back pages"
+msgstr ""
+
+#. translators: 1: page name, 2: file name.
+#: includes/class-site-health.php:67
+#, php-format
+msgid "The %1$s page is enabled but wp-content/%2$s is missing."
+msgstr ""
+
+#. translators: 1: page name, 2: file name.
+#: includes/class-site-health.php:71
+#, php-format
+msgid "wp-content/%2$s does not match the current settings of the %1$s page."
+msgstr ""
+
+#. translators: %s: file name.
+#: includes/class-site-health.php:75
+#, php-format
+msgid "wp-content/%s was not written by Be Right Back. The plugin leaves it untouched, so this page is not branded."
+msgstr ""
+
+#: includes/class-site-health.php:82
+msgid "The PHP error page cannot be shown with the current PHP configuration."
+msgstr ""
+
+#: includes/class-site-health.php:86
+msgid "wp-content is not writable, so the pages cannot be written automatically. Download them from the settings page and upload them yourself."
+msgstr ""
+
+#: includes/class-site-health.php:94
+msgid "Your downtime pages are in place"
+msgstr ""
+
+#: includes/class-site-health.php:100
+msgid "Visitors see a branded page when the database is unreachable, during updates and on fatal errors."
+msgstr ""
+
+#: includes/class-site-health.php:101
+msgid "Open the Be Right Back settings"
+msgstr ""
+
+#: includes/class-site-health.php:106
+msgid "Some downtime pages need attention"
+msgstr ""
+
+#. translators: 1: local time of the incident (computed when the page is served), 2: timezone name, 3: sentence describing the incident.
+#: templates/partials/content.php:43
+#, php-format
+msgid "Incident recorded at %1$s (%2$s). %3$s"
+msgstr ""

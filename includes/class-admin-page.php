@@ -71,6 +71,16 @@ class Admin_Page {
 	}
 
 	/**
+	 * URL of admin-post.php on the current site. It also serves the network admin,
+	 * which has no admin-post.php of its own.
+	 *
+	 * @return string
+	 */
+	private function post_url() {
+		return admin_url( 'admin-post.php' );
+	}
+
+	/**
 	 * Preview URL of a screen, protected by capability and nonce.
 	 *
 	 * @param string $key Screen key.
@@ -83,7 +93,7 @@ class Admin_Page {
 					'action' => 'be_right_back_preview',
 					'screen' => $key,
 				),
-				self_admin_url( 'admin-post.php' )
+				$this->post_url()
 			),
 			'be_right_back_preview'
 		);
@@ -102,7 +112,7 @@ class Admin_Page {
 					'action' => 'be_right_back_download',
 					'screen' => $key,
 				),
-				self_admin_url( 'admin-post.php' )
+				$this->post_url()
 			),
 			'be_right_back_download'
 		);
@@ -302,7 +312,7 @@ class Admin_Page {
 				<a href="#brb-tab-advanced" class="nav-tab"><?php esc_html_e( 'Advanced', 'be-right-back' ); ?></a>
 			</h2>
 
-			<form method="post" action="<?php echo esc_url( self_admin_url( 'admin-post.php' ) ); ?>" id="brb-form">
+			<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>" id="brb-form">
 				<?php wp_nonce_field( 'be_right_back_save' ); ?>
 				<input type="hidden" name="action" value="be_right_back_save">
 				<input type="hidden" name="tab" value="general" id="brb-current-tab">
@@ -516,6 +526,9 @@ class Admin_Page {
 		);
 		$preview    = $this->preview_url( $key );
 		$name_first = $key . '][';
+		$defaults   = $this->plugin->settings->defaults();
+		$default    = $defaults[ $key ];
+		$empty_hint = __( 'Leave empty to use the default text in the language of the site.', 'be-right-back' );
 		?>
 		<p class="brb-intro"><?php echo esc_html( $intros[ $key ] ); ?></p>
 		<?php if ( 'php' === $key ) : ?>
@@ -530,13 +543,36 @@ class Admin_Page {
 				/* translators: %s: file name. */
 				sprintf( __( 'Write wp-content/%s', 'be-right-back' ), $file )
 			);
-			$this->text_row( __( 'Title', 'be-right-back' ), $name_first . 'title', $screen['title'], array( 'class' => 'regular-text' ) );
-			$this->textarea_row( __( 'Message', 'be-right-back' ), $name_first . 'message', $screen['message'], __( 'Plain text. Leave a blank line between paragraphs.', 'be-right-back' ) );
+			$this->text_row(
+				__( 'Title', 'be-right-back' ),
+				$name_first . 'title',
+				$screen['title'],
+				array(
+					'placeholder' => $default['title'],
+					'description' => $empty_hint,
+				)
+			);
+			$this->textarea_row(
+				__( 'Message', 'be-right-back' ),
+				$name_first . 'message',
+				$screen['message'],
+				__( 'Plain text. Leave a blank line between paragraphs.', 'be-right-back' ) . ' ' . $empty_hint,
+				$default['message']
+			);
+			$this->checkbox_row(
+				__( 'Retry button', 'be-right-back' ),
+				$name_first . 'show_button',
+				! empty( $screen['show_button'] ),
+				__( 'Show a button that reloads the page', 'be-right-back' )
+			);
 			$this->text_row(
 				__( 'Button label', 'be-right-back' ),
 				$name_first . 'button_label',
 				$screen['button_label'],
-				array( 'description' => __( 'The button reloads the page. Leave empty to hide it.', 'be-right-back' ) )
+				array(
+					'placeholder' => $default['button_label'],
+					'description' => $empty_hint,
+				)
 			);
 			$this->text_row(
 				__( 'Automatic refresh', 'be-right-back' ),
@@ -561,6 +597,12 @@ class Admin_Page {
 					'suffix'      => __( 'seconds', 'be-right-back' ),
 					'description' => __( 'Tells search engines and monitoring tools when to come back. 0 omits the header.', 'be-right-back' ),
 				)
+			);
+			$this->checkbox_row(
+				__( 'Incident line', 'be-right-back' ),
+				$name_first . 'show_meta',
+				! empty( $screen['show_meta'] ),
+				__( 'Show the local time of the incident and the HTTP status under the message', 'be-right-back' )
 			);
 			if ( 'php' === $key ) {
 				$this->select_row(
@@ -615,7 +657,7 @@ class Admin_Page {
 		?>
 		<h2><?php esc_html_e( 'Regenerate', 'be-right-back' ); ?></h2>
 		<p><?php esc_html_e( 'Rewrites the pages from the saved settings. Useful after changing the site title, the timezone or the logo file.', 'be-right-back' ); ?></p>
-		<form method="post" action="<?php echo esc_url( self_admin_url( 'admin-post.php' ) ); ?>">
+		<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>">
 			<?php wp_nonce_field( 'be_right_back_generate' ); ?>
 			<input type="hidden" name="action" value="be_right_back_generate">
 			<p><label><input type="checkbox" name="force" value="1"> <?php esc_html_e( 'Also replace files in wp-content that were not written by this plugin', 'be-right-back' ); ?></label></p>
@@ -624,7 +666,7 @@ class Admin_Page {
 
 		<h2><?php esc_html_e( 'Remove', 'be-right-back' ); ?></h2>
 		<p><?php esc_html_e( 'Deletes the pages written by this plugin. WordPress shows its default screens again until you save or regenerate.', 'be-right-back' ); ?></p>
-		<form method="post" action="<?php echo esc_url( self_admin_url( 'admin-post.php' ) ); ?>" class="brb-confirm" data-confirm="<?php esc_attr_e( 'Remove the pages from wp-content?', 'be-right-back' ); ?>">
+		<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>" class="brb-confirm" data-confirm="<?php esc_attr_e( 'Remove the pages from wp-content?', 'be-right-back' ); ?>">
 			<?php wp_nonce_field( 'be_right_back_remove' ); ?>
 			<input type="hidden" name="action" value="be_right_back_remove">
 			<p><button type="submit" class="button"><?php esc_html_e( 'Remove pages from wp-content', 'be-right-back' ); ?></button></p>
@@ -697,14 +739,15 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 	 * @param string $name        Field path.
 	 * @param string $value       Value.
 	 * @param string $description Help text.
+	 * @param string $placeholder Placeholder.
 	 */
-	private function textarea_row( $label, $name, $value, $description = '' ) {
+	private function textarea_row( $label, $name, $value, $description = '', $placeholder = '' ) {
 		$id = $this->field_id( $name );
 		?>
 		<tr>
 			<th scope="row"><label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $label ); ?></label></th>
 			<td>
-				<textarea id="<?php echo esc_attr( $id ); ?>" name="be_right_back[<?php echo esc_attr( $name ); ?>]" class="large-text" rows="5"><?php echo esc_textarea( $value ); ?></textarea>
+				<textarea id="<?php echo esc_attr( $id ); ?>" name="be_right_back[<?php echo esc_attr( $name ); ?>]" class="large-text" rows="5" placeholder="<?php echo esc_attr( $placeholder ); ?>"><?php echo esc_textarea( $value ); ?></textarea>
 				<?php if ( '' !== $description ) : ?>
 				<p class="description"><?php echo esc_html( $description ); ?></p>
 				<?php endif; ?>
