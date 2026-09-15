@@ -1,6 +1,6 @@
 === Be Right Back ===
 Contributors: nolidev
-Tags: maintenance mode, database error, fatal error, error page, 503
+Tags: maintenance mode, database, fatal error, error page, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
