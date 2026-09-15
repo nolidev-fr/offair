@@ -77,6 +77,11 @@ class Site_Health {
 			}
 		}
 
+		if ( Environment::php_error_page_blocked() ) {
+			$explanation = Environment::php_error_page_explanation();
+			$problems[]  = __( 'The PHP error page cannot be shown with the current PHP configuration.', 'be-right-back' ) . ' ' . $explanation[0] . ' ' . $explanation[2];
+		}
+
 		if ( ! $this->plugin->dropins->is_content_writable() && $problems ) {
 			$problems[] = __( 'wp-content is not writable, so the pages cannot be written automatically. Download them from the settings page and upload them yourself.', 'be-right-back' );
 		}

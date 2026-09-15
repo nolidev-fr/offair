@@ -69,7 +69,7 @@ Another plugin or a person placed a file with the same name in `wp-content`. Be 
 
 = I enabled WP_DEBUG_DISPLAY and the PHP error page does not show. =
 
-When WP_DEBUG_DISPLAY is enabled and PHP runs without output buffering, PHP prints the raw error and sends the headers before WordPress can act, so WordPress never loads any error page, branded or not. This is how WordPress works. With output buffering enabled in PHP (the case on most hosts) the branded page shows, with the technical details added at the bottom.
+When WP_DEBUG_DISPLAY is enabled and PHP runs without output buffering, PHP prints the raw error and sends the headers before WordPress can act, so WordPress never loads any error page, branded or not. This is how WordPress works. The settings page and Site Health detect this situation and explain how to fix it: disable WP_DEBUG_DISPLAY on a live site, or set output_buffering to 4096 in the PHP configuration. With output buffering enabled (the case on most hosts) the branded page shows, with the technical details added at the bottom.
 
 = Does the plugin send emails or contact any service? =
 

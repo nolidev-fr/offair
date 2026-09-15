@@ -377,7 +377,12 @@ class Admin_Page {
 					<tr>
 						<td><strong><?php echo esc_html( isset( $labels[ $key ] ) ? $labels[ $key ] : $key ); ?></strong></td>
 						<td><code>wp-content/<?php echo esc_html( $info['file'] ); ?></code></td>
-						<td><span class="brb-badge brb-badge-<?php echo esc_attr( $state ); ?>"><?php echo esc_html( Generator::state_label( $state ) ); ?></span></td>
+						<td>
+							<span class="brb-badge brb-badge-<?php echo esc_attr( $state ); ?>"><?php echo esc_html( Generator::state_label( $state ) ); ?></span>
+							<?php if ( 'php' === $key && Environment::php_error_page_blocked() ) : ?>
+							<span class="brb-badge brb-badge-blocked"><?php esc_html_e( 'Blocked by the PHP configuration', 'be-right-back' ); ?></span>
+							<?php endif; ?>
+						</td>
 						<td>
 							<?php if ( $info['ours'] ) : ?>
 								<?php
@@ -402,6 +407,9 @@ class Admin_Page {
 				<?php endforeach; ?>
 				</tbody>
 			</table>
+			<?php if ( Environment::php_error_page_blocked() ) : ?>
+			<div class="notice notice-warning inline"><p><?php esc_html_e( 'The PHP error page cannot be shown with the current PHP configuration. Open the PHP error tab for the explanation and the fix.', 'be-right-back' ); ?></p></div>
+			<?php endif; ?>
 			<?php if ( $writable ) : ?>
 			<p class="description"><?php esc_html_e( 'wp-content is writable: the pages are rewritten automatically whenever you save.', 'be-right-back' ); ?></p>
 			<?php else : ?>
@@ -510,6 +518,9 @@ class Admin_Page {
 		$name_first = $key . '][';
 		?>
 		<p class="brb-intro"><?php echo esc_html( $intros[ $key ] ); ?></p>
+		<?php if ( 'php' === $key ) : ?>
+			<?php $this->render_php_environment_notice(); ?>
+		<?php endif; ?>
 		<table class="form-table" role="presentation">
 			<?php
 			$this->checkbox_row(
@@ -569,6 +580,30 @@ class Admin_Page {
 		<p class="description"><?php esc_html_e( 'Rendered from the saved settings, exactly as a visitor will see it. Save to refresh it.', 'be-right-back' ); ?></p>
 		<iframe class="brb-preview" data-src="<?php echo esc_url( $preview ); ?>" title="<?php echo esc_attr( $labels[ $key ] ); ?>"></iframe>
 		<p><a href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open the preview in a new tab', 'be-right-back' ); ?></a></p>
+		<?php
+	}
+
+	/**
+	 * Warning shown in the PHP error tab when the PHP configuration prevents
+	 * WordPress from ever loading php-error.php, with the values in cause.
+	 */
+	private function render_php_environment_notice() {
+		if ( ! Environment::php_error_page_blocked() ) {
+			return;
+		}
+		?>
+		<div class="notice notice-warning inline brb-environment">
+			<p><strong><?php esc_html_e( 'This page cannot be shown with the current PHP configuration.', 'be-right-back' ); ?></strong></p>
+			<?php foreach ( Environment::php_error_page_explanation() as $paragraph ) : ?>
+			<p><?php echo esc_html( $paragraph ); ?></p>
+			<?php endforeach; ?>
+			<p>
+				<?php esc_html_e( 'Current values:', 'be-right-back' ); ?>
+				<?php foreach ( Environment::php_error_page_values() as $name => $value ) : ?>
+				<code><?php echo esc_html( $name . ' = ' . ( '' === $value ? '(empty)' : $value ) ); ?></code>
+				<?php endforeach; ?>
+			</p>
+		</div>
 		<?php
 	}
 
