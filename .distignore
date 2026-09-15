@@ -1,0 +1,17 @@
+/.git
+/.github
+/.wordpress-org
+/.gitignore
+/.distignore
+/.editorconfig
+/composer.json
+/composer.lock
+/phpcs.xml.dist
+/tests
+/vendor
+/node_modules
+/BRIEF-*.md
+/db-error.php
+/db-error-desktop.png
+/db-error-mobile.png
+*.zip

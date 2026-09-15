@@ -1,0 +1,18 @@
+# Local working notes and reference material, never published.
+/BRIEF-*.md
+/db-error.php
+/db-error-desktop.png
+/db-error-mobile.png
+
+# Tooling.
+/vendor/
+/node_modules/
+/composer.lock
+/.phpcs-cache
+/.wp-env.override.json
+
+# Builds and system files.
+/*.zip
+/build/
+.DS_Store
+Thumbs.db

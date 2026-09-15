@@ -1,0 +1,25 @@
+{
+  "name": "nolidev/be-right-back",
+  "description": "Friendly branded pages when your WordPress site is down: database errors, fatal errors and maintenance mode.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/nolidev-fr/be-right-back",
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "wp-coding-standards/wpcs": "^3.1"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  },
+  "scripts": {
+    "lint": "phpcs",
+    "lint:fix": "phpcbf"
+  }
+}
