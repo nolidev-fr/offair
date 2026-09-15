@@ -148,7 +148,7 @@ defined( 'ABSPATH' ) || exit;
 	<?php if ( ! empty( $args['logo']['src'] ) ) : ?>
 	<img class="brb-logo" src="<?php echo esc_attr( $args['logo']['src'] ); ?>" alt="<?php echo esc_attr( $args['site_name'] ); ?>"<?php echo ! empty( $args['logo']['width'] ) ? ' width="' . (int) $args['logo']['width'] . '" height="' . (int) $args['logo']['height'] . '"' : ''; ?>>
 	<?php endif; ?>
-	<?php if ( '' !== $args['site_name'] ) : ?>
+	<?php if ( ! empty( $args['show_name'] ) && '' !== $args['site_name'] ) : ?>
 	<p class="brb-brand"><?php echo esc_html( $args['site_name'] ); ?></p>
 	<?php endif; ?>
 	<?php if ( 'wave' === $args['ornament'] ) : ?>

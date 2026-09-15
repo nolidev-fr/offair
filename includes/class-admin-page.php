@@ -377,7 +377,6 @@ class Admin_Page {
 						<th><?php esc_html_e( 'Page', 'be-right-back' ); ?></th>
 						<th><?php esc_html_e( 'File', 'be-right-back' ); ?></th>
 						<th><?php esc_html_e( 'State', 'be-right-back' ); ?></th>
-						<th><?php esc_html_e( 'Written by', 'be-right-back' ); ?></th>
 						<th></th>
 					</tr>
 				</thead>
@@ -387,26 +386,19 @@ class Admin_Page {
 					<tr>
 						<td><strong><?php echo esc_html( isset( $labels[ $key ] ) ? $labels[ $key ] : $key ); ?></strong></td>
 						<td><code>wp-content/<?php echo esc_html( $info['file'] ); ?></code></td>
-						<td>
-							<span class="brb-badge brb-badge-<?php echo esc_attr( $state ); ?>"><?php echo esc_html( Generator::state_label( $state ) ); ?></span>
+						<td class="brb-status-state">
+							<?php
+							$tooltip = '';
+							if ( $info['ours'] ) {
+								/* translators: 1: plugin version, 2: generation date. */
+								$tooltip = sprintf( __( 'Written by Be Right Back %1$s on %2$s', 'be-right-back' ), $info['version'], $this->format_date( $info['generated'] ) );
+							} elseif ( $info['exists'] ) {
+								$tooltip = __( 'Written by another plugin or a person. It is never overwritten without your say.', 'be-right-back' );
+							}
+							?>
+							<span class="brb-badge brb-badge-<?php echo esc_attr( $state ); ?>" title="<?php echo esc_attr( $tooltip ); ?>"><?php echo esc_html( Generator::state_label( $state ) ); ?></span>
 							<?php if ( 'php' === $key && Environment::php_error_page_blocked() ) : ?>
 							<span class="brb-badge brb-badge-blocked"><?php esc_html_e( 'Blocked by the PHP configuration', 'be-right-back' ); ?></span>
-							<?php endif; ?>
-						</td>
-						<td>
-							<?php if ( $info['ours'] ) : ?>
-								<?php
-								printf(
-									/* translators: 1: plugin version, 2: generation date. */
-									esc_html__( 'Be Right Back %1$s on %2$s', 'be-right-back' ),
-									esc_html( $info['version'] ),
-									esc_html( $this->format_date( $info['generated'] ) )
-								);
-								?>
-							<?php elseif ( $info['exists'] ) : ?>
-								<?php esc_html_e( 'Another plugin or a person. It is never overwritten without your say.', 'be-right-back' ); ?>
-							<?php else : ?>
-								&mdash;
 							<?php endif; ?>
 						</td>
 						<td class="brb-status-links">
@@ -460,6 +452,12 @@ class Admin_Page {
 					'placeholder' => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 					'description' => __( 'Shown above the title. Leave empty to use the site title.', 'be-right-back' ),
 				)
+			);
+			$this->checkbox_row(
+				__( 'Name display', 'be-right-back' ),
+				'general][show_name',
+				! empty( $general['show_name'] ),
+				__( 'Show the name above the title. Uncheck it when the logo already contains the name.', 'be-right-back' )
 			);
 			$this->text_row(
 				__( 'Primary color', 'be-right-back' ),

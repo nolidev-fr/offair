@@ -3,7 +3,7 @@
  * Plugin Name:       Be Right Back
  * Plugin URI:        https://github.com/nolidev-fr/be-right-back
  * Description:       Friendly branded pages when your site is down: database errors, fatal errors and maintenance mode. Works even when WordPress cannot load.
- * Version:           0.1.0
+ * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Nolidev
@@ -22,7 +22,7 @@ if ( defined( 'BE_RIGHT_BACK_VERSION' ) ) {
 	return;
 }
 
-define( 'BE_RIGHT_BACK_VERSION', '0.1.0' );
+define( 'BE_RIGHT_BACK_VERSION', '1.0.0' );
 define( 'BE_RIGHT_BACK_FILE', __FILE__ );
 define( 'BE_RIGHT_BACK_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BE_RIGHT_BACK_URL', plugin_dir_url( __FILE__ ) );

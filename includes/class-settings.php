@@ -108,10 +108,11 @@ class Settings {
 			'general'     => array(
 				'logo_id'          => 0,
 				'site_name'        => '',
+				'show_name'        => true,
 				'primary_color'    => '#334155',
 				'background_color' => '#f5f4f0',
 				'heading_font'     => 'serif',
-				'ornament'         => 'wave',
+				'ornament'         => 'line',
 				'contact_line'     => '',
 			),
 			'db'          => array(
@@ -256,6 +257,7 @@ class Settings {
 			if ( isset( $general['site_name'] ) ) {
 				$section['site_name'] = sanitize_text_field( $general['site_name'] );
 			}
+			$section['show_name'] = ! empty( $general['show_name'] );
 			foreach ( array( 'primary_color', 'background_color' ) as $color_key ) {
 				if ( isset( $general[ $color_key ] ) ) {
 					$color                 = sanitize_hex_color( trim( (string) $general[ $color_key ] ) );

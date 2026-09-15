@@ -291,6 +291,7 @@ class Generator {
 			'screen'        => $key,
 			'lang'          => get_bloginfo( 'language' ),
 			'site_name'     => $site_name,
+			'show_name'     => ! empty( $general['show_name'] ),
 			'title'         => (string) $screen['title'],
 			'message_html'  => self::paragraphs( $screen['message'] ),
 			'button_label'  => empty( $screen['show_button'] ) ? '' : (string) $screen['button_label'],

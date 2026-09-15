@@ -4,7 +4,7 @@ Tags: maintenance mode, database error, fatal error, error page, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,10 +91,13 @@ Yes. The three files are shared by every site of the network, so the settings li
 
 == Changelog ==
 
-= 0.1.0 =
-* Initial development version.
+= 1.0.0 =
+* Initial release: branded pages for database errors, maintenance mode and fatal PHP errors, written as standalone drop-ins.
+* Settings page with status box, live preview, manual download and per-page options.
+* Logo and color detection, texts in the language of the site, French translation.
+* Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
 
-= 0.1.0 =
-Initial development version.
+= 1.0.0 =
+Initial release.
