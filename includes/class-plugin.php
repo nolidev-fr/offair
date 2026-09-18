@@ -36,18 +36,25 @@ final class Plugin {
 	public $branding;
 
 	/**
-	 * Drop-in files on disk.
+	 * Drop-in files in wp-content.
 	 *
 	 * @var Dropins
 	 */
 	public $dropins;
 
 	/**
-	 * Template compiler.
+	 * Page content saved in the uploads folder.
 	 *
-	 * @var Generator
+	 * @var Pages
 	 */
-	public $generator;
+	public $pages;
+
+	/**
+	 * Writes and removes everything the visitors see.
+	 *
+	 * @var Publisher
+	 */
+	public $publisher;
 
 	/**
 	 * Returns the shared instance, creating it on first use.
@@ -69,10 +76,18 @@ final class Plugin {
 		$this->settings  = new Settings();
 		$this->branding  = new Branding();
 		$this->dropins   = new Dropins();
-		$this->generator = new Generator( $this->settings, $this->dropins, $this->branding );
+		$this->pages     = new Pages( $this->settings, $this->branding );
+		$this->publisher = new Publisher( $this->settings, $this->dropins, $this->pages );
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_init', array( $this, 'maybe_upgrade' ) );
+
+		// The pages show the site title, language, timezone and time format:
+		// their content is saved again when one of these settings changes.
+		foreach ( array( 'blogname', 'WPLANG', 'timezone_string', 'gmt_offset', 'time_format', 'site_icon' ) as $option ) {
+			add_action( 'update_option_' . $option, array( $this, 'schedule_refresh' ) );
+		}
+		add_action( 'init', array( $this, 'refresh' ), 20 );
 
 		new Site_Health( $this );
 
@@ -86,6 +101,34 @@ final class Plugin {
 	}
 
 	/**
+	 * Asks for the page content to be saved again on the next request. The
+	 * current request may still run with the previous language loaded.
+	 * Only the settings of the main site feed the pages.
+	 */
+	public function schedule_refresh() {
+		if ( is_main_site() ) {
+			update_option( Settings::REFRESH_OPTION, 1 );
+		}
+	}
+
+	/**
+	 * Saves the page content again after a site setting it shows has
+	 * changed, provided the pages have been published before.
+	 */
+	public function refresh() {
+		if ( ! get_option( Settings::REFRESH_OPTION ) ) {
+			return;
+		}
+
+		delete_option( Settings::REFRESH_OPTION );
+
+		if ( file_exists( $this->pages->path() ) ) {
+			$this->pages->flush();
+			$this->pages->write();
+		}
+	}
+
+	/**
 	 * Loads the translations shipped in the languages directory. Language
 	 * packs from translate.wordpress.org take precedence when present.
 	 */
@@ -94,8 +137,8 @@ final class Plugin {
 	}
 
 	/**
-	 * Rewrites the drop-ins after a plugin update so they always match the
-	 * current templates.
+	 * After a plugin update, copies the new drop-in and saves the page
+	 * content again so that both match the new version.
 	 */
 	public function maybe_upgrade() {
 		$stored = (string) Settings::get_option( Settings::VERSION_OPTION, '' );
@@ -104,30 +147,30 @@ final class Plugin {
 			return;
 		}
 
-		$this->generator->generate_all();
+		$this->publisher->publish();
 		Settings::update_option( Settings::VERSION_OPTION, BE_RIGHT_BACK_VERSION );
 	}
 
 	/**
-	 * Activation: seed the settings from the site branding and write the pages.
+	 * Activation: seed the settings from the site branding and publish the pages.
 	 */
 	public static function activate() {
 		$plugin = self::instance();
 
 		$plugin->settings->seed_defaults( $plugin->branding );
-		$plugin->generator->generate_all();
+		$plugin->publisher->publish();
 
 		Settings::update_option( Settings::VERSION_OPTION, BE_RIGHT_BACK_VERSION );
 	}
 
 	/**
-	 * Deactivation: remove the pages written by the plugin. Settings are kept
-	 * so that reactivating restores the same pages. Uninstalling removes them.
+	 * Deactivation: remove the drop-ins. Settings are kept so that
+	 * reactivating restores the same pages. Uninstalling removes them.
 	 */
 	public static function deactivate() {
 		$plugin = self::instance();
 
-		$plugin->generator->remove_all();
+		$plugin->publisher->unpublish();
 
 		Settings::delete_option( Settings::VERSION_OPTION );
 	}

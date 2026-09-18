@@ -1,6 +1,6 @@
 <?php
 /**
- * Drop-in files on disk: signature, detection and atomic writes.
+ * Drop-in files in wp-content.
  *
  * @package BeRightBack
  */
@@ -10,34 +10,38 @@ namespace BeRightBack;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Reads and writes the files in wp-content without ever touching a file the
- * plugin did not write itself.
+ * Copies the static drop-in shipped with the plugin (dropins/drop-in.php)
+ * to wp-content under the three names WordPress looks for. The file is
+ * copied unchanged: no code is generated. A file the plugin did not copy
+ * is never replaced or deleted without an explicit request.
  */
 class Dropins {
 
 	/**
-	 * Text that identifies a file written by this plugin.
+	 * Text that identifies the plugin drop-in, found in its header comment.
 	 */
 	const MARKER = 'Be Right Back drop-in';
 
 	/**
-	 * Managed drop-ins, keyed by screen.
+	 * Drop-ins managed by the plugin, keyed by screen.
 	 *
 	 * @return array<string, string> Screen key to file name.
 	 */
 	public static function files() {
-		$files = array(
+		return array(
 			'db'          => 'db-error.php',
 			'maintenance' => 'maintenance.php',
 			'php'         => 'php-error.php',
 		);
+	}
 
-		/**
-		 * Filters the drop-ins managed by the plugin.
-		 *
-		 * @param array<string, string> $files Screen key to file name.
-		 */
-		return apply_filters( 'be_right_back_dropins', $files );
+	/**
+	 * Static drop-in shipped with the plugin.
+	 *
+	 * @return string
+	 */
+	public function source() {
+		return BE_RIGHT_BACK_DIR . 'dropins/drop-in.php';
 	}
 
 	/**
@@ -63,12 +67,14 @@ class Dropins {
 	}
 
 	/**
-	 * Whether wp-content accepts new files.
+	 * Whether the drop-ins can be copied without FTP credentials.
 	 *
 	 * @return bool
 	 */
-	public function is_content_writable() {
-		return wp_is_writable( WP_CONTENT_DIR );
+	public function is_writable() {
+		$filesystem = Filesystem::get();
+
+		return null !== $filesystem && $filesystem->is_writable( WP_CONTENT_DIR );
 	}
 
 	/**
@@ -76,152 +82,84 @@ class Dropins {
 	 *
 	 * @param string $key Screen key.
 	 * @return array {
-	 *     @type string      $file      File name.
-	 *     @type string      $path      Absolute path.
-	 *     @type bool        $exists    Whether a file is present.
-	 *     @type bool        $ours      Whether the file carries the plugin signature.
-	 *     @type string      $hash      Settings hash found in the file header.
-	 *     @type string      $version   Plugin version found in the file header.
-	 *     @type string      $generated Generation date found in the file header.
+	 *     @type string $file    File name.
+	 *     @type string $path    Absolute path.
+	 *     @type bool   $exists  Whether a file is present.
+	 *     @type bool   $ours    Whether the file is the plugin drop-in, any version.
+	 *     @type bool   $current Whether the file is identical to the drop-in of this version.
 	 * }
 	 */
 	public function info( $key ) {
 		$path = $this->path( $key );
 		$info = array(
-			'file'      => $this->file( $key ),
-			'path'      => $path,
-			'exists'    => is_file( $path ),
-			'ours'      => false,
-			'hash'      => '',
-			'version'   => '',
-			'generated' => '',
+			'file'    => $this->file( $key ),
+			'path'    => $path,
+			'exists'  => is_file( $path ),
+			'ours'    => false,
+			'current' => false,
 		);
 
 		if ( ! $info['exists'] ) {
 			return $info;
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file header, read only.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reads the header of a local file.
 		$head = file_get_contents( $path, false, null, 0, 2048 );
 
-		if ( false === $head || false === strpos( $head, self::MARKER ) ) {
-			return $info;
-		}
-
-		$info['ours'] = true;
-
-		if ( preg_match( '/Settings hash: ([a-f0-9]{32})/', $head, $match ) ) {
-			$info['hash'] = $match[1];
-		}
-		if ( preg_match( '/Plugin version: (\S+)/', $head, $match ) ) {
-			$info['version'] = $match[1];
-		}
-		if ( preg_match( '/Generated on: (\S+)/', $head, $match ) ) {
-			$info['generated'] = $match[1];
-		}
+		$info['ours']    = false !== $head && false !== strpos( $head, self::MARKER );
+		$info['current'] = $info['ours'] && md5_file( $path ) === md5_file( $this->source() );
 
 		return $info;
 	}
 
 	/**
-	 * Fingerprint of a compiled body, stored in the header so that changes to
-	 * the settings, the logo or the templates can be detected.
+	 * Copies the drop-in for a screen.
 	 *
-	 * @param string $body Compiled body.
-	 * @return string
-	 */
-	public function hash( $body ) {
-		return md5( $body );
-	}
-
-	/**
-	 * Signed header placed at the top of every generated file.
-	 *
-	 * @param string $file File name.
-	 * @param string $hash Body hash.
-	 * @return string
-	 */
-	public function header( $file, $hash ) {
-		$lines = array(
-			'<?php',
-			'/**',
-			' * ' . self::MARKER . ': ' . $file,
-			' *',
-			' * Written by the Be Right Back plugin from its settings. Do not edit',
-			' * this file: it is rewritten whenever the settings change, and removed',
-			' * when the plugin is deactivated or uninstalled.',
-			' *',
-			' * Plugin version: ' . BE_RIGHT_BACK_VERSION,
-			' * Generated on: ' . gmdate( 'c' ),
-			' * Settings hash: ' . $hash,
-			' */',
-		);
-
-		return implode( "\n", $lines ) . "\n";
-	}
-
-	/**
-	 * Writes a drop-in atomically: temporary file first, then rename.
-	 *
-	 * @param string $key    Screen key.
-	 * @param string $source Full file content.
+	 * @param string $key   Screen key.
+	 * @param bool   $force Replace a file the plugin did not copy.
 	 * @return true|\WP_Error
 	 */
-	public function write( $key, $source ) {
-		$path = $this->path( $key );
-		$dir  = dirname( $path );
+	public function install( $key, $force = false ) {
+		$info = $this->info( $key );
 
-		if ( ! wp_is_writable( $dir ) ) {
+		if ( $info['exists'] && ! $info['ours'] && ! $force ) {
 			return new \WP_Error(
-				'be_right_back_not_writable',
-				/* translators: %s: directory path. */
-				sprintf( __( 'The directory %s is not writable.', 'be-right-back' ), $dir )
-			);
-		}
-
-		$temp = $path . '.' . wp_generate_password( 8, false, false ) . '.tmp';
-
-		// phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.PHP.NoSilencedErrors.Discouraged -- Atomic write of a drop-in, WP_Filesystem cannot rename in place.
-		$written = file_put_contents( $temp, $source, LOCK_EX );
-
-		if ( false === $written || strlen( $source ) !== $written ) {
-			@unlink( $temp );
-
-			return new \WP_Error(
-				'be_right_back_write_failed',
-				/* translators: %s: file name. */
-				sprintf( __( 'Could not write %s.', 'be-right-back' ), $this->file( $key ) )
-			);
-		}
-
-		@chmod( $temp, $this->file_mode() );
-
-		if ( ! @rename( $temp, $path ) ) {
-			// Windows cannot rename over an existing file.
-			@unlink( $path );
-
-			if ( ! @rename( $temp, $path ) ) {
-				@unlink( $temp );
-
-				return new \WP_Error(
-					'be_right_back_rename_failed',
+				'be_right_back_foreign',
+				sprintf(
 					/* translators: %s: file name. */
-					sprintf( __( 'Could not replace %s.', 'be-right-back' ), $this->file( $key ) )
-				);
-			}
+					__( 'wp-content/%s already exists and was not added by Be Right Back, so it was left untouched. Use the Advanced tab to replace it.', 'be-right-back' ),
+					$info['file']
+				)
+			);
 		}
-		// phpcs:enable
 
-		$this->invalidate( $path );
+		if ( $info['current'] ) {
+			return true;
+		}
+
+		$filesystem = Filesystem::get();
+
+		if ( null === $filesystem || ! $filesystem->copy( $this->source(), $info['path'], true, FS_CHMOD_FILE ) ) {
+			return new \WP_Error(
+				'be_right_back_copy_failed',
+				sprintf(
+					/* translators: %s: file name. */
+					__( 'Could not copy wp-content/%s. Download it from the Advanced tab and upload it yourself.', 'be-right-back' ),
+					$info['file']
+				)
+			);
+		}
+
+		$this->invalidate( $info['path'] );
 
 		return true;
 	}
 
 	/**
-	 * Removes a drop-in written by the plugin.
+	 * Removes the drop-in of a screen.
 	 *
 	 * @param string $key   Screen key.
-	 * @param bool   $force Also remove a file the plugin did not write.
+	 * @param bool   $force Also remove a file the plugin did not copy.
 	 * @return true|false|\WP_Error True when removed, false when there was nothing to remove.
 	 */
 	public function remove( $key, $force = false ) {
@@ -235,7 +173,7 @@ class Dropins {
 			return new \WP_Error(
 				'be_right_back_foreign',
 				/* translators: %s: file name. */
-				sprintf( __( '%s was not written by Be Right Back and was left untouched.', 'be-right-back' ), $info['file'] )
+				sprintf( __( 'wp-content/%s was not added by Be Right Back and was left untouched.', 'be-right-back' ), $info['file'] )
 			);
 		}
 
@@ -245,7 +183,7 @@ class Dropins {
 			return new \WP_Error(
 				'be_right_back_delete_failed',
 				/* translators: %s: file name. */
-				sprintf( __( 'Could not delete %s.', 'be-right-back' ), $info['file'] )
+				sprintf( __( 'Could not delete wp-content/%s.', 'be-right-back' ), $info['file'] )
 			);
 		}
 
@@ -255,27 +193,14 @@ class Dropins {
 	}
 
 	/**
-	 * Permissions for new files, aligned with WordPress conventions.
-	 *
-	 * @return int
-	 */
-	private function file_mode() {
-		if ( defined( 'FS_CHMOD_FILE' ) ) {
-			return FS_CHMOD_FILE;
-		}
-
-		return ( fileperms( ABSPATH . 'index.php' ) & 0777 ) | 0644;
-	}
-
-	/**
 	 * Makes sure PHP does not keep serving a stale copy from OPcache.
 	 *
 	 * @param string $path Absolute path.
 	 */
 	private function invalidate( $path ) {
-		if ( function_exists( 'opcache_invalidate' ) ) {
-			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- opcache.restrict_api may forbid the call.
-			@opcache_invalidate( $path, true );
+		// opcache.restrict_api may forbid the call, in which case OPcache revalidates on its own schedule.
+		if ( function_exists( 'opcache_invalidate' ) && filter_var( ini_get( 'opcache.enable' ), FILTER_VALIDATE_BOOLEAN ) && '' === (string) ini_get( 'opcache.restrict_api' ) ) {
+			opcache_invalidate( $path, true );
 		}
 	}
 }

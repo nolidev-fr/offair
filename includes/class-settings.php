@@ -20,6 +20,7 @@ class Settings {
 	const OPTION         = 'be_right_back_settings';
 	const VERSION_OPTION = 'be_right_back_version';
 	const LOGO_CACHE     = 'be_right_back_logo_cache';
+	const REFRESH_OPTION = 'be_right_back_refresh';
 
 	/**
 	 * Screen keys, in display order.

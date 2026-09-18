@@ -40,7 +40,7 @@ class Site_Health {
 	 */
 	public function register( $tests ) {
 		$tests['direct']['be_right_back'] = array(
-			'label' => __( 'Be Right Back pages', 'be-right-back' ),
+			'label' => __( 'Be Right Back', 'be-right-back' ),
 			'test'  => array( $this, 'run' ),
 		);
 
@@ -54,7 +54,7 @@ class Site_Health {
 	 */
 	public function run() {
 		$labels   = Settings::screen_labels();
-		$states   = $this->plugin->generator->states();
+		$states   = $this->plugin->publisher->states();
 		$problems = array();
 
 		foreach ( $states as $key => $state ) {
@@ -72,7 +72,7 @@ class Site_Health {
 					break;
 				case 'foreign':
 					/* translators: %s: file name. */
-					$problems[] = sprintf( __( 'wp-content/%s was not written by Be Right Back. The plugin leaves it untouched, so this page is not branded.', 'be-right-back' ), $file );
+					$problems[] = sprintf( __( 'wp-content/%s was not added by Be Right Back. The plugin leaves it untouched, so this page is not branded.', 'be-right-back' ), $file );
 					break;
 			}
 		}
@@ -82,7 +82,11 @@ class Site_Health {
 			$problems[]  = __( 'The PHP error page cannot be shown with the current PHP configuration.', 'be-right-back' ) . ' ' . $explanation[0] . ' ' . $explanation[2];
 		}
 
-		if ( ! $this->plugin->dropins->is_content_writable() && $problems ) {
+		if ( ! $this->plugin->pages->is_reachable() ) {
+			$problems[] = __( 'The uploads folder uses a custom path stored in the database, so the pages cannot read their content and show a neutral English page instead.', 'be-right-back' );
+		}
+
+		if ( ! $this->plugin->dropins->is_writable() && $problems ) {
 			$problems[] = __( 'wp-content is not writable, so the pages cannot be written automatically. Download them from the settings page and upload them yourself.', 'be-right-back' );
 		}
 

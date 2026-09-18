@@ -10,7 +10,7 @@ namespace BeRightBack;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Manages the branded downtime pages written to wp-content.
+ * Manages the branded pages shown when WordPress breaks.
  */
 class CLI {
 
@@ -56,35 +56,38 @@ class CLI {
 	public function status( $args, $assoc_args ) {
 		$rows = array();
 
-		foreach ( $this->plugin->generator->states() as $key => $state ) {
+		foreach ( $this->plugin->publisher->states() as $key => $state ) {
 			$info   = $this->plugin->dropins->info( $key );
 			$rows[] = array(
-				'page'      => $key,
-				'file'      => 'wp-content/' . $info['file'],
-				'state'     => $state,
-				'version'   => $info['ours'] ? $info['version'] : '',
-				'generated' => $info['ours'] ? $info['generated'] : '',
+				'page'  => $key,
+				'file'  => 'wp-content/' . $info['file'],
+				'state' => $state,
 			);
 		}
 
 		\WP_CLI\Utils\format_items(
 			isset( $assoc_args['format'] ) ? $assoc_args['format'] : 'table',
 			$rows,
-			array( 'page', 'file', 'state', 'version', 'generated' )
+			array( 'page', 'file', 'state' )
 		);
 
-		if ( ! $this->plugin->dropins->is_content_writable() ) {
+		\WP_CLI::log( 'Content: ' . wp_normalize_path( $this->plugin->pages->path() ) );
+
+		if ( ! $this->plugin->dropins->is_writable() ) {
 			\WP_CLI::warning( 'wp-content is not writable.' );
+		}
+		if ( ! $this->plugin->pages->is_reachable() ) {
+			\WP_CLI::warning( 'The uploads folder uses a custom path stored in the database: the pages cannot read their content.' );
 		}
 	}
 
 	/**
-	 * Writes the pages from the current settings.
+	 * Saves the content of the pages and copies the drop-ins.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [--force]
-	 * : Replace files in wp-content that were not written by this plugin.
+	 * : Replace files in wp-content that were not added by this plugin.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -96,18 +99,18 @@ class CLI {
 	 */
 	public function generate( $args, $assoc_args ) {
 		$force   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'force', false );
-		$results = $this->plugin->generator->generate_all( $force );
+		$results = $this->plugin->publisher->publish( $force );
 
 		$this->report( $results, 'written' );
 	}
 
 	/**
-	 * Removes the pages written by this plugin.
+	 * Removes the drop-ins added by this plugin.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [--force]
-	 * : Also remove files that were not written by this plugin.
+	 * : Also remove files that were not added by this plugin.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -118,13 +121,13 @@ class CLI {
 	 */
 	public function remove( $args, $assoc_args ) {
 		$force   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'force', false );
-		$results = $this->plugin->generator->remove_all( $force );
+		$results = $this->plugin->publisher->unpublish( $force );
 
 		$this->report( $results, 'removed' );
 	}
 
 	/**
-	 * Prints the generated source of one page.
+	 * Prints the HTML of one page, as visitors would see it.
 	 *
 	 * ## OPTIONS
 	 *
@@ -139,7 +142,7 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp be-right-back preview db > db-error.php
+	 *     wp be-right-back preview db > db-error.html
 	 *
 	 * @param array $args Positional arguments.
 	 */
@@ -151,7 +154,9 @@ class CLI {
 			\WP_CLI::error( 'Unknown page. Use db, maintenance or php.' );
 		}
 
-		\WP_CLI::line( $this->plugin->generator->source( $key ) );
+		define( 'BE_RIGHT_BACK_PREVIEW', $key );
+
+		include $this->plugin->dropins->source();
 	}
 
 	/**
@@ -164,7 +169,7 @@ class CLI {
 		$failed = 0;
 
 		foreach ( $results as $key => $result ) {
-			$file = 'wp-content/' . $this->plugin->dropins->file( $key );
+			$file = 'data' === $key ? wp_normalize_path( $this->plugin->pages->path() ) : 'wp-content/' . $this->plugin->dropins->file( $key );
 
 			if ( is_wp_error( $result ) ) {
 				++$failed;

@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name:       Be Right Back
+ * Plugin Name:       Be Right Back – Branded Error Pages
  * Plugin URI:        https://github.com/nolidev-fr/be-right-back
- * Description:       Friendly branded pages when your site is down: database errors, fatal errors and maintenance mode. Works even when WordPress cannot load.
+ * Description:       Branded pages for the screens WordPress shows by itself when it breaks: database connection errors, fatal PHP errors and the update notice. Works even when WordPress cannot load.
  * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4

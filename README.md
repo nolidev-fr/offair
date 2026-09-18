@@ -1,38 +1,42 @@
-# Be Right Back
+# Be Right Back – Branded Error Pages
 
-Friendly branded pages when your WordPress site is down: database errors, fatal errors and maintenance mode. Works even when WordPress cannot load.
+Branded pages for the screens WordPress shows when it breaks: database connection errors, fatal PHP errors and the update notice. Works even when WordPress cannot load.
 
-When a WordPress site breaks, visitors see a blank page or a bare English sentence. Be Right Back replaces the three screens WordPress shows during an outage with a calm page in your colors, with your logo and your words.
+When WordPress breaks, it shows screens of its own that no theme and no plugin can style, because they appear before any of them is loaded. Be Right Back replaces them with a calm page in your colors, with your logo and your words.
 
 | Screen | Shown when | HTTP answer |
 | --- | --- | --- |
 | Database error | WordPress cannot reach the database | 503 with Retry-After |
-| Maintenance | WordPress updates itself, a theme or a plugin | 503 with Retry-After |
+| Update notice | WordPress installs updates | 503 with Retry-After |
 | PHP error | A fatal PHP error stops a page | 503 (default) or 500 |
+
+This is not a maintenance mode or coming soon plugin. It does not take a site offline. It only covers the moments when WordPress itself cannot serve the site.
 
 ## How it works
 
-Regular plugins cannot do this: when the database is down, no plugin is loaded. Be Right Back is a generator. It writes three small standalone files, the WordPress drop-ins `db-error.php`, `maintenance.php` and `php-error.php`, into `wp-content`. WordPress loads these files itself, before any plugin, so the page shows even when nothing else can run.
+WordPress looks for three drop-ins in `wp-content`: `db-error.php`, `maintenance.php` and `php-error.php`. It loads them itself, before any plugin, which is the only way to show something when the database is down.
 
-The generated files need nothing from WordPress: no function, no database query, no external asset. The logo is embedded in the file, the fonts are system fonts, and the headers tell caches and search engines exactly what is going on (`503`, `Retry-After`, `Cache-Control: no-store`, `X-Robots-Tag: noindex`).
+The plugin copies one static file, [`dropins/drop-in.php`](dropins/drop-in.php), under these three names. No code is generated. The drop-in uses plain PHP only, since WordPress functions are not available at that point, and escapes every value it prints.
+
+The content of the pages (texts in the language of the site, colors, logo as a data URI) is saved as JSON in `wp-content/uploads/be-right-back/pages.json`, because the database may be the very thing that is down. When that file is missing, the drop-in shows a neutral English page.
 
 ## Features
 
 - One design for the three screens: centered card, logo, site name, title, message, retry button and an incident line with the local time.
 - Logo and colors detected from the theme, the site icon and Elementor global colors, editable at any time. Pale brand colors are darkened for text so the page stays readable.
-- Texts follow the language of the site until you customize them.
-- Live preview of each page, rendered exactly as visitors will see it.
-- Status box telling you whether each file is present, up to date and written by the plugin. A file the plugin did not write is never overwritten without your say.
+- Texts follow the language of the site until you customize them. French translation included.
+- Live preview of each page, rendered by the drop-in itself.
+- Status box telling you whether each page is in place and up to date. A file the plugin did not add is never replaced without your say.
 - Site Health test, WP-CLI commands and filters for developers.
-- Clean removal: the pages are removed on deactivation, everything is removed on uninstall.
+- Clean removal: drop-ins removed on deactivation, everything removed on uninstall.
 
 ## Installation
 
 1. Install and activate the plugin.
 2. Open Settings, Be Right Back. The logo and primary color of the site are pre-filled when they can be detected.
-3. Adjust the texts and colors, save. The three files are written to `wp-content` and the preview shows the result.
+3. Adjust the texts and colors, save. The preview shows the result.
 
-If `wp-content` is not writable, download the three files from the settings page and upload them yourself.
+If `wp-content` is not writable, download the drop-ins from the settings page and upload them yourself, once. Later changes are saved in the uploads folder.
 
 Requires WordPress 6.0 and PHP 7.4 or later.
 
@@ -49,16 +53,14 @@ wp be-right-back preview <db|maintenance|php>
 
 | Filter | Purpose |
 | --- | --- |
-| `be_right_back_settings` | Settings right before a page is compiled |
-| `be_right_back_template_vars` | Variables handed to the templates |
-| `be_right_back_dropin_html` | Final HTML of each page |
-| `be_right_back_dropins` | List of managed files |
+| `be_right_back_settings` | Settings right before the page content is built |
+| `be_right_back_data` | Page content before it is saved for the drop-in |
 
 ## Limits worth knowing
 
-- Pages served from a full page cache (LiteSpeed Cache, WP Rocket, Cloudflare) keep being served normally during an outage. Only requests that reach PHP see the error page, which is what you want.
+- Pages served from a full page cache (LiteSpeed Cache, WP Rocket, Cloudflare) keep being served normally during an outage. Only requests that reach PHP see the outage page, which is what you want.
 - A web server or PHP outage is not covered. Only the host can show a page in that case.
-- WordPress can only show an error page for a fatal error that happens before the page started being sent. When PHP prints errors on screen (`WP_DEBUG_DISPLAY`) and does not buffer its output, no error page can be shown at all. The settings page and Site Health detect that combination and explain the fix.
+- WordPress can only show an error page for a fatal error that happens before the page started being sent. When PHP prints errors on screen and does not buffer its output, no error page can be shown at all. The settings page and Site Health detect that combination and explain the fix.
 
 ## Development
 
