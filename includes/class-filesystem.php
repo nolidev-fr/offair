@@ -2,10 +2,10 @@
 /**
  * Access to the WordPress filesystem API.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 

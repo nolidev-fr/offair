@@ -2,10 +2,10 @@
 /**
  * Plugin bootstrap.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -96,7 +96,7 @@ final class Plugin {
 		}
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			\WP_CLI::add_command( 'be-right-back', new CLI( $this ) );
+			\WP_CLI::add_command( 'offair', new CLI( $this ) );
 		}
 	}
 
@@ -133,7 +133,7 @@ final class Plugin {
 	 * packs from translate.wordpress.org take precedence when present.
 	 */
 	public function load_textdomain() {
-		load_plugin_textdomain( 'be-right-back', false, dirname( BE_RIGHT_BACK_BASENAME ) . '/languages' );
+		load_plugin_textdomain( 'offair', false, dirname( OFFAIR_BASENAME ) . '/languages' );
 	}
 
 	/**
@@ -143,12 +143,12 @@ final class Plugin {
 	public function maybe_upgrade() {
 		$stored = (string) Settings::get_option( Settings::VERSION_OPTION, '' );
 
-		if ( BE_RIGHT_BACK_VERSION === $stored ) {
+		if ( OFFAIR_VERSION === $stored ) {
 			return;
 		}
 
 		$this->publisher->publish();
-		Settings::update_option( Settings::VERSION_OPTION, BE_RIGHT_BACK_VERSION );
+		Settings::update_option( Settings::VERSION_OPTION, OFFAIR_VERSION );
 	}
 
 	/**
@@ -160,7 +160,7 @@ final class Plugin {
 		$plugin->settings->seed_defaults( $plugin->branding );
 		$plugin->publisher->publish();
 
-		Settings::update_option( Settings::VERSION_OPTION, BE_RIGHT_BACK_VERSION );
+		Settings::update_option( Settings::VERSION_OPTION, OFFAIR_VERSION );
 	}
 
 	/**

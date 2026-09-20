@@ -1,12 +1,12 @@
-/* global jQuery, wp, beRightBackAdmin */
+/* global jQuery, wp, offairAdmin */
 ( function ( $ ) {
 	'use strict';
 
 	$( function () {
-		var $tabs = $( '.brb-tabs .nav-tab' );
-		var $panels = $( '.brb-panel' );
-		var $save = $( '.brb-save' );
-		var $currentTab = $( '#brb-current-tab' );
+		var $tabs = $( '.offair-tabs .nav-tab' );
+		var $panels = $( '.offair-panel' );
+		var $save = $( '.offair-save' );
+		var $currentTab = $( '#offair-current-tab' );
 		var frame;
 
 		function activate( id ) {
@@ -18,8 +18,8 @@
 
 			$tabs.removeClass( 'nav-tab-active' ).filter( '[href="#' + id + '"]' ).addClass( 'nav-tab-active' );
 			$panels.hide().filter( '#' + id ).show();
-			$save.toggle( 'brb-tab-advanced' !== id );
-			$currentTab.val( id.replace( 'brb-tab-', '' ) );
+			$save.toggle( 'offair-tab-advanced' !== id );
+			$currentTab.val( id.replace( 'offair-tab-', '' ) );
 
 			// The preview iframes load only when their tab is opened.
 			$( '#' + id + ' iframe[data-src]' ).each( function () {
@@ -43,10 +43,10 @@
 		activate( ( window.location.hash || '' ).substring( 1 ) );
 
 		if ( $.fn.wpColorPicker ) {
-			$( '.brb-color' ).wpColorPicker();
+			$( '.offair-color' ).wpColorPicker();
 		}
 
-		$( '.brb-logo-choose' ).on( 'click', function ( event ) {
+		$( '.offair-logo-choose' ).on( 'click', function ( event ) {
 			event.preventDefault();
 
 			if ( ! window.wp || ! wp.media ) {
@@ -55,8 +55,8 @@
 
 			if ( ! frame ) {
 				frame = wp.media( {
-					title: beRightBackAdmin.chooseLogo,
-					button: { text: beRightBackAdmin.useLogo },
+					title: offairAdmin.chooseLogo,
+					button: { text: offairAdmin.useLogo },
 					library: { type: 'image' },
 					multiple: false
 				} );
@@ -65,23 +65,23 @@
 					var attachment = frame.state().get( 'selection' ).first().toJSON();
 					var url = attachment.sizes && attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
 
-					$( '#brb-logo-id' ).val( attachment.id );
-					$( '#brb-logo-preview' ).attr( 'src', url ).prop( 'hidden', false );
-					$( '.brb-logo-remove' ).prop( 'hidden', false );
+					$( '#offair-logo-id' ).val( attachment.id );
+					$( '#offair-logo-preview' ).attr( 'src', url ).prop( 'hidden', false );
+					$( '.offair-logo-remove' ).prop( 'hidden', false );
 				} );
 			}
 
 			frame.open();
 		} );
 
-		$( '.brb-logo-remove' ).on( 'click', function ( event ) {
+		$( '.offair-logo-remove' ).on( 'click', function ( event ) {
 			event.preventDefault();
-			$( '#brb-logo-id' ).val( '0' );
-			$( '#brb-logo-preview' ).attr( 'src', '' ).prop( 'hidden', true );
+			$( '#offair-logo-id' ).val( '0' );
+			$( '#offair-logo-preview' ).attr( 'src', '' ).prop( 'hidden', true );
 			$( this ).prop( 'hidden', true );
 		} );
 
-		$( '.brb-confirm' ).on( 'submit', function () {
+		$( '.offair-confirm' ).on( 'submit', function () {
 			return window.confirm( $( this ).data( 'confirm' ) );
 		} );
 	} );

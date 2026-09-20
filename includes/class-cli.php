@@ -2,10 +2,10 @@
 /**
  * WP-CLI commands.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -48,7 +48,7 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp be-right-back status
+	 *     wp offair status
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Named arguments.
@@ -91,8 +91,8 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp be-right-back generate
-	 *     wp be-right-back generate --force
+	 *     wp offair generate
+	 *     wp offair generate --force
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Named arguments.
@@ -114,7 +114,7 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp be-right-back remove
+	 *     wp offair remove
 	 *
 	 * @param array $args       Positional arguments.
 	 * @param array $assoc_args Named arguments.
@@ -142,7 +142,7 @@ class CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp be-right-back preview db > db-error.html
+	 *     wp offair preview db > db-error.html
 	 *
 	 * @param array $args Positional arguments.
 	 */
@@ -154,7 +154,7 @@ class CLI {
 			\WP_CLI::error( 'Unknown page. Use db, maintenance or php.' );
 		}
 
-		define( 'BE_RIGHT_BACK_PREVIEW', $key );
+		define( 'OFFAIR_PREVIEW', $key );
 
 		include $this->plugin->dropins->source();
 	}

@@ -2,40 +2,40 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Be Right Back – Branded Error Pages 1.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/nolidev-fr/be-right-back/issues\n"
+"Project-Id-Version: Offair – Branded Error Pages 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
 "Last-Translator: Nolidev <contact@nolidev.fr>\n"
 "Language-Team: Nolidev <contact@nolidev.fr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-18T13:54:12+00:00\n"
+"POT-Creation-Date: 2026-09-20T23:26:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: be-right-back\n"
+"X-Domain: offair\n"
 
 #. Plugin Name of the plugin
-#: be-right-back.php
-msgid "Be Right Back – Branded Error Pages"
+#: offair.php
+msgid "Offair – Branded Error Pages"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: be-right-back.php
-msgid "https://github.com/nolidev-fr/be-right-back"
+#: offair.php
+msgid "https://github.com/nolidev-fr/offair"
 msgstr ""
 
 #. Description of the plugin
-#: be-right-back.php
+#: offair.php
 msgid "Branded pages for the screens WordPress shows by itself when it breaks: database connection errors, fatal PHP errors and the update notice. Works even when WordPress cannot load."
 msgstr ""
 
 #. Author of the plugin
-#: be-right-back.php
+#: offair.php
 msgid "Nolidev"
 msgstr ""
 
 #. Author URI of the plugin
-#: be-right-back.php
+#: offair.php
 msgid "https://nolidev.fr"
 msgstr ""
 
@@ -44,7 +44,7 @@ msgstr ""
 #: includes/class-admin-page.php:279
 #: includes/class-site-health.php:43
 #: includes/class-site-health.php:101
-msgid "Be Right Back"
+msgid "Offair"
 msgstr ""
 
 #: includes/class-admin-page.php:153
@@ -398,7 +398,7 @@ msgid "Deactivating the plugin removes the three drop-ins from wp-content and ke
 msgstr ""
 
 #: includes/class-admin-page.php:813
-msgid "You are not allowed to manage Be Right Back."
+msgid "You are not allowed to manage Offair."
 msgstr ""
 
 #: includes/class-admin-page.php:828
@@ -408,7 +408,7 @@ msgstr ""
 #. translators: %s: file name.
 #: includes/class-dropins.php:130
 #, php-format
-msgid "wp-content/%s already exists and was not added by Be Right Back, so it was left untouched. Use the Advanced tab to replace it."
+msgid "wp-content/%s already exists and was not added by Offair, so it was left untouched. Use the Advanced tab to replace it."
 msgstr ""
 
 #. translators: %s: file name.
@@ -420,7 +420,7 @@ msgstr ""
 #. translators: %s: file name.
 #: includes/class-dropins.php:176
 #, php-format
-msgid "wp-content/%s was not added by Be Right Back and was left untouched."
+msgid "wp-content/%s was not added by Offair and was left untouched."
 msgstr ""
 
 #. translators: %s: file name.
@@ -559,7 +559,7 @@ msgstr ""
 #. translators: %s: file name.
 #: includes/class-site-health.php:75
 #, php-format
-msgid "wp-content/%s was not added by Be Right Back. The plugin leaves it untouched, so this page is not branded."
+msgid "wp-content/%s was not added by Offair. The plugin leaves it untouched, so this page is not branded."
 msgstr ""
 
 #: includes/class-site-health.php:82
@@ -583,7 +583,7 @@ msgid "Visitors see a branded page when the database is unreachable, during upda
 msgstr ""
 
 #: includes/class-site-health.php:105
-msgid "Open the Be Right Back settings"
+msgid "Open the Offair settings"
 msgstr ""
 
 #: includes/class-site-health.php:110

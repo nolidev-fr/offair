@@ -1,10 +1,10 @@
-# French translation of Be Right Back.
+# French translation of Offair.
 # Copyright (C) 2026 Nolidev
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Be Right Back 1.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/nolidev-fr/be-right-back/issues\n"
+"Project-Id-Version: Offair 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
 "POT-Creation-Date: 2026-09-18T13:51:37+00:00\n"
 "PO-Revision-Date: 2026-09-18 10:00+0200\n"
 "Last-Translator: Nolidev <contact@nolidev.fr>\n"
@@ -14,38 +14,38 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Domain: be-right-back\n"
+"X-Domain: offair\n"
 
 #. Plugin Name of the plugin
-#: be-right-back.php
-msgid "Be Right Back – Branded Error Pages"
-msgstr "Be Right Back – Pages d’erreur à vos couleurs"
+#: offair.php
+msgid "Offair – Branded Error Pages"
+msgstr "Offair – Pages d’erreur à vos couleurs"
 
 #. Plugin URI of the plugin
-#: be-right-back.php
-msgid "https://github.com/nolidev-fr/be-right-back"
-msgstr "https://github.com/nolidev-fr/be-right-back"
+#: offair.php
+msgid "https://github.com/nolidev-fr/offair"
+msgstr "https://github.com/nolidev-fr/offair"
 
 #. Description of the plugin
-#: be-right-back.php
+#: offair.php
 msgid "Branded pages for the screens WordPress shows by itself when it breaks: database connection errors, fatal PHP errors and the update notice. Works even when WordPress cannot load."
 msgstr "Des pages aux couleurs de votre site pour les écrans que WordPress affiche de lui-même quand il tombe en panne : erreur de connexion à la base de données, erreur PHP fatale et avis de mise à jour. Fonctionne même quand WordPress ne peut pas démarrer."
 
 #. Author of the plugin
-#: be-right-back.php
+#: offair.php
 msgid "Nolidev"
 msgstr "Nolidev"
 
 #. Author URI of the plugin
-#: be-right-back.php
+#: offair.php
 msgid "https://nolidev.fr"
 msgstr "https://nolidev.fr"
 
 #: includes/class-admin-page.php:127 includes/class-admin-page.php:128
 #: includes/class-admin-page.php:279 includes/class-site-health.php:43
 #: includes/class-site-health.php:101
-msgid "Be Right Back"
-msgstr "Be Right Back"
+msgid "Offair"
+msgstr "Offair"
 
 #: includes/class-admin-page.php:153
 msgid "Choose a logo"
@@ -394,8 +394,8 @@ msgid "Deactivating the plugin removes the three drop-ins from wp-content and ke
 msgstr "Désactiver l’extension supprime les trois drop-ins de wp-content et conserve vos réglages. La désinstaller supprime aussi les réglages et le dossier de contenu dans uploads. Les fichiers qui n’ont pas été ajoutés par cette extension ne sont jamais touchés."
 
 #: includes/class-admin-page.php:813
-msgid "You are not allowed to manage Be Right Back."
-msgstr "Vous n’avez pas l’autorisation de gérer Be Right Back."
+msgid "You are not allowed to manage Offair."
+msgstr "Vous n’avez pas l’autorisation de gérer Offair."
 
 #: includes/class-admin-page.php:828
 msgid "Unknown page."
@@ -404,8 +404,8 @@ msgstr "Page inconnue."
 #. translators: %s: file name.
 #: includes/class-dropins.php:130
 #, php-format
-msgid "wp-content/%s already exists and was not added by Be Right Back, so it was left untouched. Use the Advanced tab to replace it."
-msgstr "wp-content/%s existe déjà et n’a pas été ajouté par Be Right Back, il n’a donc pas été touché. Utilisez l’onglet Avancé pour le remplacer."
+msgid "wp-content/%s already exists and was not added by Offair, so it was left untouched. Use the Advanced tab to replace it."
+msgstr "wp-content/%s existe déjà et n’a pas été ajouté par Offair, il n’a donc pas été touché. Utilisez l’onglet Avancé pour le remplacer."
 
 #. translators: %s: file name.
 #: includes/class-dropins.php:147
@@ -416,8 +416,8 @@ msgstr "Impossible de copier wp-content/%s. Téléchargez-le depuis l’onglet A
 #. translators: %s: file name.
 #: includes/class-dropins.php:176
 #, php-format
-msgid "wp-content/%s was not added by Be Right Back and was left untouched."
-msgstr "wp-content/%s n’a pas été ajouté par Be Right Back et n’a pas été touché."
+msgid "wp-content/%s was not added by Offair and was left untouched."
+msgstr "wp-content/%s n’a pas été ajouté par Offair et n’a pas été touché."
 
 #. translators: %s: file name.
 #: includes/class-dropins.php:186
@@ -564,8 +564,8 @@ msgstr "wp-content/%2$s ne correspond pas aux réglages actuels de la page %1$s.
 #. translators: %s: file name.
 #: includes/class-site-health.php:75
 #, php-format
-msgid "wp-content/%s was not added by Be Right Back. The plugin leaves it untouched, so this page is not branded."
-msgstr "wp-content/%s n’a pas été ajouté par Be Right Back. L’extension n’y touche pas, cette page n’est donc pas aux couleurs du site."
+msgid "wp-content/%s was not added by Offair. The plugin leaves it untouched, so this page is not branded."
+msgstr "wp-content/%s n’a pas été ajouté par Offair. L’extension n’y touche pas, cette page n’est donc pas aux couleurs du site."
 
 #: includes/class-site-health.php:82
 msgid "The PHP error page cannot be shown with the current PHP configuration."
@@ -588,8 +588,8 @@ msgid "Visitors see a branded page when the database is unreachable, during upda
 msgstr "Les visiteurs voient une page aux couleurs du site quand la base de données est injoignable, pendant les mises à jour et lors des erreurs fatales."
 
 #: includes/class-site-health.php:105
-msgid "Open the Be Right Back settings"
-msgstr "Ouvrir les réglages de Be Right Back"
+msgid "Open the Offair settings"
+msgstr "Ouvrir les réglages d’Offair"
 
 #: includes/class-site-health.php:110
 msgid "Some downtime pages need attention"

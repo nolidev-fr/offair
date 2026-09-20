@@ -1,4 +1,4 @@
-=== Be Right Back – Branded Error Pages ===
+=== Offair – Branded Error Pages ===
 Contributors: nolidev
 Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
@@ -18,7 +18,7 @@ When WordPress breaks, it shows screens of its own that no theme and no plugin c
 * **Briefly unavailable for scheduled maintenance**, while WordPress installs updates.
 * **There has been a critical error on this website**, after a fatal PHP error.
 
-Be Right Back replaces these three screens with a calm page in your colors, with your logo and your words, and makes them answer with the right HTTP status so that search engines and caches treat the outage as temporary.
+Offair replaces these three screens with a calm page in your colors, with your logo and your words, and makes them answer with the right HTTP status so that search engines and caches treat the outage as temporary.
 
 This is not a maintenance mode or coming soon plugin. It does not take your site offline and it does not add a page you switch on. It only covers the moments when WordPress itself cannot serve your site.
 
@@ -26,7 +26,7 @@ This is not a maintenance mode or coming soon plugin. It does not take your site
 
 WordPress looks for three special files in `wp-content`, called drop-ins: `db-error.php`, `maintenance.php` and `php-error.php`. It loads them itself, before any plugin, which is the only way to show something when the database is down.
 
-The plugin copies one static file shipped in its own folder (`dropins/drop-in.php`) under these three names. No code is generated. The content of the pages (texts, colors, logo) is saved as a JSON file in `wp-content/uploads/be-right-back/`, and the drop-in reads it when a page has to be shown.
+The plugin copies one static file shipped in its own folder (`dropins/drop-in.php`) under these three names. No code is generated. The content of the pages (texts, colors, logo) is saved as a JSON file in `wp-content/uploads/offair/`, and the drop-in reads it when a page has to be shown.
 
 = What you get =
 
@@ -43,17 +43,17 @@ The plugin never replaces a `db-error.php`, `maintenance.php` or `php-error.php`
 
 = Developers =
 
-* `be_right_back_settings` filters the settings before the page content is built.
-* `be_right_back_data` filters the page content before it is saved for the drop-in.
-* WP-CLI: `wp be-right-back status`, `generate [--force]`, `remove [--force]`, `preview <db|maintenance|php>`.
+* `offair_settings` filters the settings before the page content is built.
+* `offair_data` filters the page content before it is saved for the drop-in.
+* WP-CLI: `wp offair status`, `generate [--force]`, `remove [--force]`, `preview <db|maintenance|php>`.
 
 == Installation ==
 
 1. Install and activate the plugin from Plugins, Add New.
-2. Open Settings, Be Right Back. The logo and primary color of your site are pre-filled when they can be detected.
+2. Open Settings, Offair. The logo and primary color of your site are pre-filled when they can be detected.
 3. Adjust the texts and colors, save. The preview shows the result.
 
-On activation the plugin copies its drop-in to `wp-content` under the three names WordPress expects, and saves the page content in `wp-content/uploads/be-right-back/`. If `wp-content` is not writable, download the drop-ins from the settings page and upload them yourself, once.
+On activation the plugin copies its drop-in to `wp-content` under the three names WordPress expects, and saves the page content in `wp-content/uploads/offair/`. If `wp-content` is not writable, download the drop-ins from the settings page and upload them yourself, once.
 
 == Frequently Asked Questions ==
 
@@ -67,7 +67,7 @@ Because WordPress only looks for these drop-ins there, and loads them before any
 
 = Why is the content saved as a file and not in the database? =
 
-The database is precisely what may be unreachable when the page is shown. The content is saved in the uploads folder, in `be-right-back/pages.json`, and contains only what the visitors see on the page.
+The database is precisely what may be unreachable when the page is shown. The content is saved in the uploads folder, in `offair/pages.json`, and contains only what the visitors see on the page.
 
 = Does it work with page caching (LiteSpeed Cache, WP Rocket, Cloudflare)? =
 
@@ -93,7 +93,7 @@ No. Nothing leaves your server. There is no tracking, no update check and no ext
 
 = Does it work on multisite? =
 
-Yes. The drop-ins are shared by every site of the network, so the settings live in the network admin under Settings, Be Right Back.
+Yes. The drop-ins are shared by every site of the network, so the settings live in the network admin under Settings, Offair.
 
 == Screenshots ==
 

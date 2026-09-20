@@ -2,10 +2,10 @@
 /**
  * Settings storage, defaults and validation.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,10 +17,10 @@ defined( 'ABSPATH' ) || exit;
  */
 class Settings {
 
-	const OPTION         = 'be_right_back_settings';
-	const VERSION_OPTION = 'be_right_back_version';
-	const LOGO_CACHE     = 'be_right_back_logo_cache';
-	const REFRESH_OPTION = 'be_right_back_refresh';
+	const OPTION         = 'offair_settings';
+	const VERSION_OPTION = 'offair_version';
+	const LOGO_CACHE     = 'offair_logo_cache';
+	const REFRESH_OPTION = 'offair_refresh';
 
 	/**
 	 * Screen keys, in display order.
@@ -86,9 +86,9 @@ class Settings {
 	 */
 	public static function screen_labels() {
 		return array(
-			'db'          => __( 'Database error', 'be-right-back' ),
-			'maintenance' => __( 'Maintenance', 'be-right-back' ),
-			'php'         => __( 'PHP error', 'be-right-back' ),
+			'db'          => __( 'Database error', 'offair' ),
+			'maintenance' => __( 'Maintenance', 'offair' ),
+			'php'         => __( 'PHP error', 'offair' ),
 		);
 	}
 
@@ -103,7 +103,7 @@ class Settings {
 	 * @return array
 	 */
 	public function defaults() {
-		$button = __( 'Try again', 'be-right-back' );
+		$button = __( 'Try again', 'offair' );
 
 		return array(
 			'general'     => array(
@@ -118,8 +118,8 @@ class Settings {
 			),
 			'db'          => array(
 				'enabled'       => true,
-				'title'         => __( "We'll be right back", 'be-right-back' ),
-				'message'       => __( "Our site is taking a short break because of a technical problem. It usually comes back within a few minutes.\n\nThis page refreshes on its own. Thank you for your patience.", 'be-right-back' ),
+				'title'         => __( "We'll be right back", 'offair' ),
+				'message'       => __( "Our site is taking a short break because of a technical problem. It usually comes back within a few minutes.\n\nThis page refreshes on its own. Thank you for your patience.", 'offair' ),
 				'button_label'  => $button,
 				'refresh_delay' => 60,
 				'retry_after'   => 300,
@@ -128,8 +128,8 @@ class Settings {
 			),
 			'maintenance' => array(
 				'enabled'       => true,
-				'title'         => __( 'Back in a minute', 'be-right-back' ),
-				'message'       => __( "We are installing an update. The site will be back in a moment.\n\nThis page refreshes on its own. Thank you for your patience.", 'be-right-back' ),
+				'title'         => __( 'Back in a minute', 'offair' ),
+				'message'       => __( "We are installing an update. The site will be back in a moment.\n\nThis page refreshes on its own. Thank you for your patience.", 'offair' ),
 				'button_label'  => $button,
 				'refresh_delay' => 60,
 				'retry_after'   => 300,
@@ -138,8 +138,8 @@ class Settings {
 			),
 			'php'         => array(
 				'enabled'       => true,
-				'title'         => __( 'Something went wrong', 'be-right-back' ),
-				'message'       => __( "A technical error prevents us from displaying this page right now. Please try again in a few minutes.\n\nThank you for your patience.", 'be-right-back' ),
+				'title'         => __( 'Something went wrong', 'offair' ),
+				'message'       => __( "A technical error prevents us from displaying this page right now. Please try again in a few minutes.\n\nThank you for your patience.", 'offair' ),
 				'button_label'  => $button,
 				'refresh_delay' => 60,
 				'retry_after'   => 300,

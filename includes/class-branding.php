@@ -2,10 +2,10 @@
 /**
  * Detects the site logo, icon and colors, and encodes the logo for embedding.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -201,7 +201,7 @@ class Branding {
 
 			$editor->set_quality( 82 );
 
-			$temp  = wp_tempnam( 'be-right-back-logo' );
+			$temp  = wp_tempnam( 'offair-logo' );
 			$saved = $editor->save( $temp, $mime );
 
 			if ( is_wp_error( $saved ) || empty( $saved['path'] ) ) {

@@ -2,10 +2,10 @@
 /**
  * Drop-in files in wp-content.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -20,7 +20,7 @@ class Dropins {
 	/**
 	 * Text that identifies the plugin drop-in, found in its header comment.
 	 */
-	const MARKER = 'Be Right Back drop-in';
+	const MARKER = 'Offair drop-in';
 
 	/**
 	 * Drop-ins managed by the plugin, keyed by screen.
@@ -41,7 +41,7 @@ class Dropins {
 	 * @return string
 	 */
 	public function source() {
-		return BE_RIGHT_BACK_DIR . 'dropins/drop-in.php';
+		return OFFAIR_DIR . 'dropins/drop-in.php';
 	}
 
 	/**
@@ -124,10 +124,10 @@ class Dropins {
 
 		if ( $info['exists'] && ! $info['ours'] && ! $force ) {
 			return new \WP_Error(
-				'be_right_back_foreign',
+				'offair_foreign',
 				sprintf(
 					/* translators: %s: file name. */
-					__( 'wp-content/%s already exists and was not added by Be Right Back, so it was left untouched. Use the Advanced tab to replace it.', 'be-right-back' ),
+					__( 'wp-content/%s already exists and was not added by Offair, so it was left untouched. Use the Advanced tab to replace it.', 'offair' ),
 					$info['file']
 				)
 			);
@@ -141,10 +141,10 @@ class Dropins {
 
 		if ( null === $filesystem || ! $filesystem->copy( $this->source(), $info['path'], true, FS_CHMOD_FILE ) ) {
 			return new \WP_Error(
-				'be_right_back_copy_failed',
+				'offair_copy_failed',
 				sprintf(
 					/* translators: %s: file name. */
-					__( 'Could not copy wp-content/%s. Download it from the Advanced tab and upload it yourself.', 'be-right-back' ),
+					__( 'Could not copy wp-content/%s. Download it from the Advanced tab and upload it yourself.', 'offair' ),
 					$info['file']
 				)
 			);
@@ -171,9 +171,9 @@ class Dropins {
 
 		if ( ! $info['ours'] && ! $force ) {
 			return new \WP_Error(
-				'be_right_back_foreign',
+				'offair_foreign',
 				/* translators: %s: file name. */
-				sprintf( __( 'wp-content/%s was not added by Be Right Back and was left untouched.', 'be-right-back' ), $info['file'] )
+				sprintf( __( 'wp-content/%s was not added by Offair and was left untouched.', 'offair' ), $info['file'] )
 			);
 		}
 
@@ -181,9 +181,9 @@ class Dropins {
 
 		if ( file_exists( $info['path'] ) ) {
 			return new \WP_Error(
-				'be_right_back_delete_failed',
+				'offair_delete_failed',
 				/* translators: %s: file name. */
-				sprintf( __( 'Could not delete wp-content/%s.', 'be-right-back' ), $info['file'] )
+				sprintf( __( 'Could not delete wp-content/%s.', 'offair' ), $info['file'] )
 			);
 		}
 

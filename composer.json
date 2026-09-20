@@ -1,9 +1,9 @@
 {
-  "name": "nolidev/be-right-back",
+  "name": "nolidev/offair",
   "description": "Branded pages for the screens WordPress shows when it breaks: database connection errors, fatal PHP errors and the update notice.",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
-  "homepage": "https://github.com/nolidev-fr/be-right-back",
+  "homepage": "https://github.com/nolidev-fr/offair",
   "require": {
     "php": ">=7.4"
   },

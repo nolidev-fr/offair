@@ -2,10 +2,10 @@
 /**
  * Publishes and removes the pages.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -139,11 +139,11 @@ class Publisher {
 	 */
 	public static function state_label( $state ) {
 		$labels = array(
-			'current' => __( 'Up to date', 'be-right-back' ),
-			'stale'   => __( 'Needs regeneration', 'be-right-back' ),
-			'missing' => __( 'Missing', 'be-right-back' ),
-			'foreign' => __( 'Not added by this plugin', 'be-right-back' ),
-			'off'     => __( 'Disabled', 'be-right-back' ),
+			'current' => __( 'Up to date', 'offair' ),
+			'stale'   => __( 'Needs regeneration', 'offair' ),
+			'missing' => __( 'Missing', 'offair' ),
+			'foreign' => __( 'Not added by this plugin', 'offair' ),
+			'off'     => __( 'Disabled', 'offair' ),
 		);
 
 		return isset( $labels[ $state ] ) ? $labels[ $state ] : $state;

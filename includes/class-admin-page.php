@@ -2,25 +2,25 @@
 /**
  * Settings page, status box, preview and download endpoints.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Settings, then Be Right Back. On multisite the page lives in the network
+ * Settings, then Offair. On multisite the page lives in the network
  * admin because the drop-ins are shared by every site.
  */
 class Admin_Page {
 
-	const SLUG = 'be-right-back';
+	const SLUG = 'offair';
 
 	/**
 	 * Transient prefix for the message shown after a redirect.
 	 */
-	const NOTICE = 'be_right_back_notice_';
+	const NOTICE = 'offair_notice_';
 
 	/**
 	 * Plugin.
@@ -47,14 +47,14 @@ class Admin_Page {
 		add_action( is_multisite() ? 'network_admin_menu' : 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 
-		add_action( 'admin_post_be_right_back_save', array( $this, 'handle_save' ) );
-		add_action( 'admin_post_be_right_back_generate', array( $this, 'handle_generate' ) );
-		add_action( 'admin_post_be_right_back_remove', array( $this, 'handle_remove' ) );
-		add_action( 'admin_post_be_right_back_preview', array( $this, 'handle_preview' ) );
-		add_action( 'admin_post_be_right_back_download', array( $this, 'handle_download' ) );
+		add_action( 'admin_post_offair_save', array( $this, 'handle_save' ) );
+		add_action( 'admin_post_offair_generate', array( $this, 'handle_generate' ) );
+		add_action( 'admin_post_offair_remove', array( $this, 'handle_remove' ) );
+		add_action( 'admin_post_offair_preview', array( $this, 'handle_preview' ) );
+		add_action( 'admin_post_offair_download', array( $this, 'handle_download' ) );
 
 		$links_hook = is_multisite() ? 'network_admin_plugin_action_links_' : 'plugin_action_links_';
-		add_filter( $links_hook . BE_RIGHT_BACK_BASENAME, array( $this, 'action_links' ) );
+		add_filter( $links_hook . OFFAIR_BASENAME, array( $this, 'action_links' ) );
 	}
 
 	/**
@@ -67,7 +67,7 @@ class Admin_Page {
 		$base = is_multisite() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' );
 		$url  = add_query_arg( 'page', self::SLUG, $base );
 
-		return '' === $tab ? $url : $url . '#brb-tab-' . $tab;
+		return '' === $tab ? $url : $url . '#offair-tab-' . $tab;
 	}
 
 	/**
@@ -90,12 +90,12 @@ class Admin_Page {
 		return wp_nonce_url(
 			add_query_arg(
 				array(
-					'action' => 'be_right_back_preview',
+					'action' => 'offair_preview',
 					'screen' => $key,
 				),
 				$this->post_url()
 			),
-			'be_right_back_preview'
+			'offair_preview'
 		);
 	}
 
@@ -109,12 +109,12 @@ class Admin_Page {
 		return wp_nonce_url(
 			add_query_arg(
 				array(
-					'action' => 'be_right_back_download',
+					'action' => 'offair_download',
 					'screen' => $key,
 				),
 				$this->post_url()
 			),
-			'be_right_back_download'
+			'offair_download'
 		);
 	}
 
@@ -124,8 +124,8 @@ class Admin_Page {
 	public function register_menu() {
 		$this->hook_suffix = add_submenu_page(
 			is_multisite() ? 'settings.php' : 'options-general.php',
-			__( 'Be Right Back', 'be-right-back' ),
-			__( 'Be Right Back', 'be-right-back' ),
+			__( 'Offair', 'offair' ),
+			__( 'Offair', 'offair' ),
 			Settings::capability(),
 			self::SLUG,
 			array( $this, 'render' )
@@ -144,14 +144,14 @@ class Admin_Page {
 
 		wp_enqueue_media();
 		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_style( 'be-right-back-admin', BE_RIGHT_BACK_URL . 'assets/admin.css', array(), BE_RIGHT_BACK_VERSION );
-		wp_enqueue_script( 'be-right-back-admin', BE_RIGHT_BACK_URL . 'assets/admin.js', array( 'jquery', 'wp-color-picker' ), BE_RIGHT_BACK_VERSION, true );
+		wp_enqueue_style( 'offair-admin', OFFAIR_URL . 'assets/admin.css', array(), OFFAIR_VERSION );
+		wp_enqueue_script( 'offair-admin', OFFAIR_URL . 'assets/admin.js', array( 'jquery', 'wp-color-picker' ), OFFAIR_VERSION, true );
 		wp_localize_script(
-			'be-right-back-admin',
-			'beRightBackAdmin',
+			'offair-admin',
+			'offairAdmin',
 			array(
-				'chooseLogo' => __( 'Choose a logo', 'be-right-back' ),
-				'useLogo'    => __( 'Use this logo', 'be-right-back' ),
+				'chooseLogo' => __( 'Choose a logo', 'offair' ),
+				'useLogo'    => __( 'Use this logo', 'offair' ),
 			)
 		);
 	}
@@ -163,7 +163,7 @@ class Admin_Page {
 	 * @return string[]
 	 */
 	public function action_links( $links ) {
-		array_unshift( $links, '<a href="' . esc_url( $this->page_url() ) . '">' . esc_html__( 'Settings', 'be-right-back' ) . '</a>' );
+		array_unshift( $links, '<a href="' . esc_url( $this->page_url() ) . '">' . esc_html__( 'Settings', 'offair' ) . '</a>' );
 
 		return $links;
 	}
@@ -173,17 +173,17 @@ class Admin_Page {
 	 */
 	public function handle_save() {
 		$this->require_capability();
-		check_admin_referer( 'be_right_back_save' );
+		check_admin_referer( 'offair_save' );
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Validated field by field in Settings::sanitize().
-		$input = isset( $_POST['be_right_back'] ) && is_array( $_POST['be_right_back'] ) ? wp_unslash( $_POST['be_right_back'] ) : array();
+		$input = isset( $_POST['offair'] ) && is_array( $_POST['offair'] ) ? wp_unslash( $_POST['offair'] ) : array();
 		$tab   = isset( $_POST['tab'] ) ? sanitize_key( wp_unslash( $_POST['tab'] ) ) : 'general';
 
 		$this->plugin->settings->update( $input );
 		$this->plugin->pages->flush();
 		$results = $this->plugin->publisher->publish();
 
-		$this->finish( __( 'Settings saved and pages regenerated.', 'be-right-back' ), $results, $tab );
+		$this->finish( __( 'Settings saved and pages regenerated.', 'offair' ), $results, $tab );
 	}
 
 	/**
@@ -191,12 +191,12 @@ class Admin_Page {
 	 */
 	public function handle_generate() {
 		$this->require_capability();
-		check_admin_referer( 'be_right_back_generate' );
+		check_admin_referer( 'offair_generate' );
 
 		$force   = ! empty( $_POST['force'] );
 		$results = $this->plugin->publisher->publish( $force );
 
-		$this->finish( __( 'Pages regenerated.', 'be-right-back' ), $results, 'advanced' );
+		$this->finish( __( 'Pages regenerated.', 'offair' ), $results, 'advanced' );
 	}
 
 	/**
@@ -204,11 +204,11 @@ class Admin_Page {
 	 */
 	public function handle_remove() {
 		$this->require_capability();
-		check_admin_referer( 'be_right_back_remove' );
+		check_admin_referer( 'offair_remove' );
 
 		$results = $this->plugin->publisher->unpublish();
 
-		$this->finish( __( 'Pages removed from wp-content. They will be written again the next time you save or regenerate.', 'be-right-back' ), $results, 'advanced' );
+		$this->finish( __( 'Pages removed from wp-content. They will be written again the next time you save or regenerate.', 'offair' ), $results, 'advanced' );
 	}
 
 	/**
@@ -217,20 +217,20 @@ class Admin_Page {
 	 */
 	public function handle_preview() {
 		$this->require_capability();
-		check_admin_referer( 'be_right_back_preview' );
+		check_admin_referer( 'offair_preview' );
 
 		$key = $this->screen_from_request();
 
 		// Variables WordPress hands to php-error.php, filled with a sample error.
 		$error   = array(
 			'type'    => E_ERROR,
-			'message' => __( 'Sample error shown by the preview. Real errors appear here only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled.', 'be-right-back' ),
-			'file'    => BE_RIGHT_BACK_FILE,
+			'message' => __( 'Sample error shown by the preview. Real errors appear here only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled.', 'offair' ),
+			'file'    => OFFAIR_FILE,
 			'line'    => 1,
 		);
 		$handled = false;
 
-		define( 'BE_RIGHT_BACK_PREVIEW', $key );
+		define( 'OFFAIR_PREVIEW', $key );
 
 		include $this->plugin->dropins->source();
 
@@ -243,7 +243,7 @@ class Admin_Page {
 	 */
 	public function handle_download() {
 		$this->require_capability();
-		check_admin_referer( 'be_right_back_download' );
+		check_admin_referer( 'offair_download' );
 
 		$key    = $this->screen_from_request();
 		$file   = $this->plugin->dropins->file( $key );
@@ -275,46 +275,46 @@ class Admin_Page {
 			delete_transient( self::NOTICE . get_current_user_id() );
 		}
 		?>
-		<div class="wrap brb-wrap">
-			<h1><?php esc_html_e( 'Be Right Back', 'be-right-back' ); ?></h1>
-			<p class="brb-intro"><?php esc_html_e( 'Branded pages shown to visitors when the database is unreachable, when WordPress updates itself and when a fatal PHP error occurs. WordPress loads them from wp-content before any plugin, so they work even when WordPress cannot load.', 'be-right-back' ); ?></p>
+		<div class="wrap offair-wrap">
+			<h1><?php esc_html_e( 'Offair', 'offair' ); ?></h1>
+			<p class="offair-intro"><?php esc_html_e( 'Branded pages shown to visitors when the database is unreachable, when WordPress updates itself and when a fatal PHP error occurs. WordPress loads them from wp-content before any plugin, so they work even when WordPress cannot load.', 'offair' ); ?></p>
 
 			<?php if ( is_multisite() ) : ?>
-			<div class="notice notice-info inline"><p><?php esc_html_e( 'On a network the three pages are shared by every site. These settings apply to the whole network.', 'be-right-back' ); ?></p></div>
+			<div class="notice notice-info inline"><p><?php esc_html_e( 'On a network the three pages are shared by every site. These settings apply to the whole network.', 'offair' ); ?></p></div>
 			<?php endif; ?>
 
 			<?php $this->render_notice( $notice ); ?>
 			<?php $this->render_status( $states ); ?>
 
-			<h2 class="nav-tab-wrapper brb-tabs">
-				<a href="#brb-tab-general" class="nav-tab"><?php esc_html_e( 'General', 'be-right-back' ); ?></a>
+			<h2 class="nav-tab-wrapper offair-tabs">
+				<a href="#offair-tab-general" class="nav-tab"><?php esc_html_e( 'General', 'offair' ); ?></a>
 				<?php foreach ( Settings::SCREENS as $key ) : ?>
-				<a href="#brb-tab-<?php echo esc_attr( $key ); ?>" class="nav-tab"><?php echo esc_html( $labels[ $key ] ); ?></a>
+				<a href="#offair-tab-<?php echo esc_attr( $key ); ?>" class="nav-tab"><?php echo esc_html( $labels[ $key ] ); ?></a>
 				<?php endforeach; ?>
-				<a href="#brb-tab-advanced" class="nav-tab"><?php esc_html_e( 'Advanced', 'be-right-back' ); ?></a>
+				<a href="#offair-tab-advanced" class="nav-tab"><?php esc_html_e( 'Advanced', 'offair' ); ?></a>
 			</h2>
 
-			<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>" id="brb-form">
-				<?php wp_nonce_field( 'be_right_back_save' ); ?>
-				<input type="hidden" name="action" value="be_right_back_save">
-				<input type="hidden" name="tab" value="general" id="brb-current-tab">
+			<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>" id="offair-form">
+				<?php wp_nonce_field( 'offair_save' ); ?>
+				<input type="hidden" name="action" value="offair_save">
+				<input type="hidden" name="tab" value="general" id="offair-current-tab">
 
-				<div id="brb-tab-general" class="brb-panel">
+				<div id="offair-tab-general" class="offair-panel">
 					<?php $this->render_general( $settings['general'] ); ?>
 				</div>
 
 				<?php foreach ( Settings::SCREENS as $key ) : ?>
-				<div id="brb-tab-<?php echo esc_attr( $key ); ?>" class="brb-panel">
+				<div id="offair-tab-<?php echo esc_attr( $key ); ?>" class="offair-panel">
 					<?php $this->render_screen( $key, $settings[ $key ] ); ?>
 				</div>
 				<?php endforeach; ?>
 
-				<p class="submit brb-save">
-					<button type="submit" class="button button-primary"><?php esc_html_e( 'Save and regenerate pages', 'be-right-back' ); ?></button>
+				<p class="submit offair-save">
+					<button type="submit" class="button button-primary"><?php esc_html_e( 'Save and regenerate pages', 'offair' ); ?></button>
 				</p>
 			</form>
 
-			<div id="brb-tab-advanced" class="brb-panel">
+			<div id="offair-tab-advanced" class="offair-panel">
 				<?php $this->render_advanced(); ?>
 			</div>
 		</div>
@@ -353,13 +353,13 @@ class Admin_Page {
 		$pages    = $this->plugin->pages;
 		$writable = $dropins->is_writable();
 		?>
-		<div class="brb-status">
-			<table class="widefat striped brb-status-table">
+		<div class="offair-status">
+			<table class="widefat striped offair-status-table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Page', 'be-right-back' ); ?></th>
-						<th><?php esc_html_e( 'File', 'be-right-back' ); ?></th>
-						<th><?php esc_html_e( 'State', 'be-right-back' ); ?></th>
+						<th><?php esc_html_e( 'Page', 'offair' ); ?></th>
+						<th><?php esc_html_e( 'File', 'offair' ); ?></th>
+						<th><?php esc_html_e( 'State', 'offair' ); ?></th>
 						<th></th>
 					</tr>
 				</thead>
@@ -369,39 +369,39 @@ class Admin_Page {
 					<tr>
 						<td><strong><?php echo esc_html( isset( $labels[ $key ] ) ? $labels[ $key ] : $key ); ?></strong></td>
 						<td><code>wp-content/<?php echo esc_html( $info['file'] ); ?></code></td>
-						<td class="brb-status-state">
+						<td class="offair-status-state">
 							<?php
 							$tooltip = '';
 							if ( $info['exists'] && ! $info['ours'] ) {
-								$tooltip = __( 'Added by another plugin or a person. It is never replaced without your say.', 'be-right-back' );
+								$tooltip = __( 'Added by another plugin or a person. It is never replaced without your say.', 'offair' );
 							}
 							?>
-							<span class="brb-badge brb-badge-<?php echo esc_attr( $state ); ?>" title="<?php echo esc_attr( $tooltip ); ?>"><?php echo esc_html( Publisher::state_label( $state ) ); ?></span>
+							<span class="offair-badge offair-badge-<?php echo esc_attr( $state ); ?>" title="<?php echo esc_attr( $tooltip ); ?>"><?php echo esc_html( Publisher::state_label( $state ) ); ?></span>
 							<?php if ( 'php' === $key && Environment::php_error_page_blocked() ) : ?>
-							<span class="brb-badge brb-badge-blocked"><?php esc_html_e( 'Blocked by the PHP configuration', 'be-right-back' ); ?></span>
+							<span class="offair-badge offair-badge-blocked"><?php esc_html_e( 'Blocked by the PHP configuration', 'offair' ); ?></span>
 							<?php endif; ?>
 						</td>
-						<td class="brb-status-links">
-							<a href="<?php echo esc_url( $this->preview_url( $key ) ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Preview', 'be-right-back' ); ?></a>
-							<a href="<?php echo esc_url( $this->download_url( $key ) ); ?>"><?php esc_html_e( 'Download', 'be-right-back' ); ?></a>
+						<td class="offair-status-links">
+							<a href="<?php echo esc_url( $this->preview_url( $key ) ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Preview', 'offair' ); ?></a>
+							<a href="<?php echo esc_url( $this->download_url( $key ) ); ?>"><?php esc_html_e( 'Download', 'offair' ); ?></a>
 						</td>
 					</tr>
 				<?php endforeach; ?>
 				</tbody>
 			</table>
 			<?php if ( Environment::php_error_page_blocked() ) : ?>
-			<div class="notice notice-warning inline"><p><?php esc_html_e( 'The PHP error page cannot be shown with the current PHP configuration. Open the PHP error tab for the explanation and the fix.', 'be-right-back' ); ?></p></div>
+			<div class="notice notice-warning inline"><p><?php esc_html_e( 'The PHP error page cannot be shown with the current PHP configuration. Open the PHP error tab for the explanation and the fix.', 'offair' ); ?></p></div>
 			<?php endif; ?>
 			<?php if ( ! $pages->is_reachable() ) : ?>
-			<div class="notice notice-error inline"><p><?php esc_html_e( 'The uploads folder of this site uses a custom path stored in the database. The pages cannot read their content from there and show a neutral English page instead.', 'be-right-back' ); ?></p></div>
+			<div class="notice notice-error inline"><p><?php esc_html_e( 'The uploads folder of this site uses a custom path stored in the database. The pages cannot read their content from there and show a neutral English page instead.', 'offair' ); ?></p></div>
 			<?php endif; ?>
 			<?php if ( ! $pages->is_writable() ) : ?>
-			<div class="notice notice-error inline"><p><?php esc_html_e( 'The uploads folder is not writable, so the content of the pages cannot be saved.', 'be-right-back' ); ?></p></div>
+			<div class="notice notice-error inline"><p><?php esc_html_e( 'The uploads folder is not writable, so the content of the pages cannot be saved.', 'offair' ); ?></p></div>
 			<?php endif; ?>
 			<?php if ( $writable ) : ?>
-			<p class="description"><?php esc_html_e( 'The drop-ins are in wp-content and the content of the pages is updated whenever you save.', 'be-right-back' ); ?></p>
+			<p class="description"><?php esc_html_e( 'The drop-ins are in wp-content and the content of the pages is updated whenever you save.', 'offair' ); ?></p>
 			<?php else : ?>
-			<div class="notice notice-warning inline"><p><?php esc_html_e( 'wp-content is not writable, so the drop-ins cannot be added automatically. Download them from the table above and upload them to wp-content with FTP or SFTP. This is needed only once: your later changes are saved in the uploads folder.', 'be-right-back' ); ?></p></div>
+			<div class="notice notice-warning inline"><p><?php esc_html_e( 'wp-content is not writable, so the drop-ins cannot be added automatically. Download them from the table above and upload them to wp-content with FTP or SFTP. This is needed only once: your later changes are saved in the uploads folder.', 'offair' ); ?></p></div>
 			<?php endif; ?>
 		</div>
 		<?php
@@ -418,75 +418,75 @@ class Admin_Page {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Logo', 'be-right-back' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Logo', 'offair' ); ?></th>
 				<td>
-					<div class="brb-logo-field">
-						<img id="brb-logo-preview" src="<?php echo esc_url( $logo_url ); ?>" alt="" <?php echo $logo_url ? '' : 'hidden'; ?>>
-						<input type="hidden" name="be_right_back[general][logo_id]" id="brb-logo-id" value="<?php echo esc_attr( $logo_id ); ?>">
-						<button type="button" class="button brb-logo-choose"><?php esc_html_e( 'Choose from the media library', 'be-right-back' ); ?></button>
-						<button type="button" class="button-link brb-logo-remove" <?php echo $logo_url ? '' : 'hidden'; ?>><?php esc_html_e( 'Remove', 'be-right-back' ); ?></button>
+					<div class="offair-logo-field">
+						<img id="offair-logo-preview" src="<?php echo esc_url( $logo_url ); ?>" alt="" <?php echo $logo_url ? '' : 'hidden'; ?>>
+						<input type="hidden" name="offair[general][logo_id]" id="offair-logo-id" value="<?php echo esc_attr( $logo_id ); ?>">
+						<button type="button" class="button offair-logo-choose"><?php esc_html_e( 'Choose from the media library', 'offair' ); ?></button>
+						<button type="button" class="button-link offair-logo-remove" <?php echo $logo_url ? '' : 'hidden'; ?>><?php esc_html_e( 'Remove', 'offair' ); ?></button>
 					</div>
-					<p class="description"><?php esc_html_e( 'Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP.', 'be-right-back' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP.', 'offair' ); ?></p>
 				</td>
 			</tr>
 			<?php
 			$this->text_row(
-				__( 'Displayed name', 'be-right-back' ),
+				__( 'Displayed name', 'offair' ),
 				'general][site_name',
 				$general['site_name'],
 				array(
 					'placeholder' => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
-					'description' => __( 'Shown above the title. Leave empty to use the site title.', 'be-right-back' ),
+					'description' => __( 'Shown above the title. Leave empty to use the site title.', 'offair' ),
 				)
 			);
 			$this->checkbox_row(
-				__( 'Name display', 'be-right-back' ),
+				__( 'Name display', 'offair' ),
 				'general][show_name',
 				! empty( $general['show_name'] ),
-				__( 'Show the name above the title. Uncheck it when the logo already contains the name.', 'be-right-back' )
+				__( 'Show the name above the title. Uncheck it when the logo already contains the name.', 'offair' )
 			);
 			$this->text_row(
-				__( 'Primary color', 'be-right-back' ),
+				__( 'Primary color', 'offair' ),
 				'general][primary_color',
 				$general['primary_color'],
 				array(
-					'class'       => 'brb-color',
-					'description' => __( 'Used for the name, the ornament and the button.', 'be-right-back' ),
+					'class'       => 'offair-color',
+					'description' => __( 'Used for the name, the ornament and the button.', 'offair' ),
 				)
 			);
 			$this->text_row(
-				__( 'Background color', 'be-right-back' ),
+				__( 'Background color', 'offair' ),
 				'general][background_color',
 				$general['background_color'],
-				array( 'class' => 'brb-color' )
+				array( 'class' => 'offair-color' )
 			);
 			$this->select_row(
-				__( 'Heading font', 'be-right-back' ),
+				__( 'Heading font', 'offair' ),
 				'general][heading_font',
 				$general['heading_font'],
 				array(
-					'serif' => __( 'Serif (Georgia, Palatino)', 'be-right-back' ),
-					'sans'  => __( 'Sans-serif (system font)', 'be-right-back' ),
+					'serif' => __( 'Serif (Georgia, Palatino)', 'offair' ),
+					'sans'  => __( 'Sans-serif (system font)', 'offair' ),
 				),
-				__( 'System fonts only: nothing is loaded from the network.', 'be-right-back' )
+				__( 'System fonts only: nothing is loaded from the network.', 'offair' )
 			);
 			$this->select_row(
-				__( 'Ornament', 'be-right-back' ),
+				__( 'Ornament', 'offair' ),
 				'general][ornament',
 				$general['ornament'],
 				array(
-					'wave' => __( 'Wave', 'be-right-back' ),
-					'line' => __( 'Line', 'be-right-back' ),
-					'none' => __( 'None', 'be-right-back' ),
+					'wave' => __( 'Wave', 'offair' ),
+					'line' => __( 'Line', 'offair' ),
+					'none' => __( 'None', 'offair' ),
 				)
 			);
 			$this->text_row(
-				__( 'Contact line', 'be-right-back' ),
+				__( 'Contact line', 'offair' ),
 				'general][contact_line',
 				$general['contact_line'],
 				array(
-					'placeholder' => __( 'Need help? Write to hello@example.com', 'be-right-back' ),
-					'description' => __( 'Plain text shown under the button. Email addresses and web addresses become links.', 'be-right-back' ),
+					'placeholder' => __( 'Need help? Write to hello@example.com', 'offair' ),
+					'description' => __( 'Plain text shown under the button. Email addresses and web addresses become links.', 'offair' ),
 				)
 			);
 			?>
@@ -504,31 +504,31 @@ class Admin_Page {
 		$labels     = Settings::screen_labels();
 		$file       = $this->plugin->dropins->file( $key );
 		$intros     = array(
-			'db'          => __( 'Shown when WordPress cannot connect to the database. Answers with HTTP 503 so search engines treat the outage as temporary.', 'be-right-back' ),
-			'maintenance' => __( 'Shown while WordPress updates itself, a theme or a plugin. Answers with HTTP 503.', 'be-right-back' ),
-			'php'         => __( 'Shown when a fatal PHP error stops the page. Technical details are added only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled.', 'be-right-back' ),
+			'db'          => __( 'Shown when WordPress cannot connect to the database. Answers with HTTP 503 so search engines treat the outage as temporary.', 'offair' ),
+			'maintenance' => __( 'Shown while WordPress updates itself, a theme or a plugin. Answers with HTTP 503.', 'offair' ),
+			'php'         => __( 'Shown when a fatal PHP error stops the page. Technical details are added only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled.', 'offair' ),
 		);
 		$preview    = $this->preview_url( $key );
 		$name_first = $key . '][';
 		$defaults   = $this->plugin->settings->defaults();
 		$default    = $defaults[ $key ];
-		$empty_hint = __( 'Leave empty to use the default text in the language of the site.', 'be-right-back' );
+		$empty_hint = __( 'Leave empty to use the default text in the language of the site.', 'offair' );
 		?>
-		<p class="brb-intro"><?php echo esc_html( $intros[ $key ] ); ?></p>
+		<p class="offair-intro"><?php echo esc_html( $intros[ $key ] ); ?></p>
 		<?php if ( 'php' === $key ) : ?>
 			<?php $this->render_php_environment_notice(); ?>
 		<?php endif; ?>
 		<table class="form-table" role="presentation">
 			<?php
 			$this->checkbox_row(
-				__( 'Page', 'be-right-back' ),
+				__( 'Page', 'offair' ),
 				$name_first . 'enabled',
 				! empty( $screen['enabled'] ),
 				/* translators: %s: file name. */
-				sprintf( __( 'Write wp-content/%s', 'be-right-back' ), $file )
+				sprintf( __( 'Write wp-content/%s', 'offair' ), $file )
 			);
 			$this->text_row(
-				__( 'Title', 'be-right-back' ),
+				__( 'Title', 'offair' ),
 				$name_first . 'title',
 				$screen['title'],
 				array(
@@ -537,20 +537,20 @@ class Admin_Page {
 				)
 			);
 			$this->textarea_row(
-				__( 'Message', 'be-right-back' ),
+				__( 'Message', 'offair' ),
 				$name_first . 'message',
 				$screen['message'],
-				__( 'Plain text. Leave a blank line between paragraphs.', 'be-right-back' ) . ' ' . $empty_hint,
+				__( 'Plain text. Leave a blank line between paragraphs.', 'offair' ) . ' ' . $empty_hint,
 				$default['message']
 			);
 			$this->checkbox_row(
-				__( 'Retry button', 'be-right-back' ),
+				__( 'Retry button', 'offair' ),
 				$name_first . 'show_button',
 				! empty( $screen['show_button'] ),
-				__( 'Show a button that reloads the page', 'be-right-back' )
+				__( 'Show a button that reloads the page', 'offair' )
 			);
 			$this->text_row(
-				__( 'Button label', 'be-right-back' ),
+				__( 'Button label', 'offair' ),
 				$name_first . 'button_label',
 				$screen['button_label'],
 				array(
@@ -559,53 +559,53 @@ class Admin_Page {
 				)
 			);
 			$this->text_row(
-				__( 'Automatic refresh', 'be-right-back' ),
+				__( 'Automatic refresh', 'offair' ),
 				$name_first . 'refresh_delay',
 				$screen['refresh_delay'],
 				array(
 					'type'        => 'number',
 					'min'         => 0,
 					'max'         => 3600,
-					'suffix'      => __( 'seconds', 'be-right-back' ),
-					'description' => __( 'The page reloads itself after this delay. 0 disables it.', 'be-right-back' ),
+					'suffix'      => __( 'seconds', 'offair' ),
+					'description' => __( 'The page reloads itself after this delay. 0 disables it.', 'offair' ),
 				)
 			);
 			$this->text_row(
-				__( 'Retry-After header', 'be-right-back' ),
+				__( 'Retry-After header', 'offair' ),
 				$name_first . 'retry_after',
 				$screen['retry_after'],
 				array(
 					'type'        => 'number',
 					'min'         => 0,
 					'max'         => 86400,
-					'suffix'      => __( 'seconds', 'be-right-back' ),
-					'description' => __( 'Tells search engines and monitoring tools when to come back. 0 omits the header.', 'be-right-back' ),
+					'suffix'      => __( 'seconds', 'offair' ),
+					'description' => __( 'Tells search engines and monitoring tools when to come back. 0 omits the header.', 'offair' ),
 				)
 			);
 			$this->checkbox_row(
-				__( 'Incident line', 'be-right-back' ),
+				__( 'Incident line', 'offair' ),
 				$name_first . 'show_meta',
 				! empty( $screen['show_meta'] ),
-				__( 'Show the local time of the incident and the HTTP status under the message', 'be-right-back' )
+				__( 'Show the local time of the incident and the HTTP status under the message', 'offair' )
 			);
 			if ( 'php' === $key ) {
 				$this->select_row(
-					__( 'HTTP status', 'be-right-back' ),
+					__( 'HTTP status', 'offair' ),
 					$name_first . 'status_code',
 					(string) $screen['status_code'],
 					array(
-						'503' => __( '503 Service Unavailable (recommended)', 'be-right-back' ),
-						'500' => __( '500 Internal Server Error (WordPress default)', 'be-right-back' ),
+						'503' => __( '503 Service Unavailable (recommended)', 'offair' ),
+						'500' => __( '500 Internal Server Error (WordPress default)', 'offair' ),
 					),
-					__( '503 tells search engines the problem is temporary and sends Retry-After. 500 signals a permanent error.', 'be-right-back' )
+					__( '503 tells search engines the problem is temporary and sends Retry-After. 500 signals a permanent error.', 'offair' )
 				);
 			}
 			?>
 		</table>
-		<h3><?php esc_html_e( 'Preview', 'be-right-back' ); ?></h3>
-		<p class="description"><?php esc_html_e( 'Rendered from the saved settings, exactly as a visitor will see it. Save to refresh it.', 'be-right-back' ); ?></p>
-		<iframe class="brb-preview" data-src="<?php echo esc_url( $preview ); ?>" title="<?php echo esc_attr( $labels[ $key ] ); ?>"></iframe>
-		<p><a href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open the preview in a new tab', 'be-right-back' ); ?></a></p>
+		<h3><?php esc_html_e( 'Preview', 'offair' ); ?></h3>
+		<p class="description"><?php esc_html_e( 'Rendered from the saved settings, exactly as a visitor will see it. Save to refresh it.', 'offair' ); ?></p>
+		<iframe class="offair-preview" data-src="<?php echo esc_url( $preview ); ?>" title="<?php echo esc_attr( $labels[ $key ] ); ?>"></iframe>
+		<p><a href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open the preview in a new tab', 'offair' ); ?></a></p>
 		<?php
 	}
 
@@ -618,13 +618,13 @@ class Admin_Page {
 			return;
 		}
 		?>
-		<div class="notice notice-warning inline brb-environment">
-			<p><strong><?php esc_html_e( 'This page cannot be shown with the current PHP configuration.', 'be-right-back' ); ?></strong></p>
+		<div class="notice notice-warning inline offair-environment">
+			<p><strong><?php esc_html_e( 'This page cannot be shown with the current PHP configuration.', 'offair' ); ?></strong></p>
 			<?php foreach ( Environment::php_error_page_explanation() as $paragraph ) : ?>
 			<p><?php echo esc_html( $paragraph ); ?></p>
 			<?php endforeach; ?>
 			<p>
-				<?php esc_html_e( 'Current values:', 'be-right-back' ); ?>
+				<?php esc_html_e( 'Current values:', 'offair' ); ?>
 				<?php foreach ( Environment::php_error_page_values() as $name => $value ) : ?>
 				<code><?php echo esc_html( $name . ' = ' . ( '' === $value ? '(empty)' : $value ) ); ?></code>
 				<?php endforeach; ?>
@@ -639,43 +639,43 @@ class Admin_Page {
 	private function render_advanced() {
 		$labels = Settings::screen_labels();
 		?>
-		<h2><?php esc_html_e( 'Regenerate', 'be-right-back' ); ?></h2>
-		<p><?php esc_html_e( 'Saves the content of the pages again and restores missing drop-ins. Useful after changing the site title, the timezone or the logo file.', 'be-right-back' ); ?></p>
+		<h2><?php esc_html_e( 'Regenerate', 'offair' ); ?></h2>
+		<p><?php esc_html_e( 'Saves the content of the pages again and restores missing drop-ins. Useful after changing the site title, the timezone or the logo file.', 'offair' ); ?></p>
 		<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>">
-			<?php wp_nonce_field( 'be_right_back_generate' ); ?>
-			<input type="hidden" name="action" value="be_right_back_generate">
-			<p><label><input type="checkbox" name="force" value="1"> <?php esc_html_e( 'Also replace files in wp-content that were not added by this plugin', 'be-right-back' ); ?></label></p>
-			<p><button type="submit" class="button"><?php esc_html_e( 'Regenerate pages now', 'be-right-back' ); ?></button></p>
+			<?php wp_nonce_field( 'offair_generate' ); ?>
+			<input type="hidden" name="action" value="offair_generate">
+			<p><label><input type="checkbox" name="force" value="1"> <?php esc_html_e( 'Also replace files in wp-content that were not added by this plugin', 'offair' ); ?></label></p>
+			<p><button type="submit" class="button"><?php esc_html_e( 'Regenerate pages now', 'offair' ); ?></button></p>
 		</form>
 
-		<h2><?php esc_html_e( 'Remove', 'be-right-back' ); ?></h2>
-		<p><?php esc_html_e( 'Deletes the drop-ins added by this plugin. WordPress shows its default screens again until you save or regenerate.', 'be-right-back' ); ?></p>
-		<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>" class="brb-confirm" data-confirm="<?php esc_attr_e( 'Remove the drop-ins from wp-content?', 'be-right-back' ); ?>">
-			<?php wp_nonce_field( 'be_right_back_remove' ); ?>
-			<input type="hidden" name="action" value="be_right_back_remove">
-			<p><button type="submit" class="button"><?php esc_html_e( 'Remove drop-ins from wp-content', 'be-right-back' ); ?></button></p>
+		<h2><?php esc_html_e( 'Remove', 'offair' ); ?></h2>
+		<p><?php esc_html_e( 'Deletes the drop-ins added by this plugin. WordPress shows its default screens again until you save or regenerate.', 'offair' ); ?></p>
+		<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>" class="offair-confirm" data-confirm="<?php esc_attr_e( 'Remove the drop-ins from wp-content?', 'offair' ); ?>">
+			<?php wp_nonce_field( 'offair_remove' ); ?>
+			<input type="hidden" name="action" value="offair_remove">
+			<p><button type="submit" class="button"><?php esc_html_e( 'Remove drop-ins from wp-content', 'offair' ); ?></button></p>
 		</form>
 
-		<h2><?php esc_html_e( 'Manual installation', 'be-right-back' ); ?></h2>
-		<p><?php esc_html_e( 'When wp-content is not writable, download the drop-ins and upload them to wp-content yourself. They are the same file under three names. The content of the pages is saved in the uploads folder, so later changes need no new upload.', 'be-right-back' ); ?></p>
-		<ul class="brb-downloads">
+		<h2><?php esc_html_e( 'Manual installation', 'offair' ); ?></h2>
+		<p><?php esc_html_e( 'When wp-content is not writable, download the drop-ins and upload them to wp-content yourself. They are the same file under three names. The content of the pages is saved in the uploads folder, so later changes need no new upload.', 'offair' ); ?></p>
+		<ul class="offair-downloads">
 			<?php foreach ( Settings::SCREENS as $key ) : ?>
 			<li><a href="<?php echo esc_url( $this->download_url( $key ) ); ?>"><?php echo esc_html( $this->plugin->dropins->file( $key ) ); ?></a> (<?php echo esc_html( $labels[ $key ] ); ?>)</li>
 			<?php endforeach; ?>
 		</ul>
 
-		<h2><?php esc_html_e( 'Files', 'be-right-back' ); ?></h2>
-		<p><?php esc_html_e( 'The drop-ins are copies of dropins/drop-in.php from the plugin folder. The content of the pages is saved here:', 'be-right-back' ); ?></p>
+		<h2><?php esc_html_e( 'Files', 'offair' ); ?></h2>
+		<p><?php esc_html_e( 'The drop-ins are copies of dropins/drop-in.php from the plugin folder. The content of the pages is saved here:', 'offair' ); ?></p>
 		<p><code><?php echo esc_html( wp_normalize_path( $this->plugin->pages->path() ) ); ?></code></p>
 
-		<h2><?php esc_html_e( 'WP-CLI', 'be-right-back' ); ?></h2>
-		<pre class="brb-cli">wp be-right-back status
-wp be-right-back generate [--force]
-wp be-right-back remove [--force]
-wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
+		<h2><?php esc_html_e( 'WP-CLI', 'offair' ); ?></h2>
+		<pre class="offair-cli">wp offair status
+wp offair generate [--force]
+wp offair remove [--force]
+wp offair preview &lt;db|maintenance|php&gt;</pre>
 
-		<h2><?php esc_html_e( 'Deactivation and uninstall', 'be-right-back' ); ?></h2>
-		<p><?php esc_html_e( 'Deactivating the plugin removes the three drop-ins from wp-content and keeps your settings. Uninstalling also removes the settings and the content folder in uploads. Files not added by this plugin are never touched.', 'be-right-back' ); ?></p>
+		<h2><?php esc_html_e( 'Deactivation and uninstall', 'offair' ); ?></h2>
+		<p><?php esc_html_e( 'Deactivating the plugin removes the three drop-ins from wp-content and keeps your settings. Uninstalling also removes the settings and the content folder in uploads. Files not added by this plugin are never touched.', 'offair' ); ?></p>
 		<?php
 	}
 
@@ -683,7 +683,7 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 	 * Text or number input row.
 	 *
 	 * @param string $label Label.
-	 * @param string $name  Field path inside be_right_back[], for example general][site_name.
+	 * @param string $name  Field path inside offair[], for example general][site_name.
 	 * @param mixed  $value Value.
 	 * @param array  $args  type, class, placeholder, description, min, max, suffix.
 	 */
@@ -705,7 +705,7 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 		<tr>
 			<th scope="row"><label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $label ); ?></label></th>
 			<td>
-				<input type="<?php echo esc_attr( $args['type'] ); ?>" id="<?php echo esc_attr( $id ); ?>" name="be_right_back[<?php echo esc_attr( $name ); ?>]" value="<?php echo esc_attr( $value ); ?>" class="<?php echo esc_attr( 'number' === $args['type'] ? 'small-text' : $args['class'] ); ?>"
+				<input type="<?php echo esc_attr( $args['type'] ); ?>" id="<?php echo esc_attr( $id ); ?>" name="offair[<?php echo esc_attr( $name ); ?>]" value="<?php echo esc_attr( $value ); ?>" class="<?php echo esc_attr( 'number' === $args['type'] ? 'small-text' : $args['class'] ); ?>"
 					<?php echo '' !== $args['placeholder'] ? ' placeholder="' . esc_attr( $args['placeholder'] ) . '"' : ''; ?>
 					<?php echo null !== $args['min'] ? ' min="' . (int) $args['min'] . '"' : ''; ?>
 					<?php echo null !== $args['max'] ? ' max="' . (int) $args['max'] . '"' : ''; ?>>
@@ -735,7 +735,7 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 		<tr>
 			<th scope="row"><label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $label ); ?></label></th>
 			<td>
-				<textarea id="<?php echo esc_attr( $id ); ?>" name="be_right_back[<?php echo esc_attr( $name ); ?>]" class="large-text" rows="5" placeholder="<?php echo esc_attr( $placeholder ); ?>"><?php echo esc_textarea( $value ); ?></textarea>
+				<textarea id="<?php echo esc_attr( $id ); ?>" name="offair[<?php echo esc_attr( $name ); ?>]" class="large-text" rows="5" placeholder="<?php echo esc_attr( $placeholder ); ?>"><?php echo esc_textarea( $value ); ?></textarea>
 				<?php if ( '' !== $description ) : ?>
 				<p class="description"><?php echo esc_html( $description ); ?></p>
 				<?php endif; ?>
@@ -759,7 +759,7 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 		<tr>
 			<th scope="row"><label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $label ); ?></label></th>
 			<td>
-				<select id="<?php echo esc_attr( $id ); ?>" name="be_right_back[<?php echo esc_attr( $name ); ?>]">
+				<select id="<?php echo esc_attr( $id ); ?>" name="offair[<?php echo esc_attr( $name ); ?>]">
 					<?php foreach ( $options as $option_value => $option_label ) : ?>
 					<option value="<?php echo esc_attr( $option_value ); ?>" <?php selected( (string) $value, (string) $option_value ); ?>><?php echo esc_html( $option_label ); ?></option>
 					<?php endforeach; ?>
@@ -787,7 +787,7 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 			<th scope="row"><?php echo esc_html( $label ); ?></th>
 			<td>
 				<label for="<?php echo esc_attr( $id ); ?>">
-					<input type="checkbox" id="<?php echo esc_attr( $id ); ?>" name="be_right_back[<?php echo esc_attr( $name ); ?>]" value="1" <?php checked( $checked ); ?>>
+					<input type="checkbox" id="<?php echo esc_attr( $id ); ?>" name="offair[<?php echo esc_attr( $name ); ?>]" value="1" <?php checked( $checked ); ?>>
 					<?php echo esc_html( $text ); ?>
 				</label>
 			</td>
@@ -802,7 +802,7 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 	 * @return string
 	 */
 	private function field_id( $name ) {
-		return 'brb-' . str_replace( array( '][', '_' ), '-', $name );
+		return 'offair-' . str_replace( array( '][', '_' ), '-', $name );
 	}
 
 	/**
@@ -810,7 +810,7 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 	 */
 	private function require_capability() {
 		if ( ! current_user_can( Settings::capability() ) ) {
-			wp_die( esc_html__( 'You are not allowed to manage Be Right Back.', 'be-right-back' ), 403 );
+			wp_die( esc_html__( 'You are not allowed to manage Offair.', 'offair' ), 403 );
 		}
 	}
 
@@ -825,7 +825,7 @@ wp be-right-back preview &lt;db|maintenance|php&gt;</pre>
 		$files = Dropins::files();
 
 		if ( ! isset( $files[ $key ] ) ) {
-			wp_die( esc_html__( 'Unknown page.', 'be-right-back' ), 400 );
+			wp_die( esc_html__( 'Unknown page.', 'offair' ), 400 );
 		}
 
 		return $key;

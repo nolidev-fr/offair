@@ -1,8 +1,8 @@
-# Be Right Back – Branded Error Pages
+# Offair – Branded Error Pages
 
 Branded pages for the screens WordPress shows when it breaks: database connection errors, fatal PHP errors and the update notice. Works even when WordPress cannot load.
 
-When WordPress breaks, it shows screens of its own that no theme and no plugin can style, because they appear before any of them is loaded. Be Right Back replaces them with a calm page in your colors, with your logo and your words.
+When WordPress breaks, it shows screens of its own that no theme and no plugin can style, because they appear before any of them is loaded. Offair replaces them with a calm page in your colors, with your logo and your words.
 
 | Screen | Shown when | HTTP answer |
 | --- | --- | --- |
@@ -18,7 +18,7 @@ WordPress looks for three drop-ins in `wp-content`: `db-error.php`, `maintenance
 
 The plugin copies one static file, [`dropins/drop-in.php`](dropins/drop-in.php), under these three names. No code is generated. The drop-in uses plain PHP only, since WordPress functions are not available at that point, and escapes every value it prints.
 
-The content of the pages (texts in the language of the site, colors, logo as a data URI) is saved as JSON in `wp-content/uploads/be-right-back/pages.json`, because the database may be the very thing that is down. When that file is missing, the drop-in shows a neutral English page.
+The content of the pages (texts in the language of the site, colors, logo as a data URI) is saved as JSON in `wp-content/uploads/offair/pages.json`, because the database may be the very thing that is down. When that file is missing, the drop-in shows a neutral English page.
 
 ## Features
 
@@ -33,7 +33,7 @@ The content of the pages (texts in the language of the site, colors, logo as a d
 ## Installation
 
 1. Install and activate the plugin.
-2. Open Settings, Be Right Back. The logo and primary color of the site are pre-filled when they can be detected.
+2. Open Settings, Offair. The logo and primary color of the site are pre-filled when they can be detected.
 3. Adjust the texts and colors, save. The preview shows the result.
 
 If `wp-content` is not writable, download the drop-ins from the settings page and upload them yourself, once. Later changes are saved in the uploads folder.
@@ -43,18 +43,18 @@ Requires WordPress 6.0 and PHP 7.4 or later.
 ## WP-CLI
 
 ```
-wp be-right-back status
-wp be-right-back generate [--force]
-wp be-right-back remove [--force]
-wp be-right-back preview <db|maintenance|php>
+wp offair status
+wp offair generate [--force]
+wp offair remove [--force]
+wp offair preview <db|maintenance|php>
 ```
 
 ## Hooks
 
 | Filter | Purpose |
 | --- | --- |
-| `be_right_back_settings` | Settings right before the page content is built |
-| `be_right_back_data` | Page content before it is saved for the drop-in |
+| `offair_settings` | Settings right before the page content is built |
+| `offair_data` | Page content before it is saved for the drop-in |
 
 ## Limits worth knowing
 

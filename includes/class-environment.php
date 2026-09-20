@@ -2,10 +2,10 @@
 /**
  * Checks on the PHP configuration that affect the pages.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -68,15 +68,15 @@ class Environment {
 	 */
 	public static function php_error_page_explanation() {
 		if ( self::debug_display_enabled() ) {
-			$cause = __( 'PHP prints errors on screen because WP_DEBUG_DISPLAY is enabled in wp-config.php, and it does not buffer its output (the PHP directive output_buffering is off).', 'be-right-back' );
+			$cause = __( 'PHP prints errors on screen because WP_DEBUG_DISPLAY is enabled in wp-config.php, and it does not buffer its output (the PHP directive output_buffering is off).', 'offair' );
 		} else {
-			$cause = __( 'PHP prints errors on screen (the PHP directive display_errors is on) and does not buffer its output (the PHP directive output_buffering is off).', 'be-right-back' );
+			$cause = __( 'PHP prints errors on screen (the PHP directive display_errors is on) and does not buffer its output (the PHP directive output_buffering is off).', 'offair' );
 		}
 
 		return array(
 			$cause,
-			__( 'On a fatal error, PHP therefore sends the raw error message and the HTTP headers before WordPress runs its error handler, so WordPress never loads wp-content/php-error.php. Visitors see the raw PHP error with an HTTP 200 status instead of this page. The database and maintenance pages are not affected.', 'be-right-back' ),
-			__( 'To fix it, either disable WP_DEBUG_DISPLAY (recommended on a live site) or set output_buffering to 4096 in the PHP configuration (php.ini, .user.ini or the hosting panel).', 'be-right-back' ),
+			__( 'On a fatal error, PHP therefore sends the raw error message and the HTTP headers before WordPress runs its error handler, so WordPress never loads wp-content/php-error.php. Visitors see the raw PHP error with an HTTP 200 status instead of this page. The database and maintenance pages are not affected.', 'offair' ),
+			__( 'To fix it, either disable WP_DEBUG_DISPLAY (recommended on a live site) or set output_buffering to 4096 in the PHP configuration (php.ini, .user.ini or the hosting panel).', 'offair' ),
 		);
 	}
 

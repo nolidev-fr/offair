@@ -2,10 +2,10 @@
 /**
  * Page content saved for the drop-in.
  *
- * @package BeRightBack
+ * @package Offair
  */
 
-namespace BeRightBack;
+namespace Offair;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -23,7 +23,7 @@ class Pages {
 	/**
 	 * Folder created in uploads, named after the plugin slug.
 	 */
-	const DIR_NAME = 'be-right-back';
+	const DIR_NAME = 'offair';
 
 	/**
 	 * Data file read by the drop-in.
@@ -158,10 +158,10 @@ class Pages {
 		$filesystem = Filesystem::get();
 		$dir        = $this->dir();
 		$error      = new \WP_Error(
-			'be_right_back_data_not_written',
+			'offair_data_not_written',
 			sprintf(
 				/* translators: %s: folder path. */
-				__( 'The page content could not be saved in %s. Check that the uploads folder is writable.', 'be-right-back' ),
+				__( 'The page content could not be saved in %s. Check that the uploads folder is writable.', 'offair' ),
 				$dir
 			)
 		);
@@ -223,7 +223,7 @@ class Pages {
 		 *
 		 * @param array $settings Full settings array.
 		 */
-		$settings = apply_filters( 'be_right_back_settings', $this->settings->resolve() );
+		$settings = apply_filters( 'offair_settings', $this->settings->resolve() );
 		$general  = $settings['general'];
 		$primary  = self::hex( $general['primary_color'], '#334155' );
 		$timezone = wp_timezone_string();
@@ -267,17 +267,17 @@ class Pages {
 			$status = 'php' === $key && 500 === (int) $screen['status_code'] ? 500 : 503;
 
 			$labels = array(
-				'db'          => __( 'Database temporarily unavailable (HTTP 503).', 'be-right-back' ),
-				'maintenance' => __( 'Scheduled maintenance in progress (HTTP 503).', 'be-right-back' ),
+				'db'          => __( 'Database temporarily unavailable (HTTP 503).', 'offair' ),
+				'maintenance' => __( 'Scheduled maintenance in progress (HTTP 503).', 'offair' ),
 				/* translators: %d: HTTP status code. */
-				'php'         => sprintf( __( 'Technical error (HTTP %d).', 'be-right-back' ), $status ),
+				'php'         => sprintf( __( 'Technical error (HTTP %d).', 'offair' ), $status ),
 			);
 
 			$meta = '';
 			if ( ! empty( $screen['show_meta'] ) ) {
 				$meta = sprintf(
 					/* translators: 1: local time of the incident, filled in when the page is shown, 2: timezone name, 3: sentence describing the incident. */
-					__( 'Incident recorded at %1$s (%2$s). %3$s', 'be-right-back' ),
+					__( 'Incident recorded at %1$s (%2$s). %3$s', 'offair' ),
 					'{time}',
 					$timezone,
 					$labels[ $key ]
@@ -292,7 +292,7 @@ class Pages {
 				'retry_after' => (int) $screen['retry_after'],
 				'status'      => $status,
 				'meta'        => $meta,
-				'notice'      => 'php' === $key ? __( 'Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details.', 'be-right-back' ) : '',
+				'notice'      => 'php' === $key ? __( 'Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details.', 'offair' ) : '',
 			);
 		}
 
@@ -302,7 +302,7 @@ class Pages {
 		 * @param array $data     Page content.
 		 * @param array $settings Settings it was built from.
 		 */
-		$data = apply_filters( 'be_right_back_data', $data, $settings );
+		$data = apply_filters( 'offair_data', $data, $settings );
 
 		if ( $switched ) {
 			restore_previous_locale();
