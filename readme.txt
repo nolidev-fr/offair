@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 == Changelog ==
 
+= 1.0.3 =
+* Fix: a logo in a format the pages cannot show, such as AVIF, was left out without any warning. It is now embedded as PNG.
+
 = 1.0.2 =
 * After an update, the pages are brought up to date on the first request, without waiting for someone to open the admin.
 
@@ -120,6 +123,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+Fixes AVIF logos missing from the pages.
 
 = 1.0.2 =
 The pages are brought up to date right after an update, even when nobody opens the admin.

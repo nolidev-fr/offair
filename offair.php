@@ -3,7 +3,7 @@
  * Plugin Name:       Offair - Branded Error Pages
  * Plugin URI:        https://github.com/nolidev-fr/offair
  * Description:       Branded pages for the screens WordPress shows by itself when it breaks: database connection errors, fatal PHP errors and the update notice. Works even when WordPress cannot load.
- * Version:           1.0.2
+ * Version:           1.0.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Nolidev
@@ -22,7 +22,7 @@ if ( defined( 'OFFAIR_VERSION' ) ) {
 	return;
 }
 
-define( 'OFFAIR_VERSION', '1.0.2' );
+define( 'OFFAIR_VERSION', '1.0.3' );
 define( 'OFFAIR_FILE', __FILE__ );
 define( 'OFFAIR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OFFAIR_URL', plugin_dir_url( __FILE__ ) );
