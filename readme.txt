@@ -1,4 +1,4 @@
-=== Offair – Branded Error Pages ===
+=== Offair - Branded Error Pages ===
 Contributors: nolidev
 Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0

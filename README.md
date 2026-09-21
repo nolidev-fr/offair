@@ -1,4 +1,4 @@
-# Offair – Branded Error Pages
+# Offair - Branded Error Pages
 
 Branded pages for the screens WordPress shows when it breaks: database connection errors, fatal PHP errors and the update notice. Works even when WordPress cannot load.
 
