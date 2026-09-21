@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,12 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 == Changelog ==
 
+= 1.0.1 =
+* Fix: an SVG logo over 150 KB that only wraps one image, as design tools export them, was left out of the pages. The image is now taken out and resized like any other logo.
+* New: optional button text color. Left empty, it stays white or dark, whichever reads best on the primary color.
+* The settings page warns when the chosen logo cannot be embedded.
+* The plugin name uses a plain hyphen.
+
 = 1.0.0 =
 * Initial release: branded pages for database connection errors, the update notice and fatal PHP errors.
 * Settings page with status box, live preview, manual download and per-page options.
@@ -110,6 +116,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Fixes heavy SVG logos missing from the pages and adds a button text color setting.
 
 = 1.0.0 =
 Initial release.
