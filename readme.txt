@@ -108,6 +108,7 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * New: optional button text color. Left empty, the choice stays automatic.
 * The automatic button text is now white on mid-tone colors, with the button slightly darkened when needed, instead of dark text that was hard to read. The label always reaches a 4.5:1 contrast.
 * The settings page warns when the chosen logo cannot be embedded.
+* After an update, the pages are brought up to date on the first request, without waiting for someone to open the admin.
 * The plugin name uses a plain hyphen.
 
 = 1.0.0 =

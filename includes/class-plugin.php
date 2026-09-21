@@ -80,7 +80,9 @@ final class Plugin {
 		$this->publisher = new Publisher( $this->settings, $this->dropins, $this->pages );
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
-		add_action( 'admin_init', array( $this, 'maybe_upgrade' ) );
+
+		// On any request, not only in the admin: automatic updates run with nobody logged in.
+		add_action( 'init', array( $this, 'maybe_upgrade' ), 20 );
 
 		// The pages show the site title, language, timezone and time format:
 		// their content is saved again when one of these settings changes.
@@ -147,8 +149,9 @@ final class Plugin {
 			return;
 		}
 
-		$this->publisher->publish();
+		// Recorded first, so that requests arriving together do not all publish.
 		Settings::update_option( Settings::VERSION_OPTION, OFFAIR_VERSION );
+		$this->publisher->publish();
 	}
 
 	/**
