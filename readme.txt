@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,12 +103,14 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 == Changelog ==
 
+= 1.0.2 =
+* After an update, the pages are brought up to date on the first request, without waiting for someone to open the admin.
+
 = 1.0.1 =
 * Fix: an SVG logo over 150 KB that only wraps one image, as design tools export them, was left out of the pages. The image is now taken out and resized like any other logo.
 * New: optional button text color. Left empty, the choice stays automatic.
 * The automatic button text is now white on mid-tone colors, with the button slightly darkened when needed, instead of dark text that was hard to read. The label always reaches a 4.5:1 contrast.
 * The settings page warns when the chosen logo cannot be embedded.
-* After an update, the pages are brought up to date on the first request, without waiting for someone to open the admin.
 * The plugin name uses a plain hyphen.
 
 = 1.0.0 =
@@ -118,6 +120,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+The pages are brought up to date right after an update, even when nobody opens the admin.
 
 = 1.0.1 =
 Fixes heavy SVG logos missing from the pages, makes the button easier to read on mid-tone colors and adds a button text color setting.
