@@ -32,7 +32,7 @@ The content of the pages (texts in the language of the site, colors, logo as a d
 
 ## Installation
 
-1. Install and activate the plugin.
+1. Install and activate the plugin from the [WordPress.org plugin directory](https://wordpress.org/plugins/offair/), or search for Offair in Plugins, Add New.
 2. Open Settings, Offair. The logo and primary color of the site are pre-filled when they can be detected.
 3. Adjust the texts and colors, save. The preview shows the result.
 
