@@ -415,6 +415,7 @@ class Admin_Page {
 	private function render_general( array $general ) {
 		$logo_id  = (int) $general['logo_id'];
 		$logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
+		$embedded = ! $logo_id || null !== $this->plugin->branding->logo( $logo_id );
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
@@ -427,6 +428,17 @@ class Admin_Page {
 						<button type="button" class="button-link offair-logo-remove" <?php echo $logo_url ? '' : 'hidden'; ?>><?php esc_html_e( 'Remove', 'offair' ); ?></button>
 					</div>
 					<p class="description"><?php esc_html_e( 'Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP.', 'offair' ); ?></p>
+					<?php if ( ! $embedded ) : ?>
+					<div class="notice notice-warning inline" id="offair-logo-warning"><p>
+						<?php
+						printf(
+							/* translators: %s: file size, for example 150 KB. */
+							esc_html__( 'This logo cannot be embedded, so the pages are shown without it. An SVG has to weigh less than %s, unless all it contains is one image. Try a PNG or JPG version of the logo.', 'offair' ),
+							esc_html( size_format( Branding::MAX_LOGO_BYTES ) )
+						);
+						?>
+					</p></div>
+					<?php endif; ?>
 				</td>
 			</tr>
 			<?php

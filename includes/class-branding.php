@@ -25,6 +25,11 @@ class Branding {
 	const MAX_LOGO_BYTES = 153600;
 
 	/**
+	 * Largest SVG searched for a wrapped image, in bytes (5 MB).
+	 */
+	const MAX_WRAPPER_BYTES = 5242880;
+
+	/**
 	 * Largest favicon embedded in the pages, in bytes (12 KB).
 	 */
 	const MAX_FAVICON_BYTES = 12288;
@@ -86,7 +91,8 @@ class Branding {
 			return null;
 		}
 
-		$cache_key = md5( $attachment_id . '|' . filemtime( $file ) . '|' . self::MAX_LOGO_WIDTH . '|' . self::MAX_LOGO_BYTES );
+		// The version is part of the key: an update may encode the same file differently.
+		$cache_key = md5( $attachment_id . '|' . filemtime( $file ) . '|' . self::MAX_LOGO_WIDTH . '|' . self::MAX_LOGO_BYTES . '|' . OFFAIR_VERSION );
 		$cached    = Settings::get_option( Settings::LOGO_CACHE, array() );
 
 		if ( is_array( $cached ) && isset( $cached['key'], $cached['logo'] ) && $cache_key === $cached['key'] ) {
@@ -161,7 +167,7 @@ class Branding {
 	private function encode_logo( $file, $mime ) {
 		if ( 'image/svg+xml' === $mime ) {
 			if ( filesize( $file ) > self::MAX_LOGO_BYTES ) {
-				return null;
+				return $this->encode_wrapped_image( $file );
 			}
 
 			$src = $this->data_uri( $file, $mime );
@@ -235,6 +241,73 @@ class Branding {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Builds the logo array from an SVG too heavy to embed, when all it does
+	 * is wrap one raster image, as design tools export them. The image is
+	 * taken out and resized like any other.
+	 *
+	 * @param string $file Absolute path.
+	 * @return array|null Null when the file draws anything besides one image.
+	 */
+	private function encode_wrapped_image( $file ) {
+		if ( filesize( $file ) > self::MAX_WRAPPER_BYTES ) {
+			return null;
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, read only.
+		$svg = (string) file_get_contents( $file );
+
+		// Shapes and texts would be lost, and several images cannot be merged.
+		if ( 1 !== preg_match_all( '#<image\b#i', $svg ) || preg_match( '#<(?:path|circle|ellipse|line|polyline|polygon|text|use|foreignObject)\b#i', $svg ) ) {
+			return null;
+		}
+
+		// Only the start of the data URI is matched: the payload is too long for a pattern.
+		if ( ! preg_match( '#<image\b[^>]*?\bhref\s*=\s*(["\'])data:image/[a-z0-9.+-]+;base64,#i', $svg, $match, PREG_OFFSET_CAPTURE ) ) {
+			return null;
+		}
+
+		$start = $match[0][1] + strlen( $match[0][0] );
+		$end   = strpos( $svg, $match[1][0], $start );
+
+		if ( false === $end ) {
+			return null;
+		}
+
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Data URI decoding, not obfuscation.
+		$image = base64_decode( substr( $svg, $start, $end - $start ) );
+		unset( $svg );
+
+		$filesystem = Filesystem::get();
+
+		if ( ! $image || ! $filesystem ) {
+			return null;
+		}
+
+		$temp = wp_tempnam( 'offair-logo' );
+
+		if ( ! $filesystem->put_contents( $temp, $image ) ) {
+			wp_delete_file( $temp );
+			return null;
+		}
+
+		// The type is read from the content, not from what the SVG declares.
+		// Image libraries pick their decoder from the extension, which a temporary file lacks.
+		$mime      = (string) wp_get_image_mime( $temp );
+		$extension = strtok( (string) array_search( $mime, wp_get_mime_types(), true ), '|' );
+		$named     = $temp . '.' . $extension;
+		$logo      = null;
+
+		if ( $extension && $filesystem->move( $temp, $named, true ) ) {
+			$logo = $this->encode_logo( $named, $mime );
+			wp_delete_file( $named );
+		}
+
+		wp_delete_file( $temp );
+
+		return $logo;
 	}
 
 	/**

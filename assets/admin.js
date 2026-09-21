@@ -68,6 +68,7 @@
 					$( '#offair-logo-id' ).val( attachment.id );
 					$( '#offair-logo-preview' ).attr( 'src', url ).prop( 'hidden', false );
 					$( '.offair-logo-remove' ).prop( 'hidden', false );
+					$( '#offair-logo-warning' ).prop( 'hidden', true );
 				} );
 			}
 
@@ -78,6 +79,7 @@
 			event.preventDefault();
 			$( '#offair-logo-id' ).val( '0' );
 			$( '#offair-logo-preview' ).attr( 'src', '' ).prop( 'hidden', true );
+			$( '#offair-logo-warning' ).prop( 'hidden', true );
 			$( this ).prop( 'hidden', true );
 		} );
 
