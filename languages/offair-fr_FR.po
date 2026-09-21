@@ -450,27 +450,27 @@ msgstr "Pour corriger cela, désactivez WP_DEBUG_DISPLAY (recommandé sur un sit
 msgid "The page content could not be saved in %s. Check that the uploads folder is writable."
 msgstr "Le contenu des pages n’a pas pu être enregistré dans %s. Vérifiez que le dossier uploads est inscriptible."
 
-#: includes/class-pages.php:270
+#: includes/class-pages.php:275
 msgid "Database temporarily unavailable (HTTP 503)."
 msgstr "Base de données momentanément indisponible (HTTP 503)."
 
-#: includes/class-pages.php:271
+#: includes/class-pages.php:276
 msgid "Scheduled maintenance in progress (HTTP 503)."
 msgstr "Maintenance planifiée en cours (HTTP 503)."
 
 #. translators: %d: HTTP status code.
-#: includes/class-pages.php:273
+#: includes/class-pages.php:278
 #, php-format
 msgid "Technical error (HTTP %d)."
 msgstr "Erreur technique (HTTP %d)."
 
 #. translators: 1: local time of the incident, filled in when the page is shown, 2: timezone name, 3: sentence describing the incident.
-#: includes/class-pages.php:280
+#: includes/class-pages.php:285
 #, php-format
 msgid "Incident recorded at %1$s (%2$s). %3$s"
 msgstr "Incident constaté à %1$s (%2$s). %3$s"
 
-#: includes/class-pages.php:295
+#: includes/class-pages.php:300
 msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
 msgstr "Le mode de récupération est actif : l’extension à l’origine de cette erreur a été mise en pause. Consultez les écrans Extensions et Thèmes pour en savoir plus."
 
@@ -609,5 +609,5 @@ msgid "Button text color"
 msgstr "Couleur du texte du bouton"
 
 #: includes/class-admin-page.php:475
-msgid "Leave empty to get white or dark text, whichever reads best on the primary color."
-msgstr "Laissez vide pour obtenir un texte blanc ou sombre, selon ce qui se lit le mieux sur la couleur principale."
+msgid "Leave empty for an automatic choice: white text, on a slightly darkened button when a mid-tone color needs it, or dark text on a light color."
+msgstr "Laissez vide pour un choix automatique : texte blanc, sur un bouton légèrement assombri quand une couleur de ton moyen le demande, ou texte sombre sur une couleur claire."

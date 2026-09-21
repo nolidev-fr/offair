@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-21T13:09:14+00:00\n"
+"POT-Creation-Date: 2026-09-21T13:33:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: offair\n"
@@ -197,7 +197,7 @@ msgid "Button text color"
 msgstr ""
 
 #: includes/class-admin-page.php:475
-msgid "Leave empty to get white or dark text, whichever reads best on the primary color."
+msgid "Leave empty for an automatic choice: white text, on a slightly darkened button when a mid-tone color needs it, or dark text on a light color."
 msgstr ""
 
 #: includes/class-admin-page.php:479
@@ -465,27 +465,27 @@ msgstr ""
 msgid "The page content could not be saved in %s. Check that the uploads folder is writable."
 msgstr ""
 
-#: includes/class-pages.php:270
+#: includes/class-pages.php:275
 msgid "Database temporarily unavailable (HTTP 503)."
 msgstr ""
 
-#: includes/class-pages.php:271
+#: includes/class-pages.php:276
 msgid "Scheduled maintenance in progress (HTTP 503)."
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: includes/class-pages.php:273
+#: includes/class-pages.php:278
 #, php-format
 msgid "Technical error (HTTP %d)."
 msgstr ""
 
 #. translators: 1: local time of the incident, filled in when the page is shown, 2: timezone name, 3: sentence describing the incident.
-#: includes/class-pages.php:280
+#: includes/class-pages.php:285
 #, php-format
 msgid "Incident recorded at %1$s (%2$s). %3$s"
 msgstr ""
 
-#: includes/class-pages.php:295
+#: includes/class-pages.php:300
 msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
 msgstr ""
 

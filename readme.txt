@@ -105,7 +105,8 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 = 1.0.1 =
 * Fix: an SVG logo over 150 KB that only wraps one image, as design tools export them, was left out of the pages. The image is now taken out and resized like any other logo.
-* New: optional button text color. Left empty, it stays white or dark, whichever reads best on the primary color.
+* New: optional button text color. Left empty, the choice stays automatic.
+* The automatic button text is now white on mid-tone colors, with the button slightly darkened when needed, instead of dark text that was hard to read. The label always reaches a 4.5:1 contrast.
 * The settings page warns when the chosen logo cannot be embedded.
 * The plugin name uses a plain hyphen.
 
@@ -118,7 +119,7 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 == Upgrade Notice ==
 
 = 1.0.1 =
-Fixes heavy SVG logos missing from the pages and adds a button text color setting.
+Fixes heavy SVG logos missing from the pages, makes the button easier to read on mid-tone colors and adds a button text color setting.
 
 = 1.0.0 =
 Initial release.
