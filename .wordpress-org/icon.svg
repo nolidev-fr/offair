@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <style>
-    .brb-wave { animation: brb-roll 3s linear infinite; }
-    @keyframes brb-roll { from { transform: translateX(0); } to { transform: translateX(-48px); } }
-    @media (prefers-reduced-motion: reduce) { .brb-wave { animation: none; } }
+    .offair-wave { animation: offair-roll 3s linear infinite; }
+    @keyframes offair-roll { from { transform: translateX(0); } to { transform: translateX(-48px); } }
+    @media (prefers-reduced-motion: reduce) { .offair-wave { animation: none; } }
   </style>
   <rect width="256" height="256" rx="56" fill="#334155"/>
   <rect x="36" y="52" width="184" height="138" rx="18" fill="#1f2937"/>
@@ -16,7 +16,7 @@
     <rect x="164" y="60" width="24" height="122" fill="#d3766a"/>
     <rect x="188" y="60" width="24" height="122" fill="#6d7fb3"/>
     <rect x="44" y="150" width="168" height="32" fill="#1f2937" opacity="0.85"/>
-    <g class="brb-wave">
+    <g class="offair-wave">
       <path d="M12 166c8-10 16-10 24 0s16 10 24 0 16-10 24 0 16 10 24 0 16-10 24 0 16 10 24 0 16-10 24 0 16 10 24 0 16-10 24 0 16 10 24 0 16-10 24 0 16 10 24 0" fill="none" stroke="#f2efe6" stroke-width="3" stroke-linecap="round"/>
     </g>
   </g>
