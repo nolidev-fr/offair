@@ -251,7 +251,7 @@ class Pages {
 				'primary'       => $primary,
 				'primary_hover' => self::shade( $primary, -0.15 ),
 				'primary_text'  => self::readable_on_white( $primary ),
-				'on_primary'    => self::on_color( $primary ),
+				'on_primary'    => self::hex( $general['button_text_color'], self::on_color( $primary ) ),
 				'background'    => self::hex( $general['background_color'], '#f5f4f0' ),
 			),
 			'heading_font' => $general['heading_font'],

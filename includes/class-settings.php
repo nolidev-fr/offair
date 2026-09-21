@@ -107,14 +107,15 @@ class Settings {
 
 		return array(
 			'general'     => array(
-				'logo_id'          => 0,
-				'site_name'        => '',
-				'show_name'        => true,
-				'primary_color'    => '#334155',
-				'background_color' => '#f5f4f0',
-				'heading_font'     => 'serif',
-				'ornament'         => 'line',
-				'contact_line'     => '',
+				'logo_id'           => 0,
+				'site_name'         => '',
+				'show_name'         => true,
+				'primary_color'     => '#334155',
+				'button_text_color' => '',
+				'background_color'  => '#f5f4f0',
+				'heading_font'      => 'serif',
+				'ornament'          => 'line',
+				'contact_line'      => '',
 			),
 			'db'          => array(
 				'enabled'       => true,
@@ -264,6 +265,10 @@ class Settings {
 					$color                 = sanitize_hex_color( trim( (string) $general[ $color_key ] ) );
 					$section[ $color_key ] = $color ? $color : $defaults['general'][ $color_key ];
 				}
+			}
+			if ( isset( $general['button_text_color'] ) ) {
+				// Empty means automatic: white or dark, whichever reads best on the primary color.
+				$section['button_text_color'] = (string) sanitize_hex_color( trim( (string) $general['button_text_color'] ) );
 			}
 			if ( isset( $general['heading_font'] ) ) {
 				$section['heading_font'] = in_array( $general['heading_font'], array( 'serif', 'sans' ), true ) ? $general['heading_font'] : $defaults['general']['heading_font'];

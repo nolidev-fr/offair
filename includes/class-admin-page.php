@@ -467,6 +467,15 @@ class Admin_Page {
 				)
 			);
 			$this->text_row(
+				__( 'Button text color', 'offair' ),
+				'general][button_text_color',
+				$general['button_text_color'],
+				array(
+					'class'       => 'offair-color',
+					'description' => __( 'Leave empty to get white or dark text, whichever reads best on the primary color.', 'offair' ),
+				)
+			);
+			$this->text_row(
 				__( 'Background color', 'offair' ),
 				'general][background_color',
 				$general['background_color'],
