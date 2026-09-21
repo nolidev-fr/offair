@@ -30,6 +30,12 @@ class Branding {
 	const MAX_WRAPPER_BYTES = 5242880;
 
 	/**
+	 * Raster formats the pages embed as they are. They match what the drop-in
+	 * accepts, and every browser still in use reads them.
+	 */
+	const EMBEDDED_TYPES = array( 'image/png', 'image/jpeg', 'image/gif', 'image/webp' );
+
+	/**
 	 * Largest favicon embedded in the pages, in bytes (12 KB).
 	 */
 	const MAX_FAVICON_BYTES = 12288;
@@ -188,6 +194,9 @@ class Branding {
 		$original = wp_getimagesize( $file );
 		$widths   = array( self::MAX_LOGO_WIDTH, 220, 160 );
 
+		// AVIF, HEIC, BMP or TIFF logos are embedded as PNG, which keeps transparency.
+		$output = in_array( $mime, self::EMBEDDED_TYPES, true ) ? $mime : 'image/png';
+
 		foreach ( $widths as $width ) {
 			$editor = wp_get_image_editor( $file );
 
@@ -208,15 +217,17 @@ class Branding {
 			$editor->set_quality( 82 );
 
 			$temp  = wp_tempnam( 'offair-logo' );
-			$saved = $editor->save( $temp, $mime );
+			$saved = $editor->save( $temp, $output );
 
 			if ( is_wp_error( $saved ) || empty( $saved['path'] ) ) {
 				wp_delete_file( $temp );
 				continue;
 			}
 
+			// A site may convert what it saves to another format: the result is checked, not the request.
 			$bytes = filesize( $saved['path'] );
-			$src   = $bytes <= self::MAX_LOGO_BYTES ? $this->data_uri( $saved['path'], $saved['mime-type'] ) : '';
+			$fits  = $bytes <= self::MAX_LOGO_BYTES && in_array( $saved['mime-type'], self::EMBEDDED_TYPES, true );
+			$src   = $fits ? $this->data_uri( $saved['path'], $saved['mime-type'] ) : '';
 
 			wp_delete_file( $saved['path'] );
 			if ( $saved['path'] !== $temp ) {
