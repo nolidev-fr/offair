@@ -23,7 +23,7 @@ The content of the pages (texts in the language of the site, colors, logo as a d
 ## Features
 
 - One design for the three screens: centered card, logo, site name, title, message, retry button and an incident line with the local time.
-- Logo and colors detected from the theme, the site icon and Elementor global colors, editable at any time. Pale brand colors are darkened for text so the page stays readable.
+- Logo and colors detected from the theme, the site icon and Elementor global colors, editable at any time. Pale brand colors are darkened for text, and the button picks white or dark text by itself, slightly darkening a mid-tone color when needed, so the page stays readable.
 - Texts follow the language of the site until you customize them. French translation included.
 - Live preview of each page, rendered by the drop-in itself.
 - Status box telling you whether each page is in place and up to date. A file the plugin did not add is never replaced without your say.

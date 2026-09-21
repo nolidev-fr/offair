@@ -236,6 +236,10 @@ class Pages {
 		$time_format = trim( (string) get_option( 'time_format', 'H:i' ) );
 		$logo        = $this->branding->logo( $general['logo_id'] );
 
+		// A chosen text color is taken as is, on the untouched primary color.
+		$button_text = self::hex( $general['button_text_color'], '' );
+		$button      = '' === $button_text ? self::button_colors( $primary ) : array( $primary, $button_text );
+
 		$data = array(
 			'format'       => self::FORMAT,
 			'lang'         => get_bloginfo( 'language' ),
@@ -247,11 +251,12 @@ class Pages {
 				'height' => (int) $logo['height'],
 			) : null,
 			'favicon'      => $this->branding->favicon(),
+			// In the pages, the primary color only fills the button.
 			'colors'       => array(
-				'primary'       => $primary,
-				'primary_hover' => self::shade( $primary, -0.15 ),
+				'primary'       => $button[0],
+				'primary_hover' => self::shade( $button[0], -0.15 ),
 				'primary_text'  => self::readable_on_white( $primary ),
-				'on_primary'    => self::hex( $general['button_text_color'], self::on_color( $primary ) ),
+				'on_primary'    => $button[1],
 				'background'    => self::hex( $general['background_color'], '#f5f4f0' ),
 			),
 			'heading_font' => $general['heading_font'],
@@ -431,13 +436,29 @@ class Pages {
 	}
 
 	/**
-	 * Text color that contrasts best with a background color.
+	 * Background and text colors of the button.
 	 *
-	 * @param string $hex Background color.
-	 * @return string White or near black.
+	 * The text stays white as long as the color is dark enough for it, or gets
+	 * there once slightly darkened: on a mid-tone, neither white nor dark text
+	 * reads well on the untouched color. Light colors get dark text. Either
+	 * way the contrast ratio is at least 4.5, as WCAG AA asks.
+	 *
+	 * @param string $hex Primary color.
+	 * @return string[] Background, then text.
 	 */
-	public static function on_color( $hex ) {
-		return self::luminance( $hex ) > 0.215 ? '#1f2328' : '#ffffff';
+	public static function button_colors( $hex ) {
+		$primary    = self::hex( $hex, '#334155' );
+		$background = $primary;
+
+		for ( $step = 0; $step < 3; $step++ ) {
+			if ( 1.05 / ( self::luminance( $background ) + 0.05 ) >= 4.5 ) {
+				return array( $background, '#ffffff' );
+			}
+
+			$background = self::shade( $background, -0.12 );
+		}
+
+		return array( $primary, '#1f2328' );
 	}
 
 	/**

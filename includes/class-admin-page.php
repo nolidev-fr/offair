@@ -472,7 +472,7 @@ class Admin_Page {
 				$general['button_text_color'],
 				array(
 					'class'       => 'offair-color',
-					'description' => __( 'Leave empty to get white or dark text, whichever reads best on the primary color.', 'offair' ),
+					'description' => __( 'Leave empty for an automatic choice: white text, on a slightly darkened button when a mid-tone color needs it, or dark text on a light color.', 'offair' ),
 				)
 			);
 			$this->text_row(
