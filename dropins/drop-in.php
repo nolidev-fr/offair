@@ -69,6 +69,7 @@ defined( 'ABSPATH' ) || exit;
 			'title'      => 'Something went wrong',
 			'paragraphs' => array( 'A technical error prevents us from displaying this page right now. Please try again in a few minutes.' ),
 			'meta'       => 'Incident recorded at {time} (UTC). Technical error (HTTP 503).',
+			'refresh'    => 0,
 		),
 	);
 	$page_defaults    = array(
@@ -94,6 +95,45 @@ defined( 'ABSPATH' ) || exit;
 		$raw  = file_get_contents( $data_file );
 		$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
 		$data = is_array( $json ) ? $json : array();
+	}
+
+	/*
+	 * Private folder, next to the data file: its name cannot be guessed, so
+	 * it is found by its prefix. It holds the alert settings, the folders of
+	 * the active theme and the history of the pages shown.
+	 */
+	$private_dir = '';
+	$private     = array();
+	$found       = glob( dirname( $data_file ) . '/private-*', defined( 'GLOB_ONLYDIR' ) ? GLOB_ONLYDIR : 0 );
+
+	if ( is_array( $found ) && isset( $found[0] ) && is_dir( $found[0] ) ) {
+		$private_dir = $found[0];
+
+		if ( is_readable( $private_dir . '/private.json' ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
+			$raw     = file_get_contents( $private_dir . '/private.json' );
+			$json    = is_string( $raw ) ? json_decode( $raw, true ) : null;
+			$private = is_array( $json ) ? $json : array();
+		}
+	}
+
+	/*
+	 * A template named after this file, in an offair folder of the active
+	 * theme or of its parent, replaces the built-in page. The path is checked
+	 * against wp-content/themes, never against the data files, which sit in a
+	 * folder the web server can write to.
+	 */
+	$template = '';
+	$themes   = realpath( $content_dir . '/themes' );
+	$files    = array_flip( $screens );
+
+	foreach ( false !== $themes && isset( $private['themes'] ) && is_array( $private['themes'] ) ? $private['themes'] : array() as $theme_dir ) {
+		$candidate = is_string( $theme_dir ) ? realpath( $theme_dir . '/offair/' . $files[ $screen ] ) : false;
+
+		if ( false !== $candidate && 0 === strpos( $candidate, $themes . DIRECTORY_SEPARATOR ) && is_readable( $candidate ) ) {
+			$template = $candidate;
+			break;
+		}
 	}
 
 	$page = array_merge( $page_defaults, $fallback_screens[ $screen ] );
@@ -173,35 +213,51 @@ defined( 'ABSPATH' ) || exit;
 	$meta      = str_replace( '{time}', $time, $str( $page['meta'] ) );
 	$image     = '#^data:image/(?:png|jpeg|gif|webp|svg\+xml|x-icon|vnd\.microsoft\.icon);base64,[a-z0-9+/=]+$#i';
 
-	$logo = '';
+	$logo      = '';
+	$logo_data = null;
 	if ( isset( $data['logo']['src'] ) && is_string( $data['logo']['src'] ) && preg_match( $image, $data['logo']['src'] ) ) {
-		$width  = $num( isset( $data['logo']['width'] ) ? $data['logo']['width'] : null, 1, 2000, 0 );
-		$height = $num( isset( $data['logo']['height'] ) ? $data['logo']['height'] : null, 1, 2000, 0 );
-		$size   = $width && $height ? ' width="' . $width . '" height="' . $height . '"' : '';
-		$logo   = '<img class="offair-logo" src="' . $esc( $data['logo']['src'] ) . '" alt="' . $esc( $site_name ) . '"' . $size . '>';
+		$width     = $num( isset( $data['logo']['width'] ) ? $data['logo']['width'] : null, 1, 2000, 0 );
+		$height    = $num( isset( $data['logo']['height'] ) ? $data['logo']['height'] : null, 1, 2000, 0 );
+		$size      = $width && $height ? ' width="' . $width . '" height="' . $height . '"' : '';
+		$logo      = '<img class="offair-logo" src="' . $esc( $data['logo']['src'] ) . '" alt="' . $esc( $site_name ) . '"' . $size . '>';
+		$logo_data = array(
+			'src'    => $data['logo']['src'],
+			'width'  => $width,
+			'height' => $height,
+		);
 	}
 
-	$favicon = '';
+	$favicon      = '';
+	$favicon_data = '';
 	if ( isset( $data['favicon'] ) && is_string( $data['favicon'] ) && preg_match( $image, $data['favicon'] ) ) {
-		$favicon = '<link rel="icon" href="' . $esc( $data['favicon'] ) . '">';
+		$favicon      = '<link rel="icon" href="' . $esc( $data['favicon'] ) . '">';
+		$favicon_data = $data['favicon'];
 	}
 
-	$paragraphs = '';
+	$paragraphs     = '';
+	$paragraph_list = array();
 	foreach ( is_array( $page['paragraphs'] ) ? $page['paragraphs'] : array() as $paragraph ) {
 		if ( is_string( $paragraph ) && '' !== trim( $paragraph ) ) {
-			$paragraphs .= '<p>' . nl2br( $esc( trim( $paragraph ) ) ) . '</p>';
+			$paragraphs      .= '<p>' . nl2br( $esc( trim( $paragraph ) ) ) . '</p>';
+			$paragraph_list[] = trim( $paragraph );
 		}
 	}
 
-	$contact = '';
+	$contact       = '';
+	$contact_parts = array();
 	foreach ( isset( $data['contact'] ) && is_array( $data['contact'] ) ? $data['contact'] : array() as $part ) {
 		if ( ! isset( $part['text'] ) || ! is_string( $part['text'] ) ) {
 			continue;
 		}
 		if ( isset( $part['href'] ) && is_string( $part['href'] ) && preg_match( '#^(?:https?://|mailto:)#i', $part['href'] ) ) {
-			$contact .= '<a href="' . $esc( $part['href'] ) . '">' . $esc( $part['text'] ) . '</a>';
+			$contact        .= '<a href="' . $esc( $part['href'] ) . '">' . $esc( $part['text'] ) . '</a>';
+			$contact_parts[] = array(
+				'text' => $part['text'],
+				'href' => $part['href'],
+			);
 		} else {
-			$contact .= $esc( $part['text'] );
+			$contact        .= $esc( $part['text'] );
+			$contact_parts[] = array( 'text' => $part['text'] );
 		}
 	}
 
@@ -254,34 +310,173 @@ CSS;
 		)
 	);
 
-	$html   = array();
-	$html[] = '<!DOCTYPE html>';
-	$html[] = '<html lang="' . $esc( $lang ) . '">';
-	$html[] = '<head>';
-	$html[] = '<meta charset="UTF-8">';
-	$html[] = '<meta name="viewport" content="width=device-width, initial-scale=1">';
-	$html[] = '<meta name="robots" content="noindex, nofollow">';
-	$html[] = $refresh > 0 ? '<meta http-equiv="refresh" content="' . $refresh . '">' : '';
-	$html[] = '<title>' . $esc( '' !== $site_name ? $title . ' · ' . $site_name : $title ) . '</title>';
-	$html[] = $favicon;
-	$html[] = '<style>' . $css . '</style>';
-	$html[] = '</head>';
-	$html[] = '<body class="offair-font-' . $font . ' offair-screen-' . $screen . '">';
-	$html[] = '<main class="offair-card">';
-	$html[] = $logo;
-	$html[] = $show_name ? '<p class="offair-brand">' . $esc( $site_name ) . '</p>' : '';
-	$html[] = $ornaments[ $ornament ];
-	$html[] = '<h1 class="offair-title">' . $esc( $title ) . '</h1>';
-	$html[] = '' !== $paragraphs ? '<div class="offair-message">' . $paragraphs . '</div>' : '';
-	$html[] = '' !== $button ? '<a class="offair-button" href="">' . $esc( $button ) . '</a>' : '';
-	$html[] = '' !== $contact ? '<p class="offair-contact">' . $contact . '</p>' : '';
-	$html[] = '' !== $notice ? '<p class="offair-notice">' . $esc( $notice ) . '</p>' : '';
-	$html[] = '' !== $detail ? '<pre class="offair-detail">' . $esc( $detail ) . '</pre>' : '';
-	$html[] = '' !== $meta ? '<p class="offair-meta">' . $esc( $meta ) . '</p>' : '';
-	$html[] = '</main>';
-	$html[] = '</body>';
-	$html[] = '</html>';
+	$head   = array();
+	$head[] = '<meta charset="UTF-8">';
+	$head[] = '<meta name="viewport" content="width=device-width, initial-scale=1">';
+	$head[] = '<meta name="robots" content="noindex, nofollow">';
+	$head[] = $refresh > 0 ? '<meta http-equiv="refresh" content="' . $refresh . '">' : '';
+	$head[] = '<title>' . $esc( '' !== $site_name ? $title . ' · ' . $site_name : $title ) . '</title>';
+	$head[] = $favicon;
+	$head[] = '<style>' . $css . '</style>';
+
+	$card   = array();
+	$card[] = $logo;
+	$card[] = $show_name ? '<p class="offair-brand">' . $esc( $site_name ) . '</p>' : '';
+	$card[] = $ornaments[ $ornament ];
+	$card[] = '<h1 class="offair-title">' . $esc( $title ) . '</h1>';
+	$card[] = '' !== $paragraphs ? '<div class="offair-message">' . $paragraphs . '</div>' : '';
+	$card[] = '' !== $button ? '<a class="offair-button" href="">' . $esc( $button ) . '</a>' : '';
+	$card[] = '' !== $contact ? '<p class="offair-contact">' . $contact . '</p>' : '';
+	$card[] = '' !== $notice ? '<p class="offair-notice">' . $esc( $notice ) . '</p>' : '';
+	$card[] = '' !== $detail ? '<pre class="offair-detail">' . $esc( $detail ) . '</pre>' : '';
+	$card[] = '' !== $meta ? '<p class="offair-meta">' . $esc( $meta ) . '</p>' : '';
 
 	// Every value above was escaped with htmlspecialchars(): WordPress escaping functions are not loaded here.
-	echo implode( "\n", array_filter( $html, 'strlen' ) ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	$head_html = implode( "\n", array_filter( $head, 'strlen' ) );
+	$card_html = '<main class="offair-card">' . "\n" . implode( "\n", array_filter( $card, 'strlen' ) ) . "\n" . '</main>';
+	$output    = '';
+
+	/*
+	 * The theme template gets every value (raw, to escape with the function it
+	 * receives), the built-in markup and the stylesheet. If it fails or prints
+	 * nothing, the built-in page is shown instead.
+	 */
+	if ( '' !== $template ) {
+		$render = static function ( $offair_template, $offair ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Read by the included template.
+			include $offair_template;
+		};
+		$level  = ob_get_level();
+
+		ob_start();
+		try {
+			$render(
+				$template,
+				array(
+					'screen'       => $screen,
+					'status'       => $status,
+					'lang'         => $lang,
+					'site_name'    => $site_name,
+					'show_name'    => $show_name,
+					'title'        => $title,
+					'paragraphs'   => $paragraph_list,
+					'button'       => $button,
+					'contact'      => $contact_parts,
+					'notice'       => $notice,
+					'detail'       => $detail,
+					'meta'         => $meta,
+					'refresh'      => $refresh,
+					'logo'         => $logo_data,
+					'favicon'      => $favicon_data,
+					'colors'       => array(
+						'primary'       => $primary,
+						'primary_hover' => $hover,
+						'primary_text'  => $text_color,
+						'on_primary'    => $on_primary,
+						'background'    => $background,
+					),
+					'heading_font' => $font,
+					'ornament'     => $ornament,
+					'css'          => $css,
+					'head'         => $head_html,
+					'card'         => $card_html,
+					'escape'       => $esc,
+				)
+			);
+			while ( ob_get_level() > $level ) {
+				$output = (string) ob_get_clean() . $output;
+			}
+		} catch ( Throwable $exception ) {
+			while ( ob_get_level() > $level ) {
+				ob_end_clean();
+			}
+			$output = '';
+		}
+	}
+
+	if ( '' === trim( $output ) ) {
+		$output = implode(
+			"\n",
+			array(
+				'<!DOCTYPE html>',
+				'<html lang="' . $esc( $lang ) . '">',
+				'<head>',
+				$head_html,
+				'</head>',
+				'<body class="offair-font-' . $font . ' offair-screen-' . $screen . '">',
+				$card_html,
+				'</body>',
+				'</html>',
+			)
+		) . "\n";
+	}
+
+	// Built-in markup escaped above, or the output of a template of the active theme.
+	echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+	/*
+	 * History and alert run once the page is out, so that they never delay it
+	 * or break it. Errors are silenced for the same reason: a folder that
+	 * cannot be written must not print anything on this page.
+	 */
+	if ( defined( 'OFFAIR_PREVIEW' ) || '' === $private_dir ) {
+		return;
+	}
+
+	$now_ts = time();
+	$seen   = $private_dir . '/seen-' . $screen;
+	$last   = @filemtime( $seen ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+
+	// One line a minute per page at most, however many visitors come. Nothing about them is recorded.
+	if ( false === $last || $last <= $now_ts - 60 ) {
+		@touch( $seen ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_touch
+		@file_put_contents( $private_dir . '/events.log', $now_ts . ' ' . $screen . ' ' . $status . "\n", FILE_APPEND | LOCK_EX ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+	}
+
+	$alert = isset( $private['alert'] ) && is_array( $private['alert'] ) ? $private['alert'] : array();
+
+	if ( 'db' !== $screen || ! function_exists( 'mail' ) || ! isset( $alert['to'], $alert['subject'], $alert['body'], $alert['headers'] ) || ! is_string( $alert['to'] ) || ! filter_var( $alert['to'], FILTER_VALIDATE_EMAIL ) ) {
+		return;
+	}
+
+	// One alert an hour at most. The lock keeps two visitors arriving together from both sending it.
+	$send   = false;
+	$handle = @fopen( $private_dir . '/alert-db', 'c+' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+
+	if ( false !== $handle ) {
+		if ( flock( $handle, LOCK_EX | LOCK_NB ) ) {
+			$sent_at = (int) stream_get_contents( $handle );
+
+			if ( $sent_at <= $now_ts - 3600 ) {
+				ftruncate( $handle, 0 );
+				rewind( $handle );
+				fwrite( $handle, (string) $now_ts ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+				fflush( $handle );
+				$send = true;
+			}
+
+			flock( $handle, LOCK_UN );
+		}
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+	}
+
+	if ( ! $send ) {
+		return;
+	}
+
+	// Numeric date and time: month names cannot be translated here.
+	$when = gmdate( 'Y-m-d H:i' ) . ' (UTC)';
+	try {
+		$zone = new DateTimeZone( $str( isset( $data['timezone'] ) ? $data['timezone'] : null, 'UTC' ) );
+		$when = ( new DateTime( 'now', $zone ) )->format( 'Y-m-d H:i' ) . ' (' . $zone->getName() . ')';
+	} catch ( Exception $exception ) {
+		$when = gmdate( 'Y-m-d H:i' ) . ' (UTC)';
+	}
+
+	// The visitor already has the page: the connection is closed before talking to the mail server.
+	if ( function_exists( 'fastcgi_finish_request' ) ) {
+		fastcgi_finish_request();
+	}
+
+	// WordPress cannot run while the database is down, so wp_mail() is not available.
+	@mail( $alert['to'], (string) $alert['subject'], str_replace( '{time}', $when, (string) $alert['body'] ), (string) $alert['headers'] ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 } )( isset( $error ) ? $error : null, isset( $handled ) ? $handled : null );

@@ -36,6 +36,16 @@ class Pages {
 	const FORMAT = 1;
 
 	/**
+	 * Prefix of the private folder, completed by a random suffix.
+	 */
+	const PRIVATE_PREFIX = 'private-';
+
+	/**
+	 * Private data file read by the drop-in.
+	 */
+	const PRIVATE_FILE = 'private.json';
+
+	/**
 	 * Settings.
 	 *
 	 * @var Settings
@@ -55,6 +65,13 @@ class Pages {
 	 * @var string|null
 	 */
 	private $json = null;
+
+	/**
+	 * Private JSON built during the current request.
+	 *
+	 * @var string|null
+	 */
+	private $private_json = null;
 
 	/**
 	 * Constructor.
@@ -139,14 +156,21 @@ class Pages {
 			return false;
 		}
 
-		return md5_file( $path ) === md5( $this->json() );
+		$private = $this->private_path();
+
+		if ( '' === $private || ! is_readable( $private ) ) {
+			return false;
+		}
+
+		return md5_file( $path ) === md5( $this->json() ) && md5_file( $private ) === md5( $this->private_json() );
 	}
 
 	/**
 	 * Forgets the JSON built during this request, after the settings change.
 	 */
 	public function flush() {
-		$this->json = null;
+		$this->json         = null;
+		$this->private_json = null;
 	}
 
 	/**
@@ -179,7 +203,151 @@ class Pages {
 			return $error;
 		}
 
+		$private = $this->private_dir();
+
+		if ( '' === $private || ! $filesystem->put_contents( $private . '/' . self::PRIVATE_FILE, $this->private_json(), FS_CHMOD_FILE ) ) {
+			return $error;
+		}
+
 		return true;
+	}
+
+	/**
+	 * Private folder, created on first use under a random name.
+	 *
+	 * Anyone who knows the address of a file in uploads can read it, and
+	 * pages.json has a known address. What must stay private (the alert
+	 * recipient, the incident history, the theme paths) goes in a folder whose
+	 * name cannot be guessed. The drop-in finds it by its prefix, and both
+	 * take the first match in alphabetical order.
+	 *
+	 * @param bool $create Create the folder when it does not exist.
+	 * @return string Absolute path, empty when there is no folder.
+	 */
+	public function private_dir( $create = true ) {
+		$dir   = $this->dir();
+		$found = glob( $dir . '/' . self::PRIVATE_PREFIX . '*', GLOB_ONLYDIR );
+
+		if ( is_array( $found ) && isset( $found[0] ) ) {
+			return $found[0];
+		}
+
+		$filesystem = Filesystem::get();
+
+		if ( ! $create || null === $filesystem || ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) ) {
+			return '';
+		}
+
+		$private = $dir . '/' . self::PRIVATE_PREFIX . strtolower( wp_generate_password( 24, false ) );
+
+		if ( ! wp_mkdir_p( $private ) ) {
+			return '';
+		}
+
+		$filesystem->put_contents( $private . '/index.html', '', FS_CHMOD_FILE );
+
+		return $private;
+	}
+
+	/**
+	 * Absolute path of the private data file.
+	 *
+	 * @return string Empty when the private folder does not exist yet.
+	 */
+	public function private_path() {
+		$dir = $this->private_dir( false );
+
+		return '' === $dir ? '' : $dir . '/' . self::PRIVATE_FILE;
+	}
+
+	/**
+	 * Content of the private data file.
+	 *
+	 * @return string
+	 */
+	public function private_json() {
+		if ( null === $this->private_json ) {
+			$this->private_json = wp_json_encode( $this->private_data(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "\n";
+		}
+
+		return $this->private_json;
+	}
+
+	/**
+	 * Data the drop-in needs but visitors must not see: the folders of the
+	 * active theme, where it looks for templates, and the alert email.
+	 *
+	 * @return array
+	 */
+	public function private_data() {
+		$switched = determine_locale() !== get_locale() && switch_to_locale( get_locale() );
+		$settings = $this->settings->get();
+		$to       = Settings::alert_recipient( $settings['db'] );
+		$data     = array(
+			'format' => self::FORMAT,
+			'themes' => self::theme_dirs(),
+		);
+
+		if ( ! empty( $settings['db']['alert'] ) && '' !== $to ) {
+			$data['alert'] = Alert::outage_email( $to );
+		}
+
+		if ( $switched ) {
+			restore_previous_locale();
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Folders of the active theme and of its parent, on the main site.
+	 *
+	 * @return string[]
+	 */
+	public static function theme_dirs() {
+		$switched = false;
+
+		if ( is_multisite() && ! is_main_site() ) {
+			switch_to_blog( get_main_site_id() );
+			$switched = true;
+		}
+
+		$dirs = array_values( array_unique( array( get_stylesheet_directory(), get_template_directory() ) ) );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return array_map( 'wp_normalize_path', $dirs );
+	}
+
+	/**
+	 * Template of the active theme that replaces the built-in page.
+	 *
+	 * The drop-in applies the same rules: the file is named after the drop-in,
+	 * sits in an offair folder of the theme or of its parent theme, and
+	 * resolves to a path inside wp-content/themes.
+	 *
+	 * @param string $key Screen key.
+	 * @return string Absolute path, empty when the theme has none.
+	 */
+	public static function theme_template( $key ) {
+		$files = Dropins::files();
+		$root  = realpath( WP_CONTENT_DIR . '/themes' );
+
+		if ( ! isset( $files[ $key ] ) || false === $root ) {
+			return '';
+		}
+
+		foreach ( self::theme_dirs() as $dir ) {
+			$path = realpath( $dir . '/offair/' . $files[ $key ] );
+
+			if ( false !== $path && 0 === strpos( $path, $root . DIRECTORY_SEPARATOR ) && is_readable( $path ) ) {
+				return $path;
+			}
+		}
+
+		return '';
 	}
 
 	/**

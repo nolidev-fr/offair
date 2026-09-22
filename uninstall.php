@@ -1,7 +1,8 @@
 <?php
 /**
  * Removes everything the plugin created: the drop-ins copied to wp-content,
- * the content folder in uploads and the options stored in the database.
+ * the content folder in uploads (with the private folder and the history it
+ * holds), the options stored in the database and the scheduled check.
  *
  * Only drop-ins carrying the plugin marker are deleted. A db-error.php,
  * maintenance.php or php-error.php added by someone else is left in place.
@@ -47,7 +48,11 @@ if ( is_dir( $offair_dir ) ) {
 	}
 }
 
-foreach ( array( 'offair_settings', 'offair_version', 'offair_logo_cache', 'offair_refresh' ) as $offair_option ) {
+foreach ( array( 'offair_settings', 'offair_version', 'offair_logo_cache', 'offair_refresh', 'offair_db_reported', 'offair_last_incident' ) as $offair_option ) {
 	delete_option( $offair_option );
 	delete_site_option( $offair_option );
 }
+
+// Scheduled check for the end of an outage, and the outage notice each user dismissed.
+wp_clear_scheduled_hook( 'offair_check' );
+delete_metadata( 'user', 0, 'offair_seen_incident', '', true );

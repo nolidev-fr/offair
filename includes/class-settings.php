@@ -43,6 +43,23 @@ class Settings {
 	}
 
 	/**
+	 * Address that receives the outage alerts: the one set in the database
+	 * tab, or the administration email address of the site.
+	 *
+	 * @param array $db Settings of the database screen.
+	 * @return string Empty when no valid address is available.
+	 */
+	public static function alert_recipient( array $db ) {
+		$email = isset( $db['alert_email'] ) ? (string) $db['alert_email'] : '';
+
+		if ( '' === $email || ! is_email( $email ) ) {
+			$email = (string) ( is_multisite() ? get_site_option( 'admin_email' ) : get_option( 'admin_email' ) );
+		}
+
+		return is_email( $email ) ? $email : '';
+	}
+
+	/**
 	 * Reads an option from the right scope.
 	 *
 	 * @param string $key           Option name.
@@ -126,6 +143,8 @@ class Settings {
 				'retry_after'   => 300,
 				'show_button'   => true,
 				'show_meta'     => true,
+				'alert'         => false,
+				'alert_email'   => '',
 			),
 			'maintenance' => array(
 				'enabled'       => true,
@@ -330,6 +349,13 @@ class Settings {
 			}
 			if ( isset( $screen['retry_after'] ) ) {
 				$section['retry_after'] = min( 86400, absint( $screen['retry_after'] ) );
+			}
+			if ( 'db' === $key ) {
+				$section['alert'] = ! empty( $screen['alert'] );
+				if ( isset( $screen['alert_email'] ) ) {
+					// Empty means the administration email address of the site.
+					$section['alert_email'] = sanitize_email( $screen['alert_email'] );
+				}
 			}
 			if ( 'php' === $key && isset( $screen['status_code'] ) ) {
 				$status                 = (int) $screen['status_code'];

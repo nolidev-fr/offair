@@ -23,6 +23,11 @@ class Admin_Page {
 	const NOTICE = 'offair_notice_';
 
 	/**
+	 * User meta holding the end of the last outage the user dismissed.
+	 */
+	const SEEN_META = 'offair_seen_incident';
+
+	/**
 	 * Plugin.
 	 *
 	 * @var Plugin
@@ -52,6 +57,10 @@ class Admin_Page {
 		add_action( 'admin_post_offair_remove', array( $this, 'handle_remove' ) );
 		add_action( 'admin_post_offair_preview', array( $this, 'handle_preview' ) );
 		add_action( 'admin_post_offair_download', array( $this, 'handle_download' ) );
+		add_action( 'admin_post_offair_test_alert', array( $this, 'handle_test_alert' ) );
+		add_action( 'admin_post_offair_clear_history', array( $this, 'handle_clear_history' ) );
+		add_action( 'admin_post_offair_dismiss_incident', array( $this, 'handle_dismiss_incident' ) );
+		add_action( is_multisite() ? 'network_admin_notices' : 'admin_notices', array( $this, 'render_incident_notice' ) );
 
 		$links_hook = is_multisite() ? 'network_admin_plugin_action_links_' : 'plugin_action_links_';
 		add_filter( $links_hook . OFFAIR_BASENAME, array( $this, 'action_links' ) );
@@ -64,6 +73,16 @@ class Admin_Page {
 	 * @return string
 	 */
 	public function page_url( $tab = '' ) {
+		return self::url( $tab );
+	}
+
+	/**
+	 * URL of the settings page, also used outside the admin (in the report).
+	 *
+	 * @param string $tab Tab to open.
+	 * @return string
+	 */
+	public static function url( $tab = '' ) {
 		$base = is_multisite() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' );
 		$url  = add_query_arg( 'page', self::SLUG, $base );
 
@@ -259,6 +278,104 @@ class Admin_Page {
 	}
 
 	/**
+	 * Saves the settings, then sends a test alert the way the drop-in would.
+	 */
+	public function handle_test_alert() {
+		$this->require_capability();
+		check_admin_referer( 'offair_save' );
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Validated field by field in Settings::sanitize().
+		$input = isset( $_POST['offair'] ) && is_array( $_POST['offair'] ) ? wp_unslash( $_POST['offair'] ) : array();
+
+		$settings = $this->plugin->settings->update( $input );
+		$this->plugin->pages->flush();
+		$results = $this->plugin->publisher->publish();
+		$to      = Settings::alert_recipient( $settings['db'] );
+
+		if ( '' === $to ) {
+			$message = __( 'Settings saved. No test was sent: enter a valid email address first.', 'offair' );
+		} elseif ( Alert::send_test( $to ) ) {
+			/* translators: %s: email address. */
+			$message = sprintf( __( 'Settings saved. A test alert was handed to the server for %s. Check the inbox and the spam folder: if it never arrives, this host does not deliver the emails PHP sends by itself.', 'offair' ), $to );
+		} else {
+			$message   = __( 'Settings saved.', 'offair' );
+			$results[] = new \WP_Error( 'offair_mail_failed', __( 'The server refused to send the test: the mail function of PHP does not work on this host, so no alert can be sent during an outage. The report sent once the site is back goes through WordPress and is not affected.', 'offair' ) );
+		}
+
+		$this->finish( $message, $results, 'db' );
+	}
+
+	/**
+	 * Deletes the history of the pages shown.
+	 */
+	public function handle_clear_history() {
+		$this->require_capability();
+		check_admin_referer( 'offair_clear_history' );
+
+		$this->plugin->journal->clear();
+
+		$this->finish( __( 'History cleared.', 'offair' ), array(), 'history' );
+	}
+
+	/**
+	 * Hides the outage notice for the current user, until the next outage.
+	 */
+	public function handle_dismiss_incident() {
+		$this->require_capability();
+		check_admin_referer( 'offair_dismiss_incident' );
+
+		$incident = Journal::last_incident();
+
+		if ( null !== $incident ) {
+			update_user_meta( get_current_user_id(), self::SEEN_META, (int) $incident['end'] );
+		}
+
+		$referer = wp_get_referer();
+
+		wp_safe_redirect( $referer ? $referer : self::url( 'history' ) );
+		exit;
+	}
+
+	/**
+	 * Tells administrators, on the dashboard, that the database could not be
+	 * reached while they were away.
+	 */
+	public function render_incident_notice() {
+		$screen = get_current_screen();
+
+		if ( null === $screen || ! in_array( $screen->id, array( 'dashboard', 'dashboard-network' ), true ) || ! current_user_can( Settings::capability() ) ) {
+			return;
+		}
+
+		$incident = Journal::last_incident();
+
+		if ( null === $incident || (int) get_user_meta( get_current_user_id(), self::SEEN_META, true ) >= (int) $incident['end'] ) {
+			return;
+		}
+
+		$dismiss = wp_nonce_url( add_query_arg( 'action', 'offair_dismiss_incident', $this->post_url() ), 'offair_dismiss_incident' );
+		?>
+		<div class="notice notice-warning">
+			<p>
+				<?php
+				printf(
+					/* translators: 1: date and time the outage started, 2: duration, for example "about 15 mins". */
+					esc_html__( 'Offair: the database of this site could not be reached on %1$s (%2$s). Visitors saw the database error page.', 'offair' ),
+					esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $incident['start'] ) ),
+					esc_html( Journal::duration( $incident ) )
+				);
+				?>
+			</p>
+			<p>
+				<a href="<?php echo esc_url( self::url( 'history' ) ); ?>"><?php esc_html_e( 'See the history', 'offair' ); ?></a>
+				&middot;
+				<a href="<?php echo esc_url( $dismiss ); ?>"><?php esc_html_e( 'Dismiss', 'offair' ); ?></a>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Renders the settings page.
 	 */
 	public function render() {
@@ -291,6 +408,7 @@ class Admin_Page {
 				<?php foreach ( Settings::SCREENS as $key ) : ?>
 				<a href="#offair-tab-<?php echo esc_attr( $key ); ?>" class="nav-tab"><?php echo esc_html( $labels[ $key ] ); ?></a>
 				<?php endforeach; ?>
+				<a href="#offair-tab-history" class="nav-tab"><?php esc_html_e( 'History', 'offair' ); ?></a>
 				<a href="#offair-tab-advanced" class="nav-tab"><?php esc_html_e( 'Advanced', 'offair' ); ?></a>
 			</h2>
 
@@ -313,6 +431,10 @@ class Admin_Page {
 					<button type="submit" class="button button-primary"><?php esc_html_e( 'Save and regenerate pages', 'offair' ); ?></button>
 				</p>
 			</form>
+
+			<div id="offair-tab-history" class="offair-panel">
+				<?php $this->render_history(); ?>
+			</div>
 
 			<div id="offair-tab-advanced" class="offair-panel">
 				<?php $this->render_advanced(); ?>
@@ -539,6 +661,20 @@ class Admin_Page {
 		<?php if ( 'php' === $key ) : ?>
 			<?php $this->render_php_environment_notice(); ?>
 		<?php endif; ?>
+		<?php $template = Pages::theme_template( $key ); ?>
+		<?php if ( '' !== $template ) : ?>
+		<div class="notice notice-info inline">
+			<p>
+				<?php
+				printf(
+					/* translators: %s: path of the template file. */
+					esc_html__( 'The active theme replaces this page with its template %s. The settings below are passed to it, and the template decides what to show.', 'offair' ),
+					'<code>' . esc_html( str_replace( wp_normalize_path( WP_CONTENT_DIR ), 'wp-content', wp_normalize_path( $template ) ) ) . '</code>'
+				);
+				?>
+			</p>
+		</div>
+		<?php endif; ?>
 		<table class="form-table" role="presentation">
 			<?php
 			$this->checkbox_row(
@@ -609,6 +745,25 @@ class Admin_Page {
 				! empty( $screen['show_meta'] ),
 				__( 'Show the local time of the incident and the HTTP status under the message', 'offair' )
 			);
+			if ( 'db' === $key ) {
+				$this->checkbox_row(
+					__( 'Email alert', 'offair' ),
+					$name_first . 'alert',
+					! empty( $screen['alert'] ),
+					__( 'Send an email when visitors see this page, and a report once the site is back', 'offair' )
+				);
+				$this->text_row(
+					__( 'Alert recipient', 'offair' ),
+					$name_first . 'alert_email',
+					$screen['alert_email'],
+					array(
+						'type'        => 'email',
+						'placeholder' => (string) ( is_multisite() ? get_site_option( 'admin_email' ) : get_option( 'admin_email' ) ),
+						'description' => __( 'Leave empty to use the administration email address of the site.', 'offair' ),
+					)
+				);
+				$this->render_alert_test_row();
+			}
 			if ( 'php' === $key ) {
 				$this->select_row(
 					__( 'HTTP status', 'offair' ),
@@ -627,6 +782,82 @@ class Admin_Page {
 		<p class="description"><?php esc_html_e( 'Rendered from the saved settings, exactly as a visitor will see it. Save to refresh it.', 'offair' ); ?></p>
 		<iframe class="offair-preview" data-src="<?php echo esc_url( $preview ); ?>" title="<?php echo esc_attr( $labels[ $key ] ); ?>"></iframe>
 		<p><a href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open the preview in a new tab', 'offair' ); ?></a></p>
+		<?php
+	}
+
+	/**
+	 * Test button of the alert. It submits the settings form, so the test
+	 * uses the address typed in, saved first.
+	 */
+	private function render_alert_test_row() {
+		?>
+		<tr>
+			<th scope="row"><?php esc_html_e( 'Test', 'offair' ); ?></th>
+			<td>
+				<button type="submit" class="button" name="action" value="offair_test_alert"><?php esc_html_e( 'Save and send a test alert', 'offair' ); ?></button>
+				<p class="description"><?php esc_html_e( 'While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report sent once the site is back goes through WordPress, like its other emails.', 'offair' ); ?></p>
+			</td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * History tab: the pages shown to visitors, grouped into incidents.
+	 */
+	private function render_history() {
+		$incidents = $this->plugin->journal->incidents( 50 );
+		$labels    = Settings::screen_labels();
+		$settings  = $this->plugin->settings->get();
+		$to        = Settings::alert_recipient( $settings['db'] );
+		$format    = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		?>
+		<p class="offair-intro"><?php esc_html_e( 'Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site.', 'offair' ); ?></p>
+		<?php if ( empty( $settings['db']['alert'] ) ) : ?>
+		<p><?php esc_html_e( 'Email alerts are off. Turn them on in the Database error tab to hear about an outage while it happens.', 'offair' ); ?></p>
+		<?php elseif ( '' === $to ) : ?>
+		<div class="notice notice-warning inline"><p><?php esc_html_e( 'Email alerts are on, but no valid address is set to receive them.', 'offair' ); ?></p></div>
+		<?php else : ?>
+		<p>
+			<?php
+			printf(
+				/* translators: %s: email address. */
+				esc_html__( 'Email alerts about database outages go to %s.', 'offair' ),
+				'<strong>' . esc_html( $to ) . '</strong>'
+			);
+			?>
+		</p>
+		<?php endif; ?>
+
+		<?php if ( ! $incidents ) : ?>
+		<p><em><?php esc_html_e( 'No page has been shown to visitors so far.', 'offair' ); ?></em></p>
+		<?php else : ?>
+		<table class="widefat striped offair-history">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Page', 'offair' ); ?></th>
+					<th><?php esc_html_e( 'Started', 'offair' ); ?></th>
+					<th><?php esc_html_e( 'Observed duration', 'offair' ); ?></th>
+					<th><?php esc_html_e( 'HTTP status', 'offair' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php foreach ( $incidents as $incident ) : ?>
+				<tr>
+					<td><?php echo esc_html( isset( $labels[ $incident['screen'] ] ) ? $labels[ $incident['screen'] ] : $incident['screen'] ); ?></td>
+					<td><?php echo esc_html( wp_date( $format, $incident['start'] ) ); ?></td>
+					<td><?php echo esc_html( Journal::duration( $incident ) ); ?></td>
+					<td><?php echo esc_html( (string) $incident['status'] ); ?></td>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+		</table>
+		<p class="description"><?php esc_html_e( 'The duration runs from the first to the last page shown. The 50 most recent incidents are listed, and the history keeps 180 days.', 'offair' ); ?></p>
+		<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>" class="offair-confirm" data-confirm="<?php esc_attr_e( 'Delete the whole history?', 'offair' ); ?>">
+			<?php wp_nonce_field( 'offair_clear_history' ); ?>
+			<input type="hidden" name="action" value="offair_clear_history">
+			<p><button type="submit" class="button"><?php esc_html_e( 'Clear the history', 'offair' ); ?></button></p>
+		</form>
+		<?php endif; ?>
 		<?php
 	}
 
@@ -688,12 +919,14 @@ class Admin_Page {
 		<h2><?php esc_html_e( 'Files', 'offair' ); ?></h2>
 		<p><?php esc_html_e( 'The drop-ins are copies of dropins/drop-in.php from the plugin folder. The content of the pages is saved here:', 'offair' ); ?></p>
 		<p><code><?php echo esc_html( wp_normalize_path( $this->plugin->pages->path() ) ); ?></code></p>
+		<p><?php esc_html_e( 'The alert settings, the theme folders and the history are kept next to it, in a private folder whose name cannot be guessed, because anyone can read a file in uploads when they know its address.', 'offair' ); ?></p>
 
 		<h2><?php esc_html_e( 'WP-CLI', 'offair' ); ?></h2>
 		<pre class="offair-cli">wp offair status
 wp offair generate [--force]
 wp offair remove [--force]
-wp offair preview &lt;db|maintenance|php&gt;</pre>
+wp offair preview &lt;db|maintenance|php&gt;
+wp offair history [--format=&lt;table|json|csv&gt;]</pre>
 
 		<h2><?php esc_html_e( 'Deactivation and uninstall', 'offair' ); ?></h2>
 		<p><?php esc_html_e( 'Deactivating the plugin removes the three drop-ins from wp-content and keeps your settings. Uninstalling also removes the settings and the content folder in uploads. Files not added by this plugin are never touched.', 'offair' ); ?></p>

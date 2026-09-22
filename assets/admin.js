@@ -18,7 +18,7 @@
 
 			$tabs.removeClass( 'nav-tab-active' ).filter( '[href="#' + id + '"]' ).addClass( 'nav-tab-active' );
 			$panels.hide().filter( '#' + id ).show();
-			$save.toggle( 'offair-tab-advanced' !== id );
+			$save.toggle( -1 === [ 'offair-tab-history', 'offair-tab-advanced' ].indexOf( id ) );
 			$currentTab.val( id.replace( 'offair-tab-', '' ) );
 
 			// The preview iframes load only when their tab is opened.

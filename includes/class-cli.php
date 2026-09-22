@@ -160,6 +160,51 @@ class CLI {
 	}
 
 	/**
+	 * Lists the incidents recorded when the pages were shown to visitors.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--format=<format>]
+	 * : Output format.
+	 * ---
+	 * default: table
+	 * options:
+	 *   - table
+	 *   - json
+	 *   - csv
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp offair history
+	 *     wp offair history --format=json
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Named arguments.
+	 */
+	public function history( $args, $assoc_args ) {
+		$rows = array();
+
+		foreach ( $this->plugin->journal->incidents( 50 ) as $incident ) {
+			$rows[] = array(
+				'page'     => $incident['screen'],
+				'start'    => wp_date( 'Y-m-d H:i:s', $incident['start'] ),
+				'end'      => wp_date( 'Y-m-d H:i:s', $incident['end'] ),
+				'duration' => Journal::duration( $incident ),
+				'minutes'  => $incident['count'],
+				'status'   => $incident['status'],
+			);
+		}
+
+		if ( ! $rows ) {
+			\WP_CLI::log( 'No page has been shown to visitors so far.' );
+			return;
+		}
+
+		\WP_CLI\Utils\format_items( isset( $assoc_args['format'] ) ? $assoc_args['format'] : 'table', $rows, array_keys( $rows[0] ) );
+	}
+
+	/**
 	 * Prints one line per page and exits with an error when something failed.
 	 *
 	 * @param array  $results Result per page.

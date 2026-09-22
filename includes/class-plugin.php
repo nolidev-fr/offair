@@ -57,6 +57,13 @@ final class Plugin {
 	public $publisher;
 
 	/**
+	 * History of the pages shown and end of outages.
+	 *
+	 * @var Journal
+	 */
+	public $journal;
+
+	/**
 	 * Returns the shared instance, creating it on first use.
 	 *
 	 * @return Plugin
@@ -78,18 +85,27 @@ final class Plugin {
 		$this->dropins   = new Dropins();
 		$this->pages     = new Pages( $this->settings, $this->branding );
 		$this->publisher = new Publisher( $this->settings, $this->dropins, $this->pages );
+		$this->journal   = new Journal( $this->settings, $this->pages );
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 
 		// On any request, not only in the admin: automatic updates run with nobody logged in.
 		add_action( 'init', array( $this, 'maybe_upgrade' ), 20 );
 
-		// The pages show the site title, language, timezone and time format:
-		// their content is saved again when one of these settings changes.
-		foreach ( array( 'blogname', 'WPLANG', 'timezone_string', 'gmt_offset', 'time_format', 'site_icon' ) as $option ) {
+		// The pages show the site title, language, timezone and time format, the
+		// alert uses the address and the email of the site, the templates come
+		// from the active theme: the content is saved again when one changes.
+		foreach ( array( 'blogname', 'WPLANG', 'timezone_string', 'gmt_offset', 'time_format', 'site_icon', 'home', 'admin_email', 'stylesheet', 'template' ) as $option ) {
 			add_action( 'update_option_' . $option, array( $this, 'schedule_refresh' ) );
 		}
 		add_action( 'init', array( $this, 'refresh' ), 20 );
+
+		// The end of a database outage is noticed by a scheduled check, and at
+		// once when someone opens the admin, so the dashboard notice is fresh.
+		add_filter( 'cron_schedules', array( Journal::class, 'add_schedule' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- 15 minutes, see Journal::add_schedule().
+		add_action( Journal::CRON, array( $this->journal, 'check' ) );
+		add_action( 'admin_init', array( $this->journal, 'check' ) );
+		add_action( 'admin_init', array( Journal::class, 'schedule' ) );
 
 		new Site_Health( $this );
 
@@ -165,6 +181,7 @@ final class Plugin {
 		$plugin->publisher->publish();
 
 		Settings::update_option( Settings::VERSION_OPTION, OFFAIR_VERSION );
+		Journal::schedule();
 	}
 
 	/**
@@ -177,5 +194,6 @@ final class Plugin {
 		$plugin->publisher->unpublish();
 
 		Settings::delete_option( Settings::VERSION_OPTION );
+		Journal::unschedule();
 	}
 }
