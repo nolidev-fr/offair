@@ -302,6 +302,11 @@ class Admin_Page {
 			$results[] = new \WP_Error( 'offair_mail_failed', __( 'The server refused to send the test: the mail function of PHP does not work on this host, so no alert can be sent during an outage. The report sent once the site is back goes through WordPress and is not affected.', 'offair' ) );
 		}
 
+		// The test works with the alert off: say so, or a successful test looks like a working alert.
+		if ( '' !== $to && empty( $settings['db']['alert'] ) ) {
+			$results[] = new \WP_Error( 'offair_alert_off', __( 'The email alert itself is off, so nothing will be sent during an outage. Tick Email alert and save to turn it on.', 'offair' ) );
+		}
+
 		$this->finish( $message, $results, 'db' );
 	}
 
