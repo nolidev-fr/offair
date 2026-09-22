@@ -20,6 +20,8 @@ The plugin copies one static file, [`dropins/drop-in.php`](dropins/drop-in.php),
 
 The content of the pages (texts in the language of the site, colors, logo as a data URI) is saved as JSON in `wp-content/uploads/offair/pages.json`, because the database may be the very thing that is down. When that file is missing, the drop-in shows a neutral English page.
 
+Anyone can read a file in uploads when they know its address, and `pages.json` has a known address. What visitors must not see (the alert recipient, the folders of the theme, the history) goes in `wp-content/uploads/offair/private-<random>/`, a folder whose name cannot be guessed. The drop-in finds it by its prefix.
+
 ## Features
 
 - One design for the three screens: centered card, logo, site name, title, message, retry button and an incident line with the local time.
@@ -27,7 +29,10 @@ The content of the pages (texts in the language of the site, colors, logo as a d
 - Texts follow the language of the site until you customize them. French translation included.
 - Live preview of each page, rendered by the drop-in itself.
 - Status box telling you whether each page is in place and up to date. A file the plugin did not add is never replaced without your say.
-- Site Health test, WP-CLI commands and filters for developers.
+- Email alert when the database goes down, off by default. The drop-in sends it with `mail()`, since WordPress cannot run during the outage, at most once an hour. Once the site is back, a scheduled check sends a report through `wp_mail()` with the duration of the outage.
+- History of the pages shown to visitors, in its own tab and with `wp offair history`: the time, the page and the HTTP status, once a minute at most per page. Nothing about the visitors is recorded. A dashboard notice reports a database outage an administrator missed.
+- Theme templates: a theme can replace any of the three pages with its own design (see below).
+- Site Health test, WP-CLI commands, filters and an action for developers.
 - Clean removal: drop-ins removed on deactivation, everything removed on uninstall.
 
 ## Installation
@@ -47,19 +52,72 @@ wp offair status
 wp offair generate [--force]
 wp offair remove [--force]
 wp offair preview <db|maintenance|php>
+wp offair history [--format=<table|json|csv>]
 ```
+
+## Theme templates
+
+A theme or child theme can design the pages itself. The drop-in looks for a file named after it in an `offair` folder of the active theme, then of its parent theme:
+
+```
+wp-content/themes/your-theme/offair/db-error.php
+wp-content/themes/your-theme/offair/maintenance.php
+wp-content/themes/your-theme/offair/php-error.php
+```
+
+WordPress is not loaded when these pages are shown, so a template can only use plain PHP. The drop-in has already sent the HTTP status and the no-cache headers. The template prints the whole HTML document and receives one variable, `$offair`:
+
+| Key | Content |
+| --- | --- |
+| `screen` | `db`, `maintenance` or `php` |
+| `status` | HTTP status sent, 503 or 500 |
+| `lang` | Language of the site, for the `lang` attribute |
+| `site_name`, `show_name` | Displayed name and whether to show it |
+| `title`, `paragraphs`, `button` | Title, message split into paragraphs, label of the retry button (empty when hidden) |
+| `contact` | Contact line, as parts with a `text` and, for links, an `href` |
+| `meta` | Incident line, with the local time filled in (empty when hidden) |
+| `notice`, `detail` | Recovery mode notice and technical details of a PHP error, when WordPress would show them |
+| `refresh` | Automatic refresh delay in seconds, 0 when off |
+| `logo`, `favicon` | Logo (`src` data URI, `width`, `height`) or null, favicon data URI or empty |
+| `colors` | `primary`, `primary_hover`, `primary_text`, `on_primary`, `background` |
+| `heading_font`, `ornament` | `serif` or `sans`, and `wave`, `line` or `none` |
+| `head` | Built-in `<head>` content: meta tags, refresh, title, favicon and styles |
+| `card` | Built-in `<main class="offair-card">` markup |
+| `css` | Built-in stylesheet |
+| `escape` | Function that escapes a value for HTML |
+
+Every text value is raw: print it through `$offair['escape']`. `head` and `card` are already escaped. A minimal template that keeps the built-in card and adds a banner:
+
+```php
+<?php $e = $offair['escape']; ?>
+<!DOCTYPE html>
+<html lang="<?php echo $e( $offair['lang'] ); ?>">
+<head>
+<?php echo $offair['head']; ?>
+</head>
+<body class="offair-font-<?php echo $e( $offair['heading_font'] ); ?>">
+<p class="banner"><?php echo $e( $offair['site_name'] ); ?></p>
+<?php echo $offair['card']; ?>
+</body>
+</html>
+```
+
+If the template throws an error, has a syntax error or prints nothing, the built-in page is shown instead. The path is checked against `wp-content/themes`, so a theme stored elsewhere cannot provide templates.
 
 ## Hooks
 
-| Filter | Purpose |
-| --- | --- |
-| `offair_settings` | Settings right before the page content is built |
-| `offair_data` | Page content before it is saved for the drop-in |
+| Hook | Type | Purpose |
+| --- | --- | --- |
+| `offair_settings` | Filter | Settings right before the page content is built |
+| `offair_data` | Filter | Page content before it is saved for the drop-in |
+| `offair_incident_resolved` | Action | Fires once a database outage is over, with an array holding `start` and `end` (Unix times of the first and last pages shown), `count` (minutes with a page shown) and `status` |
 
 ## Limits worth knowing
 
 - Pages served from a full page cache (LiteSpeed Cache, WP Rocket, Cloudflare) keep being served normally during an outage. Only requests that reach PHP see the outage page, which is what you want.
 - A web server or PHP outage is not covered. Only the host can show a page in that case.
+- The history and the alert only see outages while someone visits the site: they rely on the pages actually shown.
+- During an outage the alert is sent with the `mail()` function of PHP, which some hosts block or send to spam. The test button in the Database error tab uses the same path. The report sent once the site is back uses `wp_mail()` and any email plugin.
 - WordPress can only show an error page for a fatal error that happens before the page started being sent. When PHP prints errors on screen and does not buffer its output, no error page can be shown at all. The settings page and Site Health detect that combination and explain the fix.
 
 ## Development

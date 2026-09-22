@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,13 +20,15 @@ When WordPress breaks, it shows screens of its own that no theme and no plugin c
 
 Offair replaces these three screens with a calm page in your colors, with your logo and your words, and makes them answer with the right HTTP status so that search engines and caches treat the outage as temporary.
 
+It also keeps a history of the outages your visitors ran into, and can email you when the database goes down, then again once the site is back.
+
 This is not a maintenance mode or coming soon plugin. It does not take your site offline and it does not add a page you switch on. It only covers the moments when WordPress itself cannot serve your site.
 
 = How it works =
 
 WordPress looks for three special files in `wp-content`, called drop-ins: `db-error.php`, `maintenance.php` and `php-error.php`. It loads them itself, before any plugin, which is the only way to show something when the database is down.
 
-The plugin copies one static file shipped in its own folder (`dropins/drop-in.php`) under these three names. No code is generated. The content of the pages (texts, colors, logo) is saved as a JSON file in `wp-content/uploads/offair/`, and the drop-in reads it when a page has to be shown.
+The plugin copies one static file shipped in its own folder (`dropins/drop-in.php`) under these three names. No code is generated. The content of the pages (texts, colors, logo) is saved as a JSON file in `wp-content/uploads/offair/`, and the drop-in reads it when a page has to be shown. What visitors must not see, such as the alert recipient and the history, is kept next to it in a private folder whose name cannot be guessed.
 
 = What you get =
 
@@ -36,6 +38,9 @@ The plugin copies one static file shipped in its own folder (`dropins/drop-in.ph
 * Correct HTTP answers: 503 with a Retry-After header for the database and update pages, 503 or 500 for PHP errors (your choice), plus no-cache headers so no cache ever keeps an error page.
 * No external dependency: system fonts, logo embedded in the content file, nothing loaded from the network.
 * A live preview of each page, rendered by the drop-in itself, exactly as visitors will see it.
+* An email alert when the database goes down, off by default. The page itself sends it while WordPress cannot run, and WordPress sends a report once the site is back, with the duration of the outage. A test button shows whether your host delivers it.
+* A history of the outages, in its own tab: the date, the page and the HTTP status, recorded once a minute at most. Nothing about your visitors is recorded. A notice on the dashboard tells you about a database outage you missed.
+* Theme templates: a theme can design any of the three pages itself, with the texts, colors and logo from the settings.
 * A status box, a Site Health test and WP-CLI commands.
 * Clean removal: the drop-ins are removed when the plugin is deactivated, and everything is removed when it is uninstalled.
 
@@ -45,7 +50,9 @@ The plugin never replaces a `db-error.php`, `maintenance.php` or `php-error.php`
 
 * `offair_settings` filters the settings before the page content is built.
 * `offair_data` filters the page content before it is saved for the drop-in.
-* WP-CLI: `wp offair status`, `generate [--force]`, `remove [--force]`, `preview <db|maintenance|php>`.
+* `offair_incident_resolved` fires once a database outage is over, with the times of the first and last pages shown.
+* Theme templates: `offair/db-error.php`, `offair/maintenance.php` and `offair/php-error.php` in the active theme or its parent. The variables they receive are listed in the [documentation on GitHub](https://github.com/nolidev-fr/offair#theme-templates).
+* WP-CLI: `wp offair status`, `generate [--force]`, `remove [--force]`, `preview <db|maintenance|php>`, `history`.
 
 == Installation ==
 
@@ -67,7 +74,7 @@ Because WordPress only looks for these drop-ins there, and loads them before any
 
 = Why is the content saved as a file and not in the database? =
 
-The database is precisely what may be unreachable when the page is shown. The content is saved in the uploads folder, in `offair/pages.json`, and contains only what the visitors see on the page.
+The database is precisely what may be unreachable when the page is shown. The content is saved in the uploads folder, in `offair/pages.json`, and contains only what the visitors see on the page. The alert settings and the history are kept in a private folder next to it.
 
 = Does it work with page caching (LiteSpeed Cache, WP Rocket, Cloudflare)? =
 
@@ -89,7 +96,19 @@ There is one combination WordPress cannot handle: errors printed on screen (usua
 
 = Does the plugin send emails or contact any service? =
 
-No. Nothing leaves your server. There is no tracking, no update check and no external asset.
+Only if you turn on the email alert, and only to the address you choose. The alert is sent by your own server. Nothing else leaves it: there is no tracking, no update check and no external asset.
+
+= Why does the alert sometimes not arrive? =
+
+While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP, not through your email plugin. Some hosts block it and some inboxes file it as spam. Use the test button in the Database error tab: the test travels exactly the same way. The report sent once the site is back goes through WordPress, like your other emails.
+
+= What does the history record? =
+
+The date, the page and the HTTP status, once a minute at most, each time a visitor sees one of the pages. Nothing about the visitors themselves. The history is kept for 180 days and removed when the plugin is uninstalled. An outage while nobody visits the site cannot be seen.
+
+= Can my theme design the pages? =
+
+Yes. Add `offair/db-error.php`, `offair/maintenance.php` or `offair/php-error.php` to your theme or child theme. The page then uses your template instead of the built-in one. It receives the texts, colors and logo from the settings, the built-in markup and an escaping function. WordPress is not loaded when these pages are shown, so a template can only use plain PHP. If a template fails, the built-in page is shown instead.
 
 = Does it work on multisite? =
 
@@ -102,6 +121,13 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 3. One tab per page, with the live preview rendered exactly as visitors will see it.
 
 == Changelog ==
+
+= 1.1.0 =
+* New: email alert when the database goes down, and a report once the site is back. Off by default, with a test button.
+* New: history of the pages shown to visitors, in a new History tab, and a dashboard notice after a database outage.
+* New: theme templates. A theme can replace any of the three pages with its own design.
+* New: `offair_incident_resolved` action and `wp offair history` command.
+* Fix: a site icon in a format the pages cannot show, such as AVIF, was left out of the pages. It is now embedded as PNG.
 
 = 1.0.3 =
 * Fix: a logo in a format the pages cannot show, such as AVIF, was left out without any warning. It is now embedded as PNG.
@@ -124,6 +150,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Adds an email alert, a history of the outages and theme templates. The drop-in changes: if you uploaded the drop-ins yourself, download them again from the settings page.
 
 = 1.0.3 =
 Fixes AVIF logos missing from the pages and stops the PHP error page from reloading itself every minute.
