@@ -151,6 +151,7 @@ final class Plugin {
 
 		// Recorded first, so that requests arriving together do not all publish.
 		Settings::update_option( Settings::VERSION_OPTION, OFFAIR_VERSION );
+		$this->settings->upgrade( $stored );
 		$this->publisher->publish();
 	}
 

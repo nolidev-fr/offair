@@ -142,7 +142,8 @@ class Settings {
 				'title'         => __( 'Something went wrong', 'offair' ),
 				'message'       => __( "A technical error prevents us from displaying this page right now. Please try again in a few minutes.\n\nThank you for your patience.", 'offair' ),
 				'button_label'  => $button,
-				'refresh_delay' => 60,
+				// A fatal error rarely clears on its own, and each reload runs into it again.
+				'refresh_delay' => 0,
 				'retry_after'   => 300,
 				'show_button'   => true,
 				'show_meta'     => true,
@@ -204,6 +205,27 @@ class Settings {
 		self::update_option( self::OPTION, $clean );
 
 		return $clean;
+	}
+
+	/**
+	 * Adjusts the saved settings after a plugin update. They are saved in full
+	 * on activation, so a changed default reaches existing sites only here.
+	 *
+	 * @param string $from Version the site is updated from, empty when unknown.
+	 */
+	public function upgrade( $from ) {
+		$stored = self::get_option( self::OPTION, false );
+
+		if ( ! is_array( $stored ) ) {
+			return;
+		}
+
+		// 1.0.3: the PHP error page no longer reloads itself by default. Only the
+		// former default is changed, a delay set by hand is kept.
+		if ( version_compare( $from, '1.0.3', '<' ) && isset( $stored['php']['refresh_delay'] ) && 60 === (int) $stored['php']['refresh_delay'] ) {
+			$stored['php']['refresh_delay'] = 0;
+			self::update_option( self::OPTION, $stored );
+		}
 	}
 
 	/**
