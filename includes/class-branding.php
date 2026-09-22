@@ -146,7 +146,46 @@ class Branding {
 
 		$mime = ! empty( $size['mime-type'] ) ? $size['mime-type'] : (string) get_post_mime_type( $icon_id );
 
+		// Formats the drop-in does not embed, such as AVIF, are converted to PNG.
+		if ( ! in_array( $mime, self::EMBEDDED_TYPES, true ) ) {
+			return $this->png_data_uri( $path, self::MAX_FAVICON_BYTES );
+		}
+
 		return $this->data_uri( $path, $mime );
+	}
+
+	/**
+	 * Image converted to PNG, as a data URI.
+	 *
+	 * @param string $path      Absolute path of the image.
+	 * @param int    $max_bytes Largest size accepted, in bytes.
+	 * @return string Empty when the image cannot be converted or is too heavy.
+	 */
+	private function png_data_uri( $path, $max_bytes ) {
+		$editor = wp_get_image_editor( $path );
+
+		if ( is_wp_error( $editor ) ) {
+			return '';
+		}
+
+		if ( ! function_exists( 'wp_tempnam' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		$temp  = wp_tempnam( 'offair-icon' );
+		$saved = $editor->save( $temp, 'image/png' );
+		$src   = '';
+
+		if ( ! is_wp_error( $saved ) && ! empty( $saved['path'] ) ) {
+			if ( 'image/png' === $saved['mime-type'] && filesize( $saved['path'] ) <= $max_bytes ) {
+				$src = $this->data_uri( $saved['path'], 'image/png' );
+			}
+			wp_delete_file( $saved['path'] );
+		}
+
+		wp_delete_file( $temp );
+
+		return $src;
 	}
 
 	/**
