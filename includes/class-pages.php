@@ -289,11 +289,20 @@ class Pages {
 				);
 			}
 
+			$refresh    = (int) $screen['refresh_delay'];
+			$paragraphs = self::paragraphs( $screen['message'] );
+
+			// A page that does not reload itself must not say it does.
+			if ( 0 === $refresh ) {
+				/* translators: Must match, word for word, the sentence used near the end of the default database error and maintenance messages: it is removed from the page when the automatic refresh is turned off. */
+				$paragraphs = self::without_sentence( $paragraphs, __( 'This page refreshes on its own.', 'offair' ) );
+			}
+
 			$data['screens'][ $key ] = array(
 				'title'       => (string) $screen['title'],
-				'paragraphs'  => self::paragraphs( $screen['message'] ),
+				'paragraphs'  => $paragraphs,
 				'button'      => empty( $screen['show_button'] ) ? '' : (string) $screen['button_label'],
-				'refresh'     => (int) $screen['refresh_delay'],
+				'refresh'     => $refresh,
 				'retry_after' => (int) $screen['retry_after'],
 				'status'      => $status,
 				'meta'        => $meta,
@@ -330,6 +339,22 @@ class Pages {
 		}
 
 		return array_values( array_filter( array_map( 'trim', preg_split( '/\n{2,}/', $text ) ), 'strlen' ) );
+	}
+
+	/**
+	 * Paragraphs with a sentence taken out, wherever it stands, and the
+	 * paragraphs it leaves empty removed.
+	 *
+	 * @param string[] $paragraphs Paragraphs.
+	 * @param string   $sentence   Sentence to take out.
+	 * @return string[]
+	 */
+	public static function without_sentence( array $paragraphs, $sentence ) {
+		foreach ( $paragraphs as $index => $paragraph ) {
+			$paragraphs[ $index ] = trim( str_replace( array( $sentence . ' ', ' ' . $sentence, $sentence ), '', $paragraph ) );
+		}
+
+		return array_values( array_filter( $paragraphs, 'strlen' ) );
 	}
 
 	/**

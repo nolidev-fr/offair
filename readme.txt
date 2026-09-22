@@ -106,6 +106,7 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 = 1.0.3 =
 * Fix: a logo in a format the pages cannot show, such as AVIF, was left out without any warning. It is now embedded as PNG.
 * The PHP error page no longer reloads itself every minute by default: a fatal error rarely clears on its own, and each reload runs into it again. Sites that kept the former default switch to no reload, a delay set by hand is kept.
+* When the automatic refresh is turned off, the page no longer says that it refreshes on its own.
 
 = 1.0.2 =
 * After an update, the pages are brought up to date on the first request, without waiting for someone to open the admin.

@@ -470,7 +470,7 @@ msgstr "Erreur technique (HTTP %d)."
 msgid "Incident recorded at %1$s (%2$s). %3$s"
 msgstr "Incident constaté à %1$s (%2$s). %3$s"
 
-#: includes/class-pages.php:300
+#: includes/class-pages.php:309
 msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
 msgstr "Le mode de récupération est actif : l’extension à l’origine de cette erreur a été mise en pause. Consultez les écrans Extensions et Thèmes pour en savoir plus."
 
@@ -611,3 +611,8 @@ msgstr "Couleur du texte du bouton"
 #: includes/class-admin-page.php:475
 msgid "Leave empty for an automatic choice: white text, on a slightly darkened button when a mid-tone color needs it, or dark text on a light color."
 msgstr "Laissez vide pour un choix automatique : texte blanc, sur un bouton légèrement assombri quand une couleur de ton moyen le demande, ou texte sombre sur une couleur claire."
+
+#. translators: Must match, word for word, the sentence used near the end of the default database error and maintenance messages: it is removed from the page when the automatic refresh is turned off.
+#: includes/class-pages.php:298
+msgid "This page refreshes on its own."
+msgstr "Cette page se rafraîchit toute seule."

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-21T15:29:23+00:00\n"
+"POT-Creation-Date: 2026-09-22T00:21:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: offair\n"
@@ -485,7 +485,12 @@ msgstr ""
 msgid "Incident recorded at %1$s (%2$s). %3$s"
 msgstr ""
 
-#: includes/class-pages.php:300
+#. translators: Must match, word for word, the sentence used near the end of the default database error and maintenance messages: it is removed from the page when the automatic refresh is turned off.
+#: includes/class-pages.php:298
+msgid "This page refreshes on its own."
+msgstr ""
+
+#: includes/class-pages.php:309
 msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
 msgstr ""
 
