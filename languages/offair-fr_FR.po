@@ -689,10 +689,6 @@ msgstr "Test"
 msgid "Save and send a test alert"
 msgstr "Enregistrer et envoyer une alerte de test"
 
-#: includes/class-admin-page.php:803
-msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report sent once the site is back goes through WordPress, like its other emails."
-msgstr "Pendant la coupure de la base de données, WordPress ne peut pas fonctionner : l’alerte part donc avec la fonction mail de PHP. Certains hébergeurs la bloquent, et elle peut finir dans les indésirables : le test emprunte exactement le même chemin. Le bilan envoyé au retour du site passe par WordPress, comme ses autres emails."
-
 #: includes/class-admin-page.php:819
 msgid "Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site."
 msgstr "Chaque fois qu’un visiteur voit l’une des pages, la date, la page et le statut HTTP sont enregistrés, au plus une fois par minute. Rien n’est conservé sur les visiteurs, et rien n’est enregistré tant que personne ne visite le site."
@@ -808,3 +804,7 @@ msgstr "Toutes les 15 minutes (Offair)"
 #: includes/class-admin-page.php:307
 msgid "The email alert itself is off, so nothing will be sent during an outage. Tick Email alert and save to turn it on."
 msgstr "L’alerte par email elle-même est désactivée : rien ne partira pendant une coupure. Cochez Alerte par email et enregistrez pour l’activer."
+
+#: includes/class-admin-page.php:803
+msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes."
+msgstr "Pendant la coupure de la base de données, WordPress ne peut pas fonctionner : l’alerte part donc avec la fonction mail de PHP. Certains hébergeurs la bloquent, et elle peut finir dans les indésirables : le test emprunte exactement le même chemin. Le bilan passe par WordPress, comme ses autres emails, une fois que la page d’erreur n’a plus été affichée depuis cinq minutes."

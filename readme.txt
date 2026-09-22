@@ -100,7 +100,7 @@ Only if you turn on the email alert, and only to the address you choose. The ale
 
 = Why does the alert sometimes not arrive? =
 
-While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP, not through your email plugin. Some hosts block it and some inboxes file it as spam. Use the test button in the Database error tab: the test travels exactly the same way. The report sent once the site is back goes through WordPress, like your other emails.
+While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP, not through your email plugin. Some hosts block it and some inboxes file it as spam. Use the test button in the Database error tab: the test travels exactly the same way. The report sent once the site is back goes through WordPress, like your other emails. It leaves once the error page has not been shown for five minutes, at the next scheduled check or as soon as someone opens the admin.
 
 = What does the history record? =
 

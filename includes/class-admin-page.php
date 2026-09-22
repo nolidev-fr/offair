@@ -800,7 +800,7 @@ class Admin_Page {
 			<th scope="row"><?php esc_html_e( 'Test', 'offair' ); ?></th>
 			<td>
 				<button type="submit" class="button" name="action" value="offair_test_alert"><?php esc_html_e( 'Save and send a test alert', 'offair' ); ?></button>
-				<p class="description"><?php esc_html_e( 'While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report sent once the site is back goes through WordPress, like its other emails.', 'offair' ); ?></p>
+				<p class="description"><?php esc_html_e( 'While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes.', 'offair' ); ?></p>
 			</td>
 		</tr>
 		<?php
