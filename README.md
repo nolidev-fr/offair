@@ -20,11 +20,15 @@ The plugin copies one static file, [`dropins/drop-in.php`](dropins/drop-in.php),
 
 The content of the pages (texts in the language of the site, colors, logo as a data URI) is saved as JSON in `wp-content/uploads/offair/pages.json`, because the database may be the very thing that is down. When that file is missing, the drop-in shows a neutral English page.
 
+On a network, each site also gets `sites/<id>.json`, built in its own language with its title, logo and timezone, and `sites.json` lists the address of every site. WordPress has not worked out which site is asked for when the database is down, so the drop-in compares the address with that list and picks the page of the site, or the page of the main site for an unknown address.
+
 Anyone can read a file in uploads when they know its address, and `pages.json` has a known address. What visitors must not see (the alert recipient, the folders of the theme, the history) goes in `wp-content/uploads/offair/private-<random>/`, a folder whose name cannot be guessed. The drop-in finds it by its prefix.
 
 ## Features
 
-- One design for the three screens: centered card, logo, site name, title, message, retry button and an incident line with the local time.
+- Four layouts for the three screens (card, minimal, two columns, banner), each with the logo, the site name, the title, the message, a retry button and an incident line with the local time.
+- Automatic dark mode following the device of the visitor, or always light, or always dark. Brand colors used for text are lightened in dark mode to stay readable, and an optional logo for dark backgrounds replaces the logo there.
+- On a network, a page for each site with its own title, logo, language, timezone and theme templates.
 - Logo and colors detected from the theme, the site icon and Elementor global colors, editable at any time. Pale brand colors are darkened for text, and the button picks white or dark text by itself, slightly darkening a mid-tone color when needed, so the page stays readable.
 - Texts follow the language of the site until you customize them. French translation included.
 - Live preview of each page, rendered by the drop-in itself.
@@ -78,15 +82,17 @@ WordPress is not loaded when these pages are shown, so a template can only use p
 | `meta` | Incident line, with the local time filled in (empty when hidden) |
 | `notice`, `detail` | Recovery mode notice and technical details of a PHP error, when WordPress would show them |
 | `refresh` | Automatic refresh delay in seconds, 0 when off |
-| `logo`, `favicon` | Logo (`src` data URI, `width`, `height`) or null, favicon data URI or empty |
-| `colors` | `primary`, `primary_hover`, `primary_text`, `on_primary`, `background` |
+| `logo`, `logo_dark`, `favicon` | Logo and logo for dark backgrounds (`src` data URI, `width`, `height`) or null, favicon data URI or empty |
+| `colors` | `primary`, `primary_hover`, `primary_text` (readable on white), `primary_dark` (readable on the dark surface), `on_primary`, `background` |
 | `heading_font`, `ornament` | `serif` or `sans`, and `wave`, `line` or `none` |
+| `layout`, `color_scheme` | `card`, `minimal`, `split` or `banner`, and `auto`, `light` or `dark` |
 | `head` | Built-in `<head>` content: meta tags, refresh, title, favicon and styles |
-| `card` | Built-in `<main class="offair-card">` markup |
+| `main` | Built-in `<main class="offair-page">` markup, arranged by the styles for the chosen layout |
+| `body_class` | Classes the built-in page puts on `<body>`, which the styles rely on |
 | `css` | Built-in stylesheet |
 | `escape` | Function that escapes a value for HTML |
 
-Every text value is raw: print it through `$offair['escape']`. `head` and `card` are already escaped. A minimal template that keeps the built-in card and adds a banner:
+Every text value is raw: print it through `$offair['escape']`. `head` and `main` are already escaped. A minimal template that keeps the built-in page and adds a line above it:
 
 ```php
 <?php $e = $offair['escape']; ?>
@@ -95,14 +101,14 @@ Every text value is raw: print it through `$offair['escape']`. `head` and `card`
 <head>
 <?php echo $offair['head']; ?>
 </head>
-<body class="offair-font-<?php echo $e( $offair['heading_font'] ); ?>">
+<body class="<?php echo $e( $offair['body_class'] ); ?>">
 <p class="banner"><?php echo $e( $offair['site_name'] ); ?></p>
-<?php echo $offair['card']; ?>
+<?php echo $offair['main']; ?>
 </body>
 </html>
 ```
 
-If the template throws an error, has a syntax error or prints nothing, the built-in page is shown instead. The path is checked against `wp-content/themes`, so a theme stored elsewhere cannot provide templates.
+If the template throws an error, has a syntax error or prints nothing, the built-in page is shown instead. The path is checked against `wp-content/themes`, so a theme stored elsewhere cannot provide templates. On a network, the templates come from the theme of the site asked for.
 
 ## Hooks
 

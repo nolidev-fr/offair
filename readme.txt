@@ -32,7 +32,8 @@ The plugin copies one static file shipped in its own folder (`dropins/drop-in.ph
 
 = What you get =
 
-* One design for the three screens: centered card, logo, site name, title, message, retry button and an incident line with the local time.
+* Four layouts for the three screens: card, minimal, two columns or banner. Each shows the logo, the site name, the title, the message, a retry button and an incident line with the local time.
+* Automatic dark mode: the pages follow the light or dark setting of the device of the visitor, with an optional logo for dark backgrounds. They can also stay always light or always dark.
 * Your logo and colors, detected from the theme, the site icon and Elementor global colors when available, editable at any time.
 * Texts in the language of the site until you customize them. French translation included.
 * Correct HTTP answers: 503 with a Retry-After header for the database and update pages, 503 or 500 for PHP errors (your choice), plus no-cache headers so no cache ever keeps an error page.
@@ -112,7 +113,7 @@ Yes. Add `offair/db-error.php`, `offair/maintenance.php` or `offair/php-error.ph
 
 = Does it work on multisite? =
 
-Yes. The drop-ins are shared by every site of the network, so the settings live in the network admin under Settings, Offair.
+Yes. The drop-ins are shared by every site of the network, so the settings live in the network admin under Settings, Offair. Each site still gets its own page, found from the address the visitor asked for: its title, its logo or site icon, its language, its timezone and the templates of its own theme. The design, the colors and the texts are shared by the network.
 
 == Screenshots ==
 
@@ -126,6 +127,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * New: email alert when the database goes down, and a report once the site is back. Off by default, with a test button.
 * New: history of the pages shown to visitors, in a new History tab, and a dashboard notice after a database outage.
 * New: theme templates. A theme can replace any of the three pages with its own design.
+* New: four layouts: card, minimal, two columns and banner.
+* New: automatic dark mode, with an optional logo for dark backgrounds. The pages can also stay always light or always dark.
+* New: on a network, each site gets its own page, with its title, logo, language, timezone and theme templates.
 * New: `offair_incident_resolved` action and `wp offair history` command.
 * Fix: a site icon in a format the pages cannot show, such as AVIF, was left out of the pages. It is now embedded as PNG.
 
@@ -152,7 +156,7 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 == Upgrade Notice ==
 
 = 1.1.0 =
-Adds an email alert, a history of the outages and theme templates. The drop-in changes: if you uploaded the drop-ins yourself, download them again from the settings page.
+Email alert, outage history, theme templates, four layouts, dark mode and a page per site on networks. The pages now follow the dark mode of visitors: choose Always light to keep them light. If you uploaded the drop-ins yourself, download them again.
 
 = 1.0.3 =
 Fixes AVIF logos missing from the pages and stops the PHP error page from reloading itself every minute.
