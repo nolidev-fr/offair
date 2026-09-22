@@ -53,6 +53,20 @@ foreach ( array( 'offair_settings', 'offair_version', 'offair_logo_cache', 'offa
 	delete_site_option( $offair_option );
 }
 
-// Scheduled check for the end of an outage, and the outage notice each user dismissed.
+// Scheduled tasks, and the outage notice each user dismissed.
 wp_clear_scheduled_hook( 'offair_check' );
+wp_clear_scheduled_hook( 'offair_write_sites' );
 delete_metadata( 'user', 0, 'offair_seen_incident', '', true );
+
+// On a network, each site keeps its own logo cache and refresh flag.
+if ( is_multisite() ) {
+	foreach ( get_sites(
+		array(
+			'fields' => 'ids',
+			'number' => 0,
+		)
+	) as $offair_site ) {
+		delete_blog_option( $offair_site, 'offair_logo_cache' );
+		delete_blog_option( $offair_site, 'offair_refresh' );
+	}
+}

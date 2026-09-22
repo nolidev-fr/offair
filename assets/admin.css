@@ -85,7 +85,7 @@
 	flex-wrap: wrap;
 }
 
-#offair-logo-preview {
+.offair-logo-preview {
 	max-width: 160px;
 	max-height: 80px;
 	width: auto;

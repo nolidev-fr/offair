@@ -98,6 +98,45 @@ defined( 'ABSPATH' ) || exit;
 	}
 
 	/*
+	 * On a network, each site has its own page. WordPress has not worked out
+	 * which site is asked for yet, so the address is compared with the list
+	 * of sites the plugin saves: same domain, longest matching path.
+	 */
+	$site_id  = 0;
+	$data_dir = dirname( $data_file );
+
+	if ( defined( 'OFFAIR_PREVIEW_SITE' ) ) {
+		$site_id = (int) OFFAIR_PREVIEW_SITE;
+	} elseif ( defined( 'MULTISITE' ) && MULTISITE && is_readable( $data_dir . '/sites.json' ) ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
+		$raw   = file_get_contents( $data_dir . '/sites.json' );
+		$map   = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		$host  = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( (string) $_SERVER['HTTP_HOST'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Only compared with the list of sites, WordPress is not loaded.
+		$hosts = array( $host, (string) preg_replace( '/:\d+$/', '', $host ) );
+		$path  = isset( $_SERVER['REQUEST_URI'] ) ? (string) parse_url( (string) $_SERVER['REQUEST_URI'], PHP_URL_PATH ) : '/'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput, WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Only compared with the list of sites, WordPress is not loaded.
+		$path  = rtrim( $path, '/' ) . '/';
+		$best  = -1;
+
+		foreach ( is_array( $map ) ? $map : array() as $site ) {
+			if ( ! isset( $site['id'], $site['domain'], $site['path'] ) || ! is_string( $site['domain'] ) || ! is_string( $site['path'] ) ) {
+				continue;
+			}
+			if ( in_array( $site['domain'], $hosts, true ) && 0 === strpos( $path, $site['path'] ) && strlen( $site['path'] ) > $best ) {
+				$best    = strlen( $site['path'] );
+				$site_id = (int) $site['id'];
+			}
+		}
+	}
+
+	// The main site has no file of its own: its content is pages.json.
+	if ( $site_id > 0 && is_readable( $data_dir . '/sites/' . $site_id . '.json' ) ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
+		$raw  = file_get_contents( $data_dir . '/sites/' . $site_id . '.json' );
+		$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
+		$data = is_array( $json ) ? $json : $data;
+	}
+
+	/*
 	 * Private folder, next to the data file: its name cannot be guessed, so
 	 * it is found by its prefix. It holds the alert settings, the folders of
 	 * the active theme and the history of the pages shown.
@@ -114,6 +153,17 @@ defined( 'ABSPATH' ) || exit;
 			$raw     = file_get_contents( $private_dir . '/private.json' );
 			$json    = is_string( $raw ) ? json_decode( $raw, true ) : null;
 			$private = is_array( $json ) ? $json : array();
+		}
+
+		// On a network, the templates come from the theme of the site asked for.
+		if ( $site_id > 0 && is_readable( $private_dir . '/sites/' . $site_id . '.json' ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
+			$raw  = file_get_contents( $private_dir . '/sites/' . $site_id . '.json' );
+			$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
+
+			if ( is_array( $json ) && isset( $json['themes'] ) ) {
+				$private['themes'] = $json['themes'];
+			}
 		}
 	}
 
@@ -197,6 +247,7 @@ defined( 'ABSPATH' ) || exit;
 	$primary    = $hex( isset( $colors['primary'] ) ? $colors['primary'] : null, '#334155' );
 	$hover      = $hex( isset( $colors['primary_hover'] ) ? $colors['primary_hover'] : null, $primary );
 	$text_color = $hex( isset( $colors['primary_text'] ) ? $colors['primary_text'] : null, $primary );
+	$text_dark  = $hex( isset( $colors['primary_dark'] ) ? $colors['primary_dark'] : null, '#a9b4c2' );
 	$on_primary = $hex( isset( $colors['on_primary'] ) ? $colors['on_primary'] : null, '#ffffff' );
 	$background = $hex( isset( $colors['background'] ) ? $colors['background'] : null, '#f5f4f0' );
 	$rgb        = sscanf( $primary, '#%02x%02x%02x' );
@@ -208,23 +259,58 @@ defined( 'ABSPATH' ) || exit;
 	$show_name = ! empty( $data['show_name'] ) && '' !== $site_name;
 	$font      = isset( $data['heading_font'] ) && 'sans' === $data['heading_font'] ? 'sans' : 'serif';
 	$ornament  = isset( $data['ornament'] ) && in_array( $data['ornament'], array( 'wave', 'line', 'none' ), true ) ? $data['ornament'] : 'line';
+	$layout    = isset( $data['layout'] ) && in_array( $data['layout'], array( 'card', 'minimal', 'split', 'banner' ), true ) ? $data['layout'] : 'card';
+	$scheme    = isset( $data['color_scheme'] ) && in_array( $data['color_scheme'], array( 'auto', 'light', 'dark' ), true ) ? $data['color_scheme'] : 'auto';
+	$panel     = in_array( $layout, array( 'split', 'banner' ), true );
 	$title     = $str( $page['title'] );
 	$button    = $str( $page['button'] );
 	$meta      = str_replace( '{time}', $time, $str( $page['meta'] ) );
 	$image     = '#^data:image/(?:png|jpeg|gif|webp|svg\+xml|x-icon|vnd\.microsoft\.icon);base64,[a-z0-9+/=]+$#i';
 
-	$logo      = '';
-	$logo_data = null;
-	if ( isset( $data['logo']['src'] ) && is_string( $data['logo']['src'] ) && preg_match( $image, $data['logo']['src'] ) ) {
-		$width     = $num( isset( $data['logo']['width'] ) ? $data['logo']['width'] : null, 1, 2000, 0 );
-		$height    = $num( isset( $data['logo']['height'] ) ? $data['logo']['height'] : null, 1, 2000, 0 );
-		$size      = $width && $height ? ' width="' . $width . '" height="' . $height . '"' : '';
-		$logo      = '<img class="offair-logo" src="' . $esc( $data['logo']['src'] ) . '" alt="' . $esc( $site_name ) . '"' . $size . '>';
-		$logo_data = array(
-			'src'    => $data['logo']['src'],
-			'width'  => $width,
-			'height' => $height,
+	// A logo is kept only when it is an embedded image the page can show.
+	$logo_of  = static function ( $value ) use ( $image, $num ) {
+		if ( ! isset( $value['src'] ) || ! is_string( $value['src'] ) || ! preg_match( $image, $value['src'] ) ) {
+			return null;
+		}
+
+		return array(
+			'src'    => $value['src'],
+			'width'  => $num( isset( $value['width'] ) ? $value['width'] : null, 1, 2000, 0 ),
+			'height' => $num( isset( $value['height'] ) ? $value['height'] : null, 1, 2000, 0 ),
 		);
+	};
+	$logo_img = static function ( $value, $classes ) use ( $esc, $site_name ) {
+		$size = $value['width'] && $value['height'] ? ' width="' . $value['width'] . '" height="' . $value['height'] . '"' : '';
+
+		return '<img class="offair-logo' . ( '' !== $classes ? ' ' . $classes : '' ) . '" src="' . $esc( $value['src'] ) . '" alt="' . $esc( $site_name ) . '"' . $size . '>';
+	};
+
+	// Relative luminance, as WCAG 2 defines it: a panel darker than 0.179 carries light text better than dark text.
+	$lum = 0;
+	foreach ( array( 0.2126, 0.7152, 0.0722 ) as $index => $weight ) {
+		$channel = $rgb[ $index ] / 255;
+		$lum    += $weight * ( $channel <= 0.03928 ? $channel / 12.92 : pow( ( $channel + 0.055 ) / 1.055, 2.4 ) );
+	}
+
+	$logo_data = $logo_of( isset( $data['logo'] ) ? $data['logo'] : null );
+	$logo_dark = $logo_of( isset( $data['logo_dark'] ) ? $data['logo_dark'] : null );
+	$logo      = '';
+
+	/*
+	 * The logo for dark backgrounds, when there is one, takes the place of the
+	 * logo on the colored panel of the two-column and banner layouts when that
+	 * color is dark, and in dark mode. Without it, the logo stays as it is.
+	 */
+	if ( null !== $logo_data ) {
+		if ( null === $logo_dark || ( 'light' === $scheme && ( ! $panel || $lum >= 0.179 ) ) ) {
+			$logo = $logo_img( $logo_data, '' );
+		} elseif ( $panel ) {
+			$logo = $lum < 0.179 ? $logo_img( $logo_dark, '' ) : $logo_img( $logo_data, '' );
+		} elseif ( 'dark' === $scheme ) {
+			$logo = $logo_img( $logo_dark, '' );
+		} else {
+			$logo = $logo_img( $logo_data, 'offair-logo-onlight' ) . $logo_img( $logo_dark, 'offair-logo-ondark' );
+		}
 	}
 
 	$favicon      = '';
@@ -272,38 +358,62 @@ defined( 'ABSPATH' ) || exit;
 	 * WordPress cannot load, and during updates, when the plugin folder may
 	 * be in the middle of being replaced. A stylesheet could not be enqueued
 	 * and a link to one could return an error.
+	 *
+	 * Colors that change in dark mode are custom properties of the body. The
+	 * dark values apply with the dark scheme, and with the automatic scheme
+	 * when the device of the visitor asks for dark.
 	 */
 	$css = <<<'CSS'
-:root{--offair-primary:%primary%;--offair-primary-hover:%hover%;--offair-primary-text:%text%;--offair-on-primary:%on%;--offair-background:%background%;--offair-shadow:%shadow%}
+:root{--offair-primary:%primary%;--offair-primary-hover:%hover%;--offair-on-primary:%on%;--offair-accent-light:%text%;--offair-accent-dark:%text_dark%;--offair-background:%background%;--offair-shadow-light:%shadow%}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0;min-height:100%}
-body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#555;background-color:var(--offair-background);background-image:linear-gradient(180deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,0) 100%);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px 16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{--offair-bg:var(--offair-background);--offair-glow:rgba(255,255,255,.85);--offair-surface:#fff;--offair-text:#555;--offair-title:#222;--offair-soft:#777;--offair-muted:#999;--offair-accent:var(--offair-accent-light);--offair-code-bg:#f4f4f4;--offair-code:#333;--offair-notice-bg:#fff6dd;--offair-notice:#7a4f00;--offair-shadow:var(--offair-shadow-light);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--offair-text);background-color:var(--offair-bg);background-image:linear-gradient(180deg,var(--offair-glow) 0%,rgba(255,255,255,0) 100%);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px 16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.offair-scheme-dark{%dark%}
 .offair-font-serif .offair-brand,.offair-font-serif .offair-title{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif}
 .offair-font-sans .offair-brand,.offair-font-sans .offair-title{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
-.offair-card{background:#fff;max-width:520px;width:100%;padding:48px 32px 36px;border-radius:16px;box-shadow:0 12px 40px var(--offair-shadow);text-align:center}
+.offair-page{width:100%}
+.offair-layout-card .offair-page{background:var(--offair-surface);max-width:520px;padding:48px 32px 36px;border-radius:16px;box-shadow:0 12px 40px var(--offair-shadow);text-align:center}
+.offair-layout-minimal .offair-page{max-width:560px;padding:16px 4px;text-align:center}
+.offair-layout-split .offair-page{display:grid;grid-template-columns:minmax(200px,5fr) 7fr;max-width:860px;background:var(--offair-surface);border-radius:16px;overflow:hidden;box-shadow:0 12px 40px var(--offair-shadow)}
+.offair-layout-split.offair-no-head .offair-page{grid-template-columns:1fr;max-width:560px}
+.offair-layout-split .offair-head{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center}
+.offair-layout-split .offair-content{padding:48px 40px 40px;text-align:left}
+.offair-layout-split .offair-ornament{margin-left:0}
+.offair-layout-banner{display:block;padding:0}
+.offair-layout-banner .offair-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px 18px;padding:22px 16px}
+.offair-layout-banner .offair-content{max-width:600px;margin:0 auto;padding:56px 20px 40px;text-align:center}
+.offair-layout-split .offair-head,.offair-layout-banner .offair-head{background:var(--offair-primary);color:var(--offair-on-primary)}
 .offair-logo{display:block;margin:0 auto 20px;width:auto;height:auto;max-width:160px;max-height:120px}
-.offair-brand{font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--offair-primary-text);margin:0 0 24px}
-.offair-ornament{display:block;margin:0 auto 24px;color:var(--offair-primary-text)}
+.offair-layout-split .offair-logo{max-width:180px;max-height:140px;margin-bottom:16px}
+.offair-layout-banner .offair-logo{margin:0;max-width:200px;max-height:56px}
+.offair-logo-ondark{display:none}
+.offair-brand{font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--offair-accent);margin:0 0 24px}
+.offair-layout-split .offair-brand,.offair-layout-banner .offair-brand{color:var(--offair-on-primary);margin:0}
+.offair-ornament{display:block;margin:0 auto 24px;color:var(--offair-accent)}
 .offair-ornament-wave{width:72px;height:14px}
-.offair-ornament-line{width:40px;height:2px;background:var(--offair-primary-text);border-radius:2px}
-.offair-title{font-weight:600;font-size:26px;line-height:1.3;color:#222;margin:0 0 16px}
+.offair-ornament-line{width:40px;height:2px;background:var(--offair-accent);border-radius:2px}
+.offair-title{font-weight:600;font-size:26px;line-height:1.3;color:var(--offair-title);margin:0 0 16px}
 .offair-message p{margin:0 0 14px;font-size:16px}
 .offair-button{display:inline-block;margin:18px 0 8px;padding:12px 28px;background:var(--offair-primary);color:var(--offair-on-primary);text-decoration:none;border-radius:999px;font-size:15px;letter-spacing:.04em;transition:background .15s ease}
 .offair-button:hover,.offair-button:focus{background:var(--offair-primary-hover)}
-.offair-button:focus-visible{outline:2px solid var(--offair-primary-text);outline-offset:3px}
-.offair-contact{font-size:14px;color:#777;margin:12px 0 0}
-.offair-contact a{color:var(--offair-primary-text)}
-.offair-meta{font-size:13px;color:#999;margin:20px 0 0}
-.offair-notice{font-size:14px;color:#7a4f00;background:#fff6dd;border-radius:8px;padding:10px 14px;margin:20px 0 0;text-align:left}
-.offair-detail{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.5;color:#333;background:#f4f4f4;border-radius:8px;padding:12px 14px;margin:20px 0 0;text-align:left;white-space:pre-wrap;word-break:break-word}
-@media (max-width:420px){.offair-card{padding:36px 20px 28px}.offair-title{font-size:22px}}
+.offair-button:focus-visible{outline:2px solid var(--offair-accent);outline-offset:3px}
+.offair-contact{font-size:14px;color:var(--offair-soft);margin:12px 0 0}
+.offair-contact a{color:var(--offair-accent)}
+.offair-meta{font-size:13px;color:var(--offair-muted);margin:20px 0 0}
+.offair-notice{font-size:14px;color:var(--offair-notice);background:var(--offair-notice-bg);border-radius:8px;padding:10px 14px;margin:20px 0 0;text-align:left}
+.offair-detail{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.5;color:var(--offair-code);background:var(--offair-code-bg);border-radius:8px;padding:12px 14px;margin:20px 0 0;text-align:left;white-space:pre-wrap;word-break:break-word}
+@media (prefers-color-scheme:dark){.offair-scheme-auto{%dark%}.offair-logo-onlight{display:none}.offair-logo-ondark{display:block}}
+@media (max-width:700px){.offair-layout-split .offair-page{grid-template-columns:1fr}.offair-layout-split .offair-head{padding:28px 20px}.offair-layout-split .offair-content{padding:32px 24px 28px;text-align:center}.offair-layout-split .offair-ornament{margin-left:auto}}
+@media (max-width:420px){.offair-layout-card .offair-page{padding:36px 20px 28px}.offair-title{font-size:22px}}
 CSS;
 	$css = strtr(
 		$css,
 		array(
+			'%dark%'       => '--offair-bg:#131519;--offair-glow:rgba(255,255,255,.04);--offair-surface:#1c1f24;--offair-text:#c9cdd3;--offair-title:#f2f3f5;--offair-soft:#a4a9b1;--offair-muted:#8a9099;--offair-accent:var(--offair-accent-dark);--offair-code-bg:#121418;--offair-code:#d9dce1;--offair-notice-bg:#3a2f12;--offair-notice:#ffd98a;--offair-shadow:rgba(0,0,0,.45)',
 			'%primary%'    => $primary,
 			'%hover%'      => $hover,
 			'%text%'       => $text_color,
+			'%text_dark%'  => $text_dark,
 			'%on%'         => $on_primary,
 			'%background%' => $background,
 			'%shadow%'     => $shadow,
@@ -314,27 +424,31 @@ CSS;
 	$head[] = '<meta charset="UTF-8">';
 	$head[] = '<meta name="viewport" content="width=device-width, initial-scale=1">';
 	$head[] = '<meta name="robots" content="noindex, nofollow">';
+	$head[] = '<meta name="color-scheme" content="' . ( 'auto' === $scheme ? 'light dark' : $scheme ) . '">';
 	$head[] = $refresh > 0 ? '<meta http-equiv="refresh" content="' . $refresh . '">' : '';
 	$head[] = '<title>' . $esc( '' !== $site_name ? $title . ' · ' . $site_name : $title ) . '</title>';
 	$head[] = $favicon;
 	$head[] = '<style>' . $css . '</style>';
 
-	$card   = array();
-	$card[] = $logo;
-	$card[] = $show_name ? '<p class="offair-brand">' . $esc( $site_name ) . '</p>' : '';
-	$card[] = $ornaments[ $ornament ];
-	$card[] = '<h1 class="offair-title">' . $esc( $title ) . '</h1>';
-	$card[] = '' !== $paragraphs ? '<div class="offair-message">' . $paragraphs . '</div>' : '';
-	$card[] = '' !== $button ? '<a class="offair-button" href="">' . $esc( $button ) . '</a>' : '';
-	$card[] = '' !== $contact ? '<p class="offair-contact">' . $contact . '</p>' : '';
-	$card[] = '' !== $notice ? '<p class="offair-notice">' . $esc( $notice ) . '</p>' : '';
-	$card[] = '' !== $detail ? '<pre class="offair-detail">' . $esc( $detail ) . '</pre>' : '';
-	$card[] = '' !== $meta ? '<p class="offair-meta">' . $esc( $meta ) . '</p>' : '';
+	// The same markup serves every layout: the stylesheet arranges the header and the content.
+	$brand   = $show_name ? '<p class="offair-brand">' . $esc( $site_name ) . '</p>' : '';
+	$top     = '' !== $logo || '' !== $brand ? '<header class="offair-head">' . "\n" . implode( "\n", array_filter( array( $logo, $brand ), 'strlen' ) ) . "\n" . '</header>' : '';
+	$content = array(
+		$ornaments[ $ornament ],
+		'<h1 class="offair-title">' . $esc( $title ) . '</h1>',
+		'' !== $paragraphs ? '<div class="offair-message">' . $paragraphs . '</div>' : '',
+		'' !== $button ? '<a class="offair-button" href="">' . $esc( $button ) . '</a>' : '',
+		'' !== $contact ? '<p class="offair-contact">' . $contact . '</p>' : '',
+		'' !== $notice ? '<p class="offair-notice">' . $esc( $notice ) . '</p>' : '',
+		'' !== $detail ? '<pre class="offair-detail">' . $esc( $detail ) . '</pre>' : '',
+		'' !== $meta ? '<p class="offair-meta">' . $esc( $meta ) . '</p>' : '',
+	);
 
 	// Every value above was escaped with htmlspecialchars(): WordPress escaping functions are not loaded here.
-	$head_html = implode( "\n", array_filter( $head, 'strlen' ) );
-	$card_html = '<main class="offair-card">' . "\n" . implode( "\n", array_filter( $card, 'strlen' ) ) . "\n" . '</main>';
-	$output    = '';
+	$head_html  = implode( "\n", array_filter( $head, 'strlen' ) );
+	$main_html  = '<main class="offair-page">' . "\n" . ( '' !== $top ? $top . "\n" : '' ) . '<div class="offair-content">' . "\n" . implode( "\n", array_filter( $content, 'strlen' ) ) . "\n" . '</div>' . "\n" . '</main>';
+	$body_class = 'offair-font-' . $font . ' offair-screen-' . $screen . ' offair-layout-' . $layout . ' offair-scheme-' . $scheme . ( '' === $top ? ' offair-no-head' : '' );
+	$output     = '';
 
 	/*
 	 * The theme template gets every value (raw, to escape with the function it
@@ -366,19 +480,24 @@ CSS;
 					'meta'         => $meta,
 					'refresh'      => $refresh,
 					'logo'         => $logo_data,
+					'logo_dark'    => $logo_dark,
 					'favicon'      => $favicon_data,
 					'colors'       => array(
 						'primary'       => $primary,
 						'primary_hover' => $hover,
 						'primary_text'  => $text_color,
+						'primary_dark'  => $text_dark,
 						'on_primary'    => $on_primary,
 						'background'    => $background,
 					),
 					'heading_font' => $font,
 					'ornament'     => $ornament,
+					'layout'       => $layout,
+					'color_scheme' => $scheme,
 					'css'          => $css,
 					'head'         => $head_html,
-					'card'         => $card_html,
+					'main'         => $main_html,
+					'body_class'   => $body_class,
 					'escape'       => $esc,
 				)
 			);
@@ -402,8 +521,8 @@ CSS;
 				'<head>',
 				$head_html,
 				'</head>',
-				'<body class="offair-font-' . $font . ' offair-screen-' . $screen . '">',
-				$card_html,
+				'<body class="' . $body_class . '">',
+				$main_html,
 				'</body>',
 				'</html>',
 			)

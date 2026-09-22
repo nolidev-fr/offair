@@ -34,6 +34,11 @@ class Settings {
 	const TEXT_FIELDS = array( 'title', 'message', 'button_label' );
 
 	/**
+	 * Page layouts, the drop-in knows the same list.
+	 */
+	const LAYOUTS = array( 'card', 'minimal', 'split', 'banner' );
+
+	/**
 	 * Capability required to manage the plugin.
 	 *
 	 * @return string
@@ -125,6 +130,7 @@ class Settings {
 		return array(
 			'general'     => array(
 				'logo_id'           => 0,
+				'logo_dark_id'      => 0,
 				'site_name'         => '',
 				'show_name'         => true,
 				'primary_color'     => '#334155',
@@ -132,6 +138,8 @@ class Settings {
 				'background_color'  => '#f5f4f0',
 				'heading_font'      => 'serif',
 				'ornament'          => 'line',
+				'layout'            => 'card',
+				'color_scheme'      => 'auto',
 				'contact_line'      => '',
 			),
 			'db'          => array(
@@ -294,8 +302,10 @@ class Settings {
 			$general = $input['general'];
 			$section = &$clean['general'];
 
-			if ( isset( $general['logo_id'] ) ) {
-				$section['logo_id'] = $this->sanitize_logo_id( $general['logo_id'] );
+			foreach ( array( 'logo_id', 'logo_dark_id' ) as $logo_key ) {
+				if ( isset( $general[ $logo_key ] ) ) {
+					$section[ $logo_key ] = $this->sanitize_logo_id( $general[ $logo_key ] );
+				}
 			}
 			if ( isset( $general['site_name'] ) ) {
 				$section['site_name'] = sanitize_text_field( $general['site_name'] );
@@ -316,6 +326,12 @@ class Settings {
 			}
 			if ( isset( $general['ornament'] ) ) {
 				$section['ornament'] = in_array( $general['ornament'], array( 'wave', 'line', 'none' ), true ) ? $general['ornament'] : $defaults['general']['ornament'];
+			}
+			if ( isset( $general['layout'] ) ) {
+				$section['layout'] = in_array( $general['layout'], self::LAYOUTS, true ) ? $general['layout'] : $defaults['general']['layout'];
+			}
+			if ( isset( $general['color_scheme'] ) ) {
+				$section['color_scheme'] = in_array( $general['color_scheme'], array( 'auto', 'light', 'dark' ), true ) ? $general['color_scheme'] : $defaults['general']['color_scheme'];
 			}
 			if ( isset( $general['contact_line'] ) ) {
 				$section['contact_line'] = sanitize_text_field( $general['contact_line'] );

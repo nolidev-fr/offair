@@ -46,6 +46,31 @@ class Pages {
 	const PRIVATE_FILE = 'private.json';
 
 	/**
+	 * On a network: list of the sites and their addresses, read by the drop-in.
+	 */
+	const SITES_MAP = 'sites.json';
+
+	/**
+	 * On a network: folder of the content of each site, public and private.
+	 */
+	const SITES_DIR = 'sites';
+
+	/**
+	 * Sites written in one go. A larger network is finished by a scheduled task.
+	 */
+	const SITES_BATCH = 100;
+
+	/**
+	 * Scheduled task that writes the next batch of sites.
+	 */
+	const SITES_CRON = 'offair_write_sites';
+
+	/**
+	 * Surface of the pages in dark mode. The drop-in uses the same color.
+	 */
+	const DARK_SURFACE = '#1c1f24';
+
+	/**
 	 * Settings.
 	 *
 	 * @var Settings
@@ -174,11 +199,27 @@ class Pages {
 	}
 
 	/**
-	 * Saves the data file.
+	 * Saves every file the drop-in reads: the content of the main site, the
+	 * private data and, on a network, the content of each site.
 	 *
 	 * @return true|\WP_Error
 	 */
 	public function write() {
+		$result = $this->write_main();
+
+		if ( true === $result && is_multisite() ) {
+			$result = $this->write_sites();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Saves the content of the main site and the private data.
+	 *
+	 * @return true|\WP_Error
+	 */
+	public function write_main() {
 		$filesystem = Filesystem::get();
 		$dir        = $this->dir();
 		$error      = new \WP_Error(
@@ -210,6 +251,168 @@ class Pages {
 		}
 
 		return true;
+	}
+
+	/**
+	 * On a network, saves the list of the sites and the content of a batch of
+	 * sites. The next batch is left to a scheduled task.
+	 *
+	 * @param int $offset Number of sites already written in this round.
+	 * @return true|\WP_Error
+	 */
+	public function write_sites( $offset = 0 ) {
+		$filesystem = Filesystem::get();
+		$dir        = $this->dir();
+		$error      = new \WP_Error(
+			'offair_sites_not_written',
+			sprintf(
+				/* translators: %s: folder path. */
+				__( 'The content of the sites of the network could not be saved in %s. Check that the uploads folder is writable.', 'offair' ),
+				$dir
+			)
+		);
+
+		if ( null === $filesystem || ! $this->write_map() || ( ! is_dir( $dir . '/' . self::SITES_DIR ) && ! wp_mkdir_p( $dir . '/' . self::SITES_DIR ) ) ) {
+			return $error;
+		}
+
+		if ( ! file_exists( $dir . '/' . self::SITES_DIR . '/index.html' ) ) {
+			$filesystem->put_contents( $dir . '/' . self::SITES_DIR . '/index.html', '', FS_CHMOD_FILE );
+		}
+
+		$network = $this->network_logos();
+		$ids     = get_sites(
+			array(
+				'fields'       => 'ids',
+				'number'       => self::SITES_BATCH,
+				'offset'       => (int) $offset,
+				'orderby'      => 'id',
+				'site__not_in' => array( get_main_site_id() ),
+			)
+		);
+
+		foreach ( $ids as $id ) {
+			if ( ! $this->write_site( $id, $network ) ) {
+				return $error;
+			}
+		}
+
+		if ( count( $ids ) === self::SITES_BATCH ) {
+			wp_schedule_single_event( time(), self::SITES_CRON, array( (int) $offset + self::SITES_BATCH ) );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Saves the content of one site of a network, and the folders of its
+	 * theme in the private folder.
+	 *
+	 * @param int        $blog_id Site ID.
+	 * @param array|null $network Logos of the network, worked out when null.
+	 * @return bool
+	 */
+	public function write_site( $blog_id, $network = null ) {
+		$filesystem = Filesystem::get();
+		$blog_id    = (int) $blog_id;
+
+		if ( null === $filesystem || $blog_id <= 0 || get_main_site_id() === $blog_id ) {
+			return false;
+		}
+
+		$network = is_array( $network ) ? $network : $this->network_logos();
+		$dir     = $this->dir() . '/' . self::SITES_DIR;
+		$private = $this->private_dir();
+
+		if ( ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) || '' === $private || ( ! is_dir( $private . '/' . self::SITES_DIR ) && ! wp_mkdir_p( $private . '/' . self::SITES_DIR ) ) ) {
+			return false;
+		}
+
+		$data = wp_json_encode( $this->site_data( $blog_id, $network ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "\n";
+
+		switch_to_blog( $blog_id );
+		$themes = wp_json_encode( array( 'themes' => self::theme_dirs() ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n";
+		restore_current_blog();
+
+		return $filesystem->put_contents( $dir . '/' . $blog_id . '.json', $data, FS_CHMOD_FILE )
+			&& $filesystem->put_contents( $private . '/' . self::SITES_DIR . '/' . $blog_id . '.json', $themes, FS_CHMOD_FILE );
+	}
+
+	/**
+	 * Removes the files of a site that left the network.
+	 *
+	 * @param int $blog_id Site ID.
+	 */
+	public function delete_site( $blog_id ) {
+		$blog_id = (int) $blog_id;
+		$private = $this->private_dir( false );
+
+		wp_delete_file( $this->dir() . '/' . self::SITES_DIR . '/' . $blog_id . '.json' );
+
+		if ( '' !== $private ) {
+			wp_delete_file( $private . '/' . self::SITES_DIR . '/' . $blog_id . '.json' );
+		}
+	}
+
+	/**
+	 * Saves the list of the sites of the network with their address, which
+	 * the drop-in compares with the address asked for.
+	 *
+	 * @return bool
+	 */
+	public function write_map() {
+		$filesystem = Filesystem::get();
+		$dir        = $this->dir();
+		$map        = array();
+
+		if ( null === $filesystem || ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) ) {
+			return false;
+		}
+
+		foreach ( get_sites( array( 'number' => 0 ) ) as $site ) {
+			$map[] = array(
+				'id'     => (int) $site->blog_id,
+				'domain' => strtolower( $site->domain ),
+				'path'   => $site->path,
+			);
+		}
+
+		return $filesystem->put_contents( $dir . '/' . self::SITES_MAP, wp_json_encode( $map, JSON_UNESCAPED_SLASHES ) . "\n", FS_CHMOD_FILE );
+	}
+
+	/**
+	 * How many sites of the network have their own content, for the status box.
+	 *
+	 * @return array{sites: int, written: int}
+	 */
+	public function sites_status() {
+		$written = glob( $this->dir() . '/' . self::SITES_DIR . '/*.json' );
+
+		return array(
+			'sites'   => max( 0, (int) get_sites( array( 'count' => true ) ) - 1 ),
+			'written' => is_array( $written ) ? count( $written ) : 0,
+		);
+	}
+
+	/**
+	 * Logos of the network, from the media library of the main site. A site
+	 * without a logo of its own shows them.
+	 *
+	 * @return array{logo: array|null, logo_dark: array|null}
+	 */
+	private function network_logos() {
+		$switched = ! is_main_site() && switch_to_blog( get_main_site_id() );
+		$general  = $this->settings->get()['general'];
+		$logos    = array(
+			'logo'      => self::logo_data( $this->branding->logo( $general['logo_id'] ) ),
+			'logo_dark' => self::logo_data( $this->branding->logo( $general['logo_dark_id'] ) ),
+		);
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $logos;
 	}
 
 	/**
@@ -376,14 +579,68 @@ class Pages {
 	}
 
 	/**
-	 * Content of the three pages, in the language of the site.
+	 * Content of the three pages, in the language of the site. On a network,
+	 * this is the content of the main site, also shown for an unknown address.
 	 *
 	 * @return array
 	 */
 	public function data() {
+		$switched = is_multisite() && ! is_main_site() && switch_to_blog( get_main_site_id() );
+		$settings = $this->settings->get();
+		$name     = trim( (string) $settings['general']['site_name'] );
+		$data     = $this->build(
+			array(
+				'locale'    => is_multisite() ? self::site_locale() : get_locale(),
+				'site_name' => '' !== $name ? $name : wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+				'logo'      => self::logo_data( $this->branding->logo( $settings['general']['logo_id'] ) ),
+				'logo_dark' => self::logo_data( $this->branding->logo( $settings['general']['logo_dark_id'] ) ),
+			)
+		);
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Content of the pages of one site of a network: its own name, logo,
+	 * language, timezone and icon, with the design and texts of the network.
+	 *
+	 * @param int   $blog_id Site ID.
+	 * @param array $network Logos of the network, for a site without its own.
+	 * @return array
+	 */
+	public function site_data( $blog_id, array $network ) {
+		switch_to_blog( (int) $blog_id );
+
+		$own  = $this->branding->detect_logo_id();
+		$logo = $own > 0 ? self::logo_data( $this->branding->logo( $own ) ) : null;
+		$data = $this->build(
+			array(
+				'locale'    => self::site_locale(),
+				'site_name' => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+				'logo'      => null !== $logo ? $logo : $network['logo'],
+				'logo_dark' => null !== $logo ? null : $network['logo_dark'],
+			)
+		);
+
+		restore_current_blog();
+
+		return $data;
+	}
+
+	/**
+	 * Builds the content of the pages for the current site.
+	 *
+	 * @param array $identity Locale, name and logos of the site.
+	 * @return array
+	 */
+	private function build( array $identity ) {
 		// The pages are written in the language of the site, not in the
 		// language of the administrator who happens to save the settings.
-		$switched = determine_locale() !== get_locale() && switch_to_locale( get_locale() );
+		$switched = determine_locale() !== $identity['locale'] && switch_to_locale( $identity['locale'] );
 
 		/**
 		 * Filters the settings right before the page content is built. Empty
@@ -396,13 +653,7 @@ class Pages {
 		$primary  = self::hex( $general['primary_color'], '#334155' );
 		$timezone = wp_timezone_string();
 
-		$site_name = trim( (string) $general['site_name'] );
-		if ( '' === $site_name ) {
-			$site_name = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
-		}
-
 		$time_format = trim( (string) get_option( 'time_format', 'H:i' ) );
-		$logo        = $this->branding->logo( $general['logo_id'] );
 
 		// A chosen text color is taken as is, on the untouched primary color.
 		$button_text = self::hex( $general['button_text_color'], '' );
@@ -411,19 +662,19 @@ class Pages {
 		$data = array(
 			'format'       => self::FORMAT,
 			'lang'         => get_bloginfo( 'language' ),
-			'site_name'    => $site_name,
+			'site_name'    => $identity['site_name'],
 			'show_name'    => ! empty( $general['show_name'] ),
-			'logo'         => $logo ? array(
-				'src'    => $logo['src'],
-				'width'  => (int) $logo['width'],
-				'height' => (int) $logo['height'],
-			) : null,
+			'logo'         => $identity['logo'],
+			'logo_dark'    => $identity['logo_dark'],
 			'favicon'      => $this->branding->favicon(),
+			'layout'       => in_array( $general['layout'], Settings::LAYOUTS, true ) ? $general['layout'] : 'card',
+			'color_scheme' => in_array( $general['color_scheme'], array( 'auto', 'light', 'dark' ), true ) ? $general['color_scheme'] : 'auto',
 			// In the pages, the primary color only fills the button.
 			'colors'       => array(
 				'primary'       => $button[0],
 				'primary_hover' => self::shade( $button[0], -0.15 ),
 				'primary_text'  => self::readable_on_white( $primary ),
+				'primary_dark'  => self::readable_on_dark( $primary ),
 				'on_primary'    => $button[1],
 				'background'    => self::hex( $general['background_color'], '#f5f4f0' ),
 			),
@@ -674,6 +925,58 @@ class Pages {
 		}
 
 		return $color;
+	}
+
+	/**
+	 * Lightens a color until text in that color reads on the dark surface of
+	 * the pages with a contrast ratio of at least 4.5.
+	 *
+	 * @param string $hex Hex color.
+	 * @return string Hex color.
+	 */
+	public static function readable_on_dark( $hex ) {
+		$color   = self::hex( $hex, '#334155' );
+		$surface = self::luminance( self::DARK_SURFACE );
+
+		for ( $step = 0; $step < 12; $step++ ) {
+			if ( ( self::luminance( $color ) + 0.05 ) / ( $surface + 0.05 ) >= 4.5 ) {
+				break;
+			}
+
+			$color = self::shade( $color, 0.15 );
+		}
+
+		return $color;
+	}
+
+	/**
+	 * Language of the current site of a network: its own, or the default
+	 * language of the network.
+	 *
+	 * @return string
+	 */
+	private static function site_locale() {
+		$locale = (string) get_option( 'WPLANG' );
+
+		if ( '' === $locale && is_multisite() ) {
+			$locale = (string) get_site_option( 'WPLANG' );
+		}
+
+		return '' === $locale ? 'en_US' : $locale;
+	}
+
+	/**
+	 * Logo as saved for the drop-in.
+	 *
+	 * @param array|null $logo Logo from Branding::logo().
+	 * @return array|null
+	 */
+	private static function logo_data( $logo ) {
+		return is_array( $logo ) ? array(
+			'src'    => $logo['src'],
+			'width'  => (int) $logo['width'],
+			'height' => (int) $logo['height'],
+		) : null;
 	}
 
 	/**

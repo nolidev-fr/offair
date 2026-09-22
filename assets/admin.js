@@ -7,7 +7,6 @@
 		var $panels = $( '.offair-panel' );
 		var $save = $( '.offair-save' );
 		var $currentTab = $( '#offair-current-tab' );
-		var frame;
 
 		function activate( id ) {
 			id = ( id || '' ).replace( /[^a-z0-9-]/gi, '' );
@@ -46,41 +45,61 @@
 			$( '.offair-color' ).wpColorPicker();
 		}
 
-		$( '.offair-logo-choose' ).on( 'click', function ( event ) {
-			event.preventDefault();
+		// Each logo field has its own media frame, preview and warning.
+		$( '.offair-logo-field' ).each( function () {
+			var $field = $( this );
+			var $cell = $field.closest( 'td' );
+			var frame;
 
-			if ( ! window.wp || ! wp.media ) {
-				return;
-			}
+			$field.find( '.offair-logo-choose' ).on( 'click', function ( event ) {
+				event.preventDefault();
 
-			if ( ! frame ) {
-				frame = wp.media( {
-					title: offairAdmin.chooseLogo,
-					button: { text: offairAdmin.useLogo },
-					library: { type: 'image' },
-					multiple: false
-				} );
+				if ( ! window.wp || ! wp.media ) {
+					return;
+				}
 
-				frame.on( 'select', function () {
-					var attachment = frame.state().get( 'selection' ).first().toJSON();
-					var url = attachment.sizes && attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
+				if ( ! frame ) {
+					frame = wp.media( {
+						title: offairAdmin.chooseLogo,
+						button: { text: offairAdmin.useLogo },
+						library: { type: 'image' },
+						multiple: false
+					} );
 
-					$( '#offair-logo-id' ).val( attachment.id );
-					$( '#offair-logo-preview' ).attr( 'src', url ).prop( 'hidden', false );
-					$( '.offair-logo-remove' ).prop( 'hidden', false );
-					$( '#offair-logo-warning' ).prop( 'hidden', true );
-				} );
-			}
+					frame.on( 'select', function () {
+						var attachment = frame.state().get( 'selection' ).first().toJSON();
+						var url = attachment.sizes && attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
 
-			frame.open();
+						$field.find( '.offair-logo-id' ).val( attachment.id );
+						$field.find( '.offair-logo-preview' ).attr( 'src', url ).prop( 'hidden', false );
+						$field.find( '.offair-logo-remove' ).prop( 'hidden', false );
+						$cell.find( '.offair-logo-warning' ).prop( 'hidden', true );
+					} );
+				}
+
+				frame.open();
+			} );
+
+			$field.find( '.offair-logo-remove' ).on( 'click', function ( event ) {
+				event.preventDefault();
+				$field.find( '.offair-logo-id' ).val( '0' );
+				$field.find( '.offair-logo-preview' ).attr( 'src', '' ).prop( 'hidden', true );
+				$( this ).prop( 'hidden', true );
+				$cell.find( '.offair-logo-warning' ).prop( 'hidden', true );
+			} );
 		} );
 
-		$( '.offair-logo-remove' ).on( 'click', function ( event ) {
-			event.preventDefault();
-			$( '#offair-logo-id' ).val( '0' );
-			$( '#offair-logo-preview' ).attr( 'src', '' ).prop( 'hidden', true );
-			$( '#offair-logo-warning' ).prop( 'hidden', true );
-			$( this ).prop( 'hidden', true );
+		// On a network, the preview can show the page of another site.
+		$( '.offair-preview-site' ).on( 'change', function () {
+			var site = parseInt( this.value, 10 ) || 0;
+			var $frame = $( this ).closest( '.offair-panel' ).find( '.offair-preview' );
+			var url = $frame.attr( 'data-base' ) + ( site ? '&site=' + site : '' );
+
+			$frame.attr( 'data-src', url );
+			if ( $frame.attr( 'src' ) ) {
+				$frame.attr( 'src', url );
+			}
+			$( this ).closest( '.offair-panel' ).find( '.offair-preview-link' ).attr( 'href', url );
 		} );
 
 		$( '.offair-confirm' ).on( 'submit', function () {

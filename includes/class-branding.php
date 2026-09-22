@@ -41,6 +41,11 @@ class Branding {
 	const MAX_FAVICON_BYTES = 12288;
 
 	/**
+	 * Encoded logos kept in the cache of each site.
+	 */
+	const CACHE_ENTRIES = 4;
+
+	/**
 	 * Attachment ID of the theme logo, or of the site icon as a fallback.
 	 *
 	 * @return int 0 when nothing usable is found.
@@ -98,23 +103,23 @@ class Branding {
 		}
 
 		// The version is part of the key: an update may encode the same file differently.
+		// The cache lives in the options of the site that owns the file: on a
+		// network, each site has its own media library and caches its own logos.
 		$cache_key = md5( $attachment_id . '|' . filemtime( $file ) . '|' . self::MAX_LOGO_WIDTH . '|' . self::MAX_LOGO_BYTES . '|' . OFFAIR_VERSION );
-		$cached    = Settings::get_option( Settings::LOGO_CACHE, array() );
+		$cached    = get_option( Settings::LOGO_CACHE, array() );
+		$entries   = is_array( $cached ) && isset( $cached['entries'] ) && is_array( $cached['entries'] ) ? $cached['entries'] : array();
 
-		if ( is_array( $cached ) && isset( $cached['key'], $cached['logo'] ) && $cache_key === $cached['key'] ) {
-			return $cached['logo'];
+		if ( array_key_exists( $cache_key, $entries ) ) {
+			return $entries[ $cache_key ];
 		}
 
 		$logo = $this->encode_logo( $file, (string) get_post_mime_type( $attachment_id ) );
 
-		Settings::update_option(
-			Settings::LOGO_CACHE,
-			array(
-				'key'  => $cache_key,
-				'logo' => $logo,
-			),
-			false
-		);
+		// The logo and the logo for dark backgrounds share the cache.
+		$entries[ $cache_key ] = $logo;
+		$entries               = array_slice( $entries, -self::CACHE_ENTRIES, null, true );
+
+		update_option( Settings::LOGO_CACHE, array( 'entries' => $entries ), false );
 
 		return $logo;
 	}

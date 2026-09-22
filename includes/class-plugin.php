@@ -100,6 +100,18 @@ final class Plugin {
 		}
 		add_action( 'init', array( $this, 'refresh' ), 20 );
 
+		// The logo chosen in the Customizer is a theme modification, stored per theme.
+		add_action( 'updated_option', array( $this, 'maybe_refresh_theme_mods' ) );
+		add_action( 'added_option', array( $this, 'maybe_refresh_theme_mods' ) );
+
+		// On a network, sites come and go, and a large network is written batch after batch.
+		if ( is_multisite() ) {
+			add_action( 'wp_initialize_site', array( $this, 'site_added' ), 100 );
+			add_action( 'wp_update_site', array( $this, 'site_changed' ) );
+			add_action( 'wp_delete_site', array( $this, 'site_deleted' ) );
+			add_action( Pages::SITES_CRON, array( $this->pages, 'write_sites' ) );
+		}
+
 		// The end of a database outage is noticed by a scheduled check, and at
 		// once when someone opens the admin, so the dashboard notice is fresh.
 		add_filter( 'cron_schedules', array( Journal::class, 'add_schedule' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- 15 minutes, see Journal::add_schedule().
@@ -124,14 +136,58 @@ final class Plugin {
 	 * Only the settings of the main site feed the pages.
 	 */
 	public function schedule_refresh() {
-		if ( is_main_site() ) {
-			update_option( Settings::REFRESH_OPTION, 1 );
+		// Each site of a network has its own page, so each keeps its own flag.
+		update_option( Settings::REFRESH_OPTION, 1 );
+	}
+
+	/**
+	 * Schedules a refresh when the Customizer saves the logo of the site.
+	 *
+	 * @param string $option Option name.
+	 */
+	public function maybe_refresh_theme_mods( $option ) {
+		if ( 0 === strpos( (string) $option, 'theme_mods_' ) ) {
+			$this->schedule_refresh();
+		}
+	}
+
+	/**
+	 * Writes the page of a site added to the network.
+	 *
+	 * @param \WP_Site $site Site.
+	 */
+	public function site_added( $site ) {
+		if ( file_exists( $this->pages->path() ) ) {
+			$this->pages->write_map();
+			$this->pages->write_site( $site->id );
+		}
+	}
+
+	/**
+	 * Updates the list of the sites when the address of a site changes.
+	 */
+	public function site_changed() {
+		if ( file_exists( $this->pages->path() ) ) {
+			$this->pages->write_map();
+		}
+	}
+
+	/**
+	 * Removes the page of a site deleted from the network.
+	 *
+	 * @param \WP_Site $site Site.
+	 */
+	public function site_deleted( $site ) {
+		if ( file_exists( $this->pages->path() ) ) {
+			$this->pages->delete_site( $site->id );
+			$this->pages->write_map();
 		}
 	}
 
 	/**
 	 * Saves the page content again after a site setting it shows has
-	 * changed, provided the pages have been published before.
+	 * changed, provided the pages have been published before. On a network,
+	 * only the page of the site that changed is written again.
 	 */
 	public function refresh() {
 		if ( ! get_option( Settings::REFRESH_OPTION ) ) {
@@ -140,10 +196,18 @@ final class Plugin {
 
 		delete_option( Settings::REFRESH_OPTION );
 
-		if ( file_exists( $this->pages->path() ) ) {
-			$this->pages->flush();
-			$this->pages->write();
+		if ( ! file_exists( $this->pages->path() ) ) {
+			return;
 		}
+
+		$this->pages->flush();
+
+		if ( is_multisite() && ! is_main_site() ) {
+			$this->pages->write_site( get_current_blog_id() );
+			return;
+		}
+
+		$this->pages->write_main();
 	}
 
 	/**
@@ -195,5 +259,6 @@ final class Plugin {
 
 		Settings::delete_option( Settings::VERSION_OPTION );
 		Journal::unschedule();
+		wp_clear_scheduled_hook( Pages::SITES_CRON );
 	}
 }

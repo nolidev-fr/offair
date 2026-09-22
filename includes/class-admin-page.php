@@ -251,6 +251,13 @@ class Admin_Page {
 
 		define( 'OFFAIR_PREVIEW', $key );
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Checked above, the site only changes what the preview shows.
+		$site = isset( $_GET['site'] ) ? absint( $_GET['site'] ) : 0;
+
+		if ( is_multisite() && $site > 0 && get_site( $site ) ) {
+			define( 'OFFAIR_PREVIEW_SITE', $site );
+		}
+
 		include $this->plugin->dropins->source();
 
 		exit;
@@ -519,6 +526,22 @@ class Admin_Page {
 			<?php if ( Environment::php_error_page_blocked() ) : ?>
 			<div class="notice notice-warning inline"><p><?php esc_html_e( 'The PHP error page cannot be shown with the current PHP configuration. Open the PHP error tab for the explanation and the fix.', 'offair' ); ?></p></div>
 			<?php endif; ?>
+			<?php if ( is_multisite() ) : ?>
+				<?php $sites = $pages->sites_status(); ?>
+			<p class="description">
+				<?php
+				printf(
+					/* translators: 1: number of sites with their page written, 2: number of sites of the network besides the main site. */
+					esc_html( _n( 'Each site of the network has its own page: %1$d of %2$d site written.', 'Each site of the network has its own page: %1$d of %2$d sites written.', $sites['sites'], 'offair' ) ),
+					(int) $sites['written'],
+					(int) $sites['sites']
+				);
+				?>
+			</p>
+				<?php if ( $sites['written'] < $sites['sites'] ) : ?>
+			<div class="notice notice-warning inline"><p><?php esc_html_e( 'Some sites of the network do not have their page yet. A large network is written in the background, batch after batch. Regenerate from the Advanced tab to write them now.', 'offair' ); ?></p></div>
+				<?php endif; ?>
+			<?php endif; ?>
 			<?php if ( ! $pages->is_reachable() ) : ?>
 			<div class="notice notice-error inline"><p><?php esc_html_e( 'The uploads folder of this site uses a custom path stored in the database. The pages cannot read their content from there and show a neutral English page instead.', 'offair' ); ?></p></div>
 			<?php endif; ?>
@@ -540,42 +563,36 @@ class Admin_Page {
 	 * @param array $general General settings.
 	 */
 	private function render_general( array $general ) {
-		$logo_id  = (int) $general['logo_id'];
-		$logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
-		$embedded = ! $logo_id || null !== $this->plugin->branding->logo( $logo_id );
+		$network = is_multisite();
 		?>
+		<?php if ( $network ) : ?>
+		<div class="notice notice-info inline"><p><?php esc_html_e( 'Each site of the network shows its own page: its title, its logo or site icon, its language and its timezone. The design, the colors and the texts set here are shared by every site.', 'offair' ); ?></p></div>
+		<?php endif; ?>
 		<table class="form-table" role="presentation">
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Logo', 'offair' ); ?></th>
-				<td>
-					<div class="offair-logo-field">
-						<img id="offair-logo-preview" src="<?php echo esc_url( $logo_url ); ?>" alt="" <?php echo $logo_url ? '' : 'hidden'; ?>>
-						<input type="hidden" name="offair[general][logo_id]" id="offair-logo-id" value="<?php echo esc_attr( $logo_id ); ?>">
-						<button type="button" class="button offair-logo-choose"><?php esc_html_e( 'Choose from the media library', 'offair' ); ?></button>
-						<button type="button" class="button-link offair-logo-remove" <?php echo $logo_url ? '' : 'hidden'; ?>><?php esc_html_e( 'Remove', 'offair' ); ?></button>
-					</div>
-					<p class="description"><?php esc_html_e( 'Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP.', 'offair' ); ?></p>
-					<?php if ( ! $embedded ) : ?>
-					<div class="notice notice-warning inline" id="offair-logo-warning"><p>
-						<?php
-						printf(
-							/* translators: %s: file size, for example 150 KB. */
-							esc_html__( 'This logo cannot be embedded, so the pages are shown without it. An SVG has to weigh less than %s, unless all it contains is one image. Try a PNG or JPG version of the logo.', 'offair' ),
-							esc_html( size_format( Branding::MAX_LOGO_BYTES ) )
-						);
-						?>
-					</p></div>
-					<?php endif; ?>
-				</td>
-			</tr>
 			<?php
+			$this->logo_row(
+				__( 'Logo', 'offair' ),
+				'logo_id',
+				(int) $general['logo_id'],
+				$network
+					? __( 'Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP. A site of the network with a logo or site icon of its own shows it instead.', 'offair' )
+					: __( 'Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP.', 'offair' )
+			);
+			$this->logo_row(
+				__( 'Logo on dark backgrounds', 'offair' ),
+				'logo_dark_id',
+				(int) $general['logo_dark_id'],
+				__( 'Optional, usually a white version of the logo. It replaces the logo in dark mode and on a dark colored panel. Leave empty to keep the logo as it is everywhere.', 'offair' )
+			);
 			$this->text_row(
 				__( 'Displayed name', 'offair' ),
 				'general][site_name',
 				$general['site_name'],
 				array(
 					'placeholder' => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
-					'description' => __( 'Shown above the title. Leave empty to use the site title.', 'offair' ),
+					'description' => $network
+						? __( 'Shown above the title on the main site. Leave empty to use its title. The other sites of the network show their own title.', 'offair' )
+						: __( 'Shown above the title. Leave empty to use the site title.', 'offair' ),
 				)
 			);
 			$this->checkbox_row(
@@ -583,6 +600,28 @@ class Admin_Page {
 				'general][show_name',
 				! empty( $general['show_name'] ),
 				__( 'Show the name above the title. Uncheck it when the logo already contains the name.', 'offair' )
+			);
+			$this->select_row(
+				__( 'Layout', 'offair' ),
+				'general][layout',
+				$general['layout'],
+				array(
+					'card'    => __( 'Card: the message in a card centered on the background', 'offair' ),
+					'minimal' => __( 'Minimal: the message right on the background, without a card', 'offair' ),
+					'split'   => __( 'Two columns: a panel in the primary color with the logo, the message beside it', 'offair' ),
+					'banner'  => __( 'Banner: a band in the primary color with the logo, the message below', 'offair' ),
+				)
+			);
+			$this->select_row(
+				__( 'Appearance', 'offair' ),
+				'general][color_scheme',
+				$general['color_scheme'],
+				array(
+					'auto'  => __( 'Automatic: light or dark, as set on the device of the visitor', 'offair' ),
+					'light' => __( 'Always light', 'offair' ),
+					'dark'  => __( 'Always dark', 'offair' ),
+				),
+				__( 'In dark mode the background and the card turn dark, and the primary color is lightened where it colors text, so that it stays readable.', 'offair' )
 			);
 			$this->text_row(
 				__( 'Primary color', 'offair' ),
@@ -640,6 +679,75 @@ class Admin_Page {
 			?>
 		</table>
 		<?php
+		$this->render_preview( 'db' );
+	}
+
+	/**
+	 * Logo row: media library picker, preview and a warning when the image
+	 * cannot be embedded.
+	 *
+	 * @param string $label       Label.
+	 * @param string $key         Setting key in the general section.
+	 * @param int    $logo_id     Attachment ID.
+	 * @param string $description Description.
+	 */
+	private function logo_row( $label, $key, $logo_id, $description ) {
+		$logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
+		$embedded = ! $logo_id || null !== $this->plugin->branding->logo( $logo_id );
+		?>
+		<tr>
+			<th scope="row"><?php echo esc_html( $label ); ?></th>
+			<td>
+				<div class="offair-logo-field">
+					<img class="offair-logo-preview" src="<?php echo esc_url( $logo_url ); ?>" alt="" <?php echo $logo_url ? '' : 'hidden'; ?>>
+					<input type="hidden" class="offair-logo-id" name="offair[general][<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $logo_id ); ?>">
+					<button type="button" class="button offair-logo-choose"><?php esc_html_e( 'Choose from the media library', 'offair' ); ?></button>
+					<button type="button" class="button-link offair-logo-remove" <?php echo $logo_url ? '' : 'hidden'; ?>><?php esc_html_e( 'Remove', 'offair' ); ?></button>
+				</div>
+				<p class="description"><?php echo esc_html( $description ); ?></p>
+				<?php if ( ! $embedded ) : ?>
+				<div class="notice notice-warning inline offair-logo-warning"><p>
+					<?php
+					printf(
+						/* translators: %s: file size, for example 150 KB. */
+						esc_html__( 'This logo cannot be embedded, so the pages are shown without it. An SVG has to weigh less than %s, unless all it contains is one image. Try a PNG or JPG version of the logo.', 'offair' ),
+						esc_html( size_format( Branding::MAX_LOGO_BYTES ) )
+					);
+					?>
+				</p></div>
+				<?php endif; ?>
+			</td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Preview of a page in a frame. On a network, the page of any site can
+	 * be shown.
+	 *
+	 * @param string $key Screen key.
+	 */
+	private function render_preview( $key ) {
+		$labels  = Settings::screen_labels();
+		$preview = $this->preview_url( $key );
+		?>
+		<h3><?php esc_html_e( 'Preview', 'offair' ); ?></h3>
+		<p class="description"><?php esc_html_e( 'Rendered from the saved settings, exactly as a visitor will see it. Save to refresh it.', 'offair' ); ?></p>
+		<?php if ( is_multisite() ) : ?>
+		<p>
+			<label>
+				<?php esc_html_e( 'Site shown:', 'offair' ); ?>
+				<select class="offair-preview-site">
+					<?php foreach ( get_sites( array( 'number' => 100 ) ) as $site ) : ?>
+					<option value="<?php echo esc_attr( is_main_site( $site->blog_id ) ? 0 : $site->blog_id ); ?>"><?php echo esc_html( untrailingslashit( $site->domain . $site->path ) ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</label>
+		</p>
+		<?php endif; ?>
+		<iframe class="offair-preview" data-src="<?php echo esc_url( $preview ); ?>" data-base="<?php echo esc_url( $preview ); ?>" title="<?php echo esc_attr( $labels[ $key ] ); ?>"></iframe>
+		<p><a class="offair-preview-link" href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open the preview in a new tab', 'offair' ); ?></a></p>
+		<?php
 	}
 
 	/**
@@ -649,14 +757,12 @@ class Admin_Page {
 	 * @param array  $screen Screen settings.
 	 */
 	private function render_screen( $key, array $screen ) {
-		$labels     = Settings::screen_labels();
 		$file       = $this->plugin->dropins->file( $key );
 		$intros     = array(
 			'db'          => __( 'Shown when WordPress cannot connect to the database. Answers with HTTP 503 so search engines treat the outage as temporary.', 'offair' ),
 			'maintenance' => __( 'Shown while WordPress updates itself, a theme or a plugin. Answers with HTTP 503.', 'offair' ),
 			'php'         => __( 'Shown when a fatal PHP error stops the page. Technical details are added only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled.', 'offair' ),
 		);
-		$preview    = $this->preview_url( $key );
 		$name_first = $key . '][';
 		$defaults   = $this->plugin->settings->defaults();
 		$default    = $defaults[ $key ];
@@ -783,11 +889,8 @@ class Admin_Page {
 			}
 			?>
 		</table>
-		<h3><?php esc_html_e( 'Preview', 'offair' ); ?></h3>
-		<p class="description"><?php esc_html_e( 'Rendered from the saved settings, exactly as a visitor will see it. Save to refresh it.', 'offair' ); ?></p>
-		<iframe class="offair-preview" data-src="<?php echo esc_url( $preview ); ?>" title="<?php echo esc_attr( $labels[ $key ] ); ?>"></iframe>
-		<p><a href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open the preview in a new tab', 'offair' ); ?></a></p>
 		<?php
+		$this->render_preview( $key );
 	}
 
 	/**
