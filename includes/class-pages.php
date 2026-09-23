@@ -398,11 +398,13 @@ class Pages {
 	 * Logos of the network, from the media library of the main site. A site
 	 * without a logo of its own shows them.
 	 *
+	 * @param array|null $settings Settings to read the logos from, the saved ones when null.
 	 * @return array{logo: array|null, logo_dark: array|null}
 	 */
-	private function network_logos() {
+	private function network_logos( $settings = null ) {
 		$switched = ! is_main_site() && switch_to_blog( get_main_site_id() );
-		$general  = $this->settings->get()['general'];
+		$raw      = is_array( $settings ) ? $settings : $this->settings->get();
+		$general  = $raw['general'];
 		$logos    = array(
 			'logo'      => self::logo_data( $this->branding->logo( $general['logo_id'] ) ),
 			'logo_dark' => self::logo_data( $this->branding->logo( $general['logo_dark_id'] ) ),
@@ -413,6 +415,23 @@ class Pages {
 		}
 
 		return $logos;
+	}
+
+	/**
+	 * Content of the pages built from settings that are not saved, for the
+	 * preview of the settings page. Nothing is written.
+	 *
+	 * @param array $settings Settings, as sanitized but not saved.
+	 * @param int   $blog_id  Site of a network to build for, 0 for the main site.
+	 * @return string JSON handed to the drop-in.
+	 */
+	public function preview_json( array $settings, $blog_id = 0 ) {
+		$blog_id = (int) $blog_id;
+		$data    = is_multisite() && $blog_id > 0 && get_main_site_id() !== $blog_id
+			? $this->site_data( $blog_id, $this->network_logos( $settings ), $settings )
+			: $this->data( $settings );
+
+		return (string) wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	}
 
 	/**
@@ -582,19 +601,21 @@ class Pages {
 	 * Content of the three pages, in the language of the site. On a network,
 	 * this is the content of the main site, also shown for an unknown address.
 	 *
+	 * @param array|null $settings Settings to build from, the saved ones when null.
 	 * @return array
 	 */
-	public function data() {
+	public function data( $settings = null ) {
 		$switched = is_multisite() && ! is_main_site() && switch_to_blog( get_main_site_id() );
-		$settings = $this->settings->get();
-		$name     = trim( (string) $settings['general']['site_name'] );
+		$raw      = is_array( $settings ) ? $settings : $this->settings->get();
+		$name     = trim( (string) $raw['general']['site_name'] );
 		$data     = $this->build(
 			array(
 				'locale'    => is_multisite() ? self::site_locale() : get_locale(),
 				'site_name' => '' !== $name ? $name : wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
-				'logo'      => self::logo_data( $this->branding->logo( $settings['general']['logo_id'] ) ),
-				'logo_dark' => self::logo_data( $this->branding->logo( $settings['general']['logo_dark_id'] ) ),
-			)
+				'logo'      => self::logo_data( $this->branding->logo( $raw['general']['logo_id'] ) ),
+				'logo_dark' => self::logo_data( $this->branding->logo( $raw['general']['logo_dark_id'] ) ),
+			),
+			$settings
 		);
 
 		if ( $switched ) {
@@ -608,11 +629,12 @@ class Pages {
 	 * Content of the pages of one site of a network: its own name, logo,
 	 * language, timezone and icon, with the design and texts of the network.
 	 *
-	 * @param int   $blog_id Site ID.
-	 * @param array $network Logos of the network, for a site without its own.
+	 * @param int        $blog_id  Site ID.
+	 * @param array      $network  Logos of the network, for a site without its own.
+	 * @param array|null $settings Settings to build from, the saved ones when null.
 	 * @return array
 	 */
-	public function site_data( $blog_id, array $network ) {
+	public function site_data( $blog_id, array $network, $settings = null ) {
 		switch_to_blog( (int) $blog_id );
 
 		$own  = $this->branding->detect_logo_id();
@@ -623,7 +645,8 @@ class Pages {
 				'site_name' => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 				'logo'      => null !== $logo ? $logo : $network['logo'],
 				'logo_dark' => null !== $logo ? null : $network['logo_dark'],
-			)
+			),
+			$settings
 		);
 
 		restore_current_blog();
@@ -634,10 +657,11 @@ class Pages {
 	/**
 	 * Builds the content of the pages for the current site.
 	 *
-	 * @param array $identity Locale, name and logos of the site.
+	 * @param array      $identity Locale, name and logos of the site.
+	 * @param array|null $settings Settings to build from, the saved ones when null.
 	 * @return array
 	 */
-	private function build( array $identity ) {
+	private function build( array $identity, $settings = null ) {
 		// The pages are written in the language of the site, not in the
 		// language of the administrator who happens to save the settings.
 		$switched = determine_locale() !== $identity['locale'] && switch_to_locale( $identity['locale'] );
@@ -648,7 +672,7 @@ class Pages {
 		 *
 		 * @param array $settings Full settings array.
 		 */
-		$settings = apply_filters( 'offair_settings', $this->settings->resolve() );
+		$settings = apply_filters( 'offair_settings', $this->settings->resolve( $settings ) );
 		$general  = $settings['general'];
 		$primary  = self::hex( $general['primary_color'], '#334155' );
 		$timezone = wp_timezone_string();

@@ -31,7 +31,7 @@ Anyone can read a file in uploads when they know its address, and `pages.json` h
 - On a network, a page for each site with its own title, logo, language, timezone and theme templates.
 - Logo and colors detected from the theme, the site icon and Elementor global colors, editable at any time. Pale brand colors are darkened for text, and the button picks white or dark text by itself, slightly darkening a mid-tone color when needed, so the page stays readable.
 - Texts follow the language of the site until you customize them. French translation included.
-- Live preview of each page, rendered by the drop-in itself.
+- Live preview beside the settings, rendered by the drop-in itself. It follows what you type: trying out colors, layouts or texts writes nothing until you save. A phone width is one click away.
 - Status box telling you whether each page is in place and up to date. A file the plugin did not add is never replaced without your say.
 - Email alert when the database goes down, off by default. The drop-in sends it with `mail()`, since WordPress cannot run during the outage, at most once an hour. Once the site is back, a scheduled check sends a report through `wp_mail()` with the duration of the outage.
 - History of the pages shown to visitors, in its own tab and with `wp offair history`: the time, the page and the HTTP status, once a minute at most per page. Nothing about the visitors is recorded. A dashboard notice reports a database outage an administrator missed.

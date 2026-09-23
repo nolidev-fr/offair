@@ -96,13 +96,91 @@
 	border-radius: 4px;
 }
 
-.offair-preview {
-	width: 100%;
-	max-width: 960px;
-	height: 560px;
+/* A tab with a preview beside the settings needs the room. */
+.offair-panel-wide {
+	max-width: 1500px;
+}
+
+/* Settings on the left, live preview on the right. */
+.offair-editor {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+	gap: 24px;
+	align-items: start;
+}
+
+.offair-editor-settings {
+	min-width: 0;
+}
+
+/* Fields keep to their column instead of running under the preview. */
+.offair-editor-settings .form-table th {
+	width: 170px;
+}
+
+.offair-editor-settings .regular-text,
+.offair-editor-settings textarea,
+.offair-editor-settings select {
+	max-width: 100%;
+}
+
+.offair-editor-preview {
+	position: sticky;
+	top: 46px;
+}
+
+.offair-preview-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 8px;
+}
+
+.offair-preview-site-row {
+	margin: 0 0 8px;
+}
+
+.offair-preview-frame {
+	background: #f6f7f7;
 	border: 1px solid #c3c4c7;
 	border-radius: 4px;
+	padding: 8px;
+}
+
+.offair-preview-frame.is-mobile .offair-preview {
+	display: block;
+	width: 390px;
+	margin: 0 auto;
+}
+
+.offair-preview {
+	width: 100%;
+	height: 70vh;
+	min-height: 460px;
+	border: 0;
+	border-radius: 2px;
 	background: #fff;
+}
+
+.offair-device.is-active {
+	background: #f0f0f1;
+	border-color: #8c8f94;
+	box-shadow: none;
+}
+
+@media (max-width: 1280px) {
+	.offair-editor {
+		grid-template-columns: 1fr;
+	}
+
+	.offair-editor-preview {
+		position: static;
+	}
+
+	.offair-preview {
+		height: 560px;
+	}
 }
 
 .offair-cli {

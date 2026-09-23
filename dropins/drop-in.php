@@ -90,7 +90,14 @@ defined( 'ABSPATH' ) || exit;
 	$data_file   = rtrim( $uploads_dir, '/\\' ) . '/offair/pages.json';
 	$data        = array();
 
-	if ( is_readable( $data_file ) ) {
+	/*
+	 * The settings page previews settings that are not saved yet: it hands the
+	 * content over directly, so that nothing on the site is written or changed.
+	 */
+	if ( defined( 'OFFAIR_PREVIEW_DATA' ) ) {
+		$json = json_decode( (string) OFFAIR_PREVIEW_DATA, true );
+		$data = is_array( $json ) ? $json : array();
+	} elseif ( is_readable( $data_file ) ) {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
 		$raw  = file_get_contents( $data_file );
 		$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
@@ -129,7 +136,7 @@ defined( 'ABSPATH' ) || exit;
 	}
 
 	// The main site has no file of its own: its content is pages.json.
-	if ( $site_id > 0 && is_readable( $data_dir . '/sites/' . $site_id . '.json' ) ) {
+	if ( ! defined( 'OFFAIR_PREVIEW_DATA' ) && $site_id > 0 && is_readable( $data_dir . '/sites/' . $site_id . '.json' ) ) {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
 		$raw  = file_get_contents( $data_dir . '/sites/' . $site_id . '.json' );
 		$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
@@ -194,6 +201,11 @@ defined( 'ABSPATH' ) || exit;
 	$status      = 500 === $num( $page['status'], 500, 503, 503 ) ? 500 : 503;
 	$retry_after = $num( $page['retry_after'], 0, 86400, 300 );
 	$refresh     = $num( $page['refresh'], 0, 3600, 60 );
+
+	// A preview sits in a frame of the settings page: it must not reload itself.
+	if ( defined( 'OFFAIR_PREVIEW' ) ) {
+		$refresh = 0;
+	}
 
 	// A fatal error may leave partial output behind: start from a clean page.
 	if ( 'php' === $screen ) {

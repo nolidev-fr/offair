@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,7 +38,7 @@ The plugin copies one static file shipped in its own folder (`dropins/drop-in.ph
 * Texts in the language of the site until you customize them. French translation included.
 * Correct HTTP answers: 503 with a Retry-After header for the database and update pages, 503 or 500 for PHP errors (your choice), plus no-cache headers so no cache ever keeps an error page.
 * No external dependency: system fonts, logo embedded in the content file, nothing loaded from the network.
-* A live preview of each page, rendered by the drop-in itself, exactly as visitors will see it.
+* A live preview beside the settings, rendered by the drop-in itself, exactly as visitors will see it. It follows what you type, and nothing is saved or written to your site until you save.
 * An email alert when the database goes down, off by default. The page itself sends it while WordPress cannot run, and WordPress sends a report once the site is back, with the duration of the outage. A test button shows whether your host delivers it.
 * A history of the outages, in its own tab: the date, the page and the HTTP status, recorded once a minute at most. Nothing about your visitors is recorded. A notice on the dashboard tells you about a database outage you missed.
 * Theme templates: a theme can design any of the three pages itself, with the texts, colors and logo from the settings.
@@ -123,6 +123,10 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 == Changelog ==
 
+= 1.2.0 =
+* New: the preview sits beside the settings and follows what you type. Trying out colors, layouts or texts no longer means saving and writing the pages of the site.
+* The preview can be shown at phone width, and no longer reloads itself.
+
 = 1.1.0 =
 * New: email alert when the database goes down, and a report once the site is back. Off by default, with a test button.
 * New: history of the pages shown to visitors, in a new History tab, and a dashboard notice after a database outage.
@@ -154,6 +158,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+The preview now sits beside the settings and follows what you type, without saving. If you uploaded the drop-ins yourself, download them again.
 
 = 1.1.0 =
 Email alert, outage history, theme templates, four layouts, dark mode and a page per site on networks. The pages now follow the dark mode of visitors: choose Always light to keep them light. If you uploaded the drop-ins yourself, download them again.

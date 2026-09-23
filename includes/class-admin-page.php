@@ -258,6 +258,15 @@ class Admin_Page {
 			define( 'OFFAIR_PREVIEW_SITE', $site );
 		}
 
+		// The settings page sends the fields being edited, so the preview
+		// follows them without saving anything and without writing the pages.
+		if ( isset( $_POST['offair'] ) && is_array( $_POST['offair'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Validated field by field in Settings::sanitize().
+			$input = wp_unslash( $_POST['offair'] );
+
+			define( 'OFFAIR_PREVIEW_DATA', $this->plugin->pages->preview_json( $this->plugin->settings->sanitize( $input ), $site ) );
+		}
+
 		include $this->plugin->dropins->source();
 
 		exit;
@@ -429,13 +438,19 @@ class Admin_Page {
 				<input type="hidden" name="action" value="offair_save">
 				<input type="hidden" name="tab" value="general" id="offair-current-tab">
 
-				<div id="offair-tab-general" class="offair-panel">
-					<?php $this->render_general( $settings['general'] ); ?>
+				<div id="offair-tab-general" class="offair-panel offair-panel-wide">
+					<div class="offair-editor">
+						<div class="offair-editor-settings"><?php $this->render_general( $settings['general'] ); ?></div>
+						<div class="offair-editor-preview"><?php $this->render_preview( 'db', 'general' ); ?></div>
+					</div>
 				</div>
 
 				<?php foreach ( Settings::SCREENS as $key ) : ?>
-				<div id="offair-tab-<?php echo esc_attr( $key ); ?>" class="offair-panel">
-					<?php $this->render_screen( $key, $settings[ $key ] ); ?>
+				<div id="offair-tab-<?php echo esc_attr( $key ); ?>" class="offair-panel offair-panel-wide">
+					<div class="offair-editor">
+						<div class="offair-editor-settings"><?php $this->render_screen( $key, $settings[ $key ] ); ?></div>
+						<div class="offair-editor-preview"><?php $this->render_preview( $key ); ?></div>
+					</div>
 				</div>
 				<?php endforeach; ?>
 
@@ -679,7 +694,6 @@ class Admin_Page {
 			?>
 		</table>
 		<?php
-		$this->render_preview( 'db' );
 	}
 
 	/**
@@ -722,36 +736,7 @@ class Admin_Page {
 	}
 
 	/**
-	 * Preview of a page in a frame. On a network, the page of any site can
-	 * be shown.
-	 *
-	 * @param string $key Screen key.
-	 */
-	private function render_preview( $key ) {
-		$labels  = Settings::screen_labels();
-		$preview = $this->preview_url( $key );
-		?>
-		<h3><?php esc_html_e( 'Preview', 'offair' ); ?></h3>
-		<p class="description"><?php esc_html_e( 'Rendered from the saved settings, exactly as a visitor will see it. Save to refresh it.', 'offair' ); ?></p>
-		<?php if ( is_multisite() ) : ?>
-		<p>
-			<label>
-				<?php esc_html_e( 'Site shown:', 'offair' ); ?>
-				<select class="offair-preview-site">
-					<?php foreach ( get_sites( array( 'number' => 100 ) ) as $site ) : ?>
-					<option value="<?php echo esc_attr( is_main_site( $site->blog_id ) ? 0 : $site->blog_id ); ?>"><?php echo esc_html( untrailingslashit( $site->domain . $site->path ) ); ?></option>
-					<?php endforeach; ?>
-				</select>
-			</label>
-		</p>
-		<?php endif; ?>
-		<iframe class="offair-preview" data-src="<?php echo esc_url( $preview ); ?>" data-base="<?php echo esc_url( $preview ); ?>" title="<?php echo esc_attr( $labels[ $key ] ); ?>"></iframe>
-		<p><a class="offair-preview-link" href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open the preview in a new tab', 'offair' ); ?></a></p>
-		<?php
-	}
-
-	/**
-	 * Tab of one screen: texts, timings and preview.
+	 * Tab of one screen: texts and timings. The preview sits beside it.
 	 *
 	 * @param string $key    Screen key.
 	 * @param array  $screen Screen settings.
@@ -890,7 +875,50 @@ class Admin_Page {
 			?>
 		</table>
 		<?php
-		$this->render_preview( $key );
+	}
+
+	/**
+	 * Live preview of a page, beside the settings. It follows what is typed:
+	 * the fields are sent to the preview endpoint, which renders them without
+	 * saving anything. On a network, the page of any site can be shown.
+	 *
+	 * @param string $key     Screen key.
+	 * @param string $context Tab the preview sits in, when it is not the tab of the screen.
+	 */
+	private function render_preview( $key, $context = '' ) {
+		$labels  = Settings::screen_labels();
+		$preview = $this->preview_url( $key );
+		$frame   = 'offair-preview-' . ( '' !== $context ? $context : $key );
+		?>
+		<div class="offair-preview-pane">
+			<div class="offair-preview-bar">
+				<strong><?php esc_html_e( 'Live preview', 'offair' ); ?></strong>
+				<span class="offair-preview-devices">
+					<button type="button" class="button button-small offair-device is-active" data-device="desktop"><?php esc_html_e( 'Desktop', 'offair' ); ?></button>
+					<button type="button" class="button button-small offair-device" data-device="mobile"><?php esc_html_e( 'Mobile', 'offair' ); ?></button>
+				</span>
+			</div>
+			<?php if ( is_multisite() ) : ?>
+			<p class="offair-preview-site-row">
+				<label>
+					<?php esc_html_e( 'Site shown:', 'offair' ); ?>
+					<select class="offair-preview-site">
+						<?php foreach ( get_sites( array( 'number' => 100 ) ) as $site ) : ?>
+						<option value="<?php echo esc_attr( is_main_site( $site->blog_id ) ? 0 : $site->blog_id ); ?>"><?php echo esc_html( untrailingslashit( $site->domain . $site->path ) ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</label>
+			</p>
+			<?php endif; ?>
+			<div class="offair-preview-frame">
+				<iframe class="offair-preview" name="<?php echo esc_attr( $frame ); ?>" data-base="<?php echo esc_url( $preview ); ?>" title="<?php echo esc_attr( $labels[ $key ] ); ?>"></iframe>
+			</div>
+			<p class="description">
+				<?php esc_html_e( 'The preview follows what you type. Nothing is saved, and the pages of the site are left untouched, until you save.', 'offair' ); ?>
+				<a href="<?php echo esc_url( $preview ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Open the saved page in a new tab', 'offair' ); ?></a>
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
