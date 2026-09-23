@@ -98,13 +98,13 @@
 
 /* A tab with a preview beside the settings needs the room. */
 .offair-panel-wide {
-	max-width: 1500px;
+	max-width: 1800px;
 }
 
 /* Settings on the left, live preview on the right. */
 .offair-editor {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+	grid-template-columns: minmax(360px, 620px) minmax(0, 1fr);
 	gap: 24px;
 	align-items: start;
 }
@@ -141,25 +141,26 @@
 	margin: 0 0 8px;
 }
 
+/*
+ * The page is rendered at the width of a real screen, then scaled down to fit
+ * the pane: at the width of the pane alone, a wide layout would look like its
+ * phone version. The script sets the scale and the height.
+ */
 .offair-preview-frame {
+	position: relative;
+	overflow: hidden;
+	height: 72vh;
+	min-height: 480px;
 	background: #f6f7f7;
 	border: 1px solid #c3c4c7;
 	border-radius: 4px;
-	padding: 8px;
-}
-
-.offair-preview-frame.is-mobile .offair-preview {
-	display: block;
-	width: 390px;
-	margin: 0 auto;
 }
 
 .offair-preview {
+	display: block;
 	width: 100%;
-	height: 70vh;
-	min-height: 460px;
+	height: 100%;
 	border: 0;
-	border-radius: 2px;
 	background: #fff;
 }
 

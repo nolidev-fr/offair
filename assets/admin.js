@@ -8,6 +8,7 @@
 		var $save = $( '.offair-save' );
 		var $currentTab = $( '#offair-current-tab' );
 		var previewTimer;
+		var resizeTimer;
 
 		// Address of the preview, with the site of the network to show.
 		function previewUrl( $frame ) {
@@ -39,6 +40,38 @@
 			$form.remove();
 		}
 
+		/*
+		 * The frame renders the page at the width of a screen (or of a phone) and
+		 * is scaled down to the room available, so that a wide layout is seen as
+		 * visitors on a computer see it.
+		 */
+		function fitPreview( $frame ) {
+			if ( ! $frame || ! $frame.length ) {
+				return;
+			}
+
+			var $box = $frame.closest( '.offair-preview-frame' );
+			var mobile = $box.hasClass( 'is-mobile' );
+			var target = mobile ? 390 : 1200;
+			var available = $box.width();
+			var height = $box.height();
+			var scale = Math.min( 1, available / target );
+
+			$frame.css( {
+				width: target + 'px',
+				height: Math.round( height / scale ) + 'px',
+				transform: 'scale(' + scale + ')',
+				'transform-origin': 'top left',
+				'margin-left': mobile ? Math.round( Math.max( 0, available - target * scale ) / 2 ) + 'px' : 0
+			} );
+		}
+
+		function fitAllPreviews() {
+			$( '.offair-preview' ).each( function () {
+				fitPreview( $( this ) );
+			} );
+		}
+
 		function visiblePreview() {
 			return $panels.filter( ':visible' ).find( '.offair-preview' ).first();
 		}
@@ -64,7 +97,10 @@
 			$currentTab.val( id.replace( 'offair-tab-', '' ) );
 
 			// The preview of the tab being opened is rendered from the current fields.
-			refreshPreview( $( '#' + id ).find( '.offair-preview' ).first() );
+			var $frame = $( '#' + id ).find( '.offair-preview' ).first();
+
+			fitPreview( $frame );
+			refreshPreview( $frame );
 		}
 
 		$tabs.on( 'click', function ( event ) {
@@ -92,6 +128,12 @@
 			$pane.find( '.offair-device' ).removeClass( 'is-active' );
 			$( this ).addClass( 'is-active' );
 			$pane.find( '.offair-preview-frame' ).toggleClass( 'is-mobile', 'mobile' === $( this ).data( 'device' ) );
+			fitPreview( $pane.find( '.offair-preview' ).first() );
+		} );
+
+		$( window ).on( 'resize', function () {
+			window.clearTimeout( resizeTimer );
+			resizeTimer = window.setTimeout( fitAllPreviews, 200 );
 		} );
 
 		// Each logo field has its own media frame, preview and warning.

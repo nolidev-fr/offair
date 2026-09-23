@@ -125,7 +125,7 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 = 1.2.0 =
 * New: the preview sits beside the settings and follows what you type. Trying out colors, layouts or texts no longer means saving and writing the pages of the site.
-* The preview can be shown at phone width, and no longer reloads itself.
+* The preview shows the page as a computer screen sees it, or at phone width, and no longer reloads itself.
 
 = 1.1.0 =
 * New: email alert when the database goes down, and a report once the site is back. Off by default, with a test button.
