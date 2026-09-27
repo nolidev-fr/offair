@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,10 +123,12 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 == Changelog ==
 
+= 1.2.1 =
+* New: the plugin and its pages are translated into German, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian and Japanese, on top of French.
+
 = 1.2.0 =
 * New: the preview sits beside the settings and follows what you type. Trying out colors, layouts or texts no longer means saving and writing the pages of the site.
 * The preview shows the page as a computer screen sees it, or at phone width, and no longer reloads itself.
-* New: the plugin and its pages are translated into German, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian and Japanese, on top of French.
 
 = 1.1.0 =
 * New: email alert when the database goes down, and a report once the site is back. Off by default, with a test button.
@@ -160,8 +162,11 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 == Upgrade Notice ==
 
+= 1.2.1 =
+The plugin and its pages now speak German, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian and Japanese.
+
 = 1.2.0 =
-The preview now sits beside the settings and follows what you type, without saving. Eight new translations. If you uploaded the drop-ins yourself, download them again.
+The preview now sits beside the settings and follows what you type, without saving. If you uploaded the drop-ins yourself, download them again.
 
 = 1.1.0 =
 Email alert, outage history, theme templates, four layouts, dark mode and a page per site on networks. The pages now follow the dark mode of visitors: choose Always light to keep them light. If you uploaded the drop-ins yourself, download them again.

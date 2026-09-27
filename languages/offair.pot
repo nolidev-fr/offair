@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Offair - Branded Error Pages 1.2.0\n"
+"Project-Id-Version: Offair - Branded Error Pages 1.2.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
 "Last-Translator: Nolidev <contact@nolidev.fr>\n"
 "Language-Team: Nolidev <contact@nolidev.fr>\n"
