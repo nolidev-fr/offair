@@ -1,0 +1,904 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Offair 1.2.0\n"
+"Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
+"Last-Translator: Nolidev <contact@nolidev.fr>\n"
+"Language-Team: Nolidev <contact@nolidev.fr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-23T10:53:45+00:00\n"
+"PO-Revision-Date: 2026-09-27 18:23+0200\n"
+"Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Domain: offair\n"
+
+#. Plugin Name of the plugin
+#: offair.php
+msgid "Offair - Branded Error Pages"
+msgstr "Offair - Страницы ошибок в стиле вашего сайта"
+
+#. Plugin URI of the plugin
+#: offair.php
+msgid "https://github.com/nolidev-fr/offair"
+msgstr "https://github.com/nolidev-fr/offair"
+
+#. Description of the plugin
+#: offair.php
+msgid "Branded pages for the screens WordPress shows by itself when it breaks: database connection errors, fatal PHP errors and the update notice. Works even when WordPress cannot load."
+msgstr "Страницы в цветах вашего сайта для экранов, которые WordPress показывает сам, когда что-то ломается: ошибки подключения к базе данных, фатальные ошибки PHP и уведомление во время обновления. Работает, даже когда WordPress не может загрузиться."
+
+#. Author of the plugin
+#: offair.php
+msgid "Nolidev"
+msgstr "Nolidev"
+
+#. Author URI of the plugin
+#: offair.php
+msgid "https://nolidev.fr"
+msgstr "https://nolidev.fr"
+
+#: includes/class-admin-page.php:146
+#: includes/class-admin-page.php:147
+#: includes/class-admin-page.php:417
+#: includes/class-site-health.php:43
+#: includes/class-site-health.php:101
+msgid "Offair"
+msgstr "Offair"
+
+#: includes/class-admin-page.php:172
+msgid "Choose a logo"
+msgstr "Выбрать логотип"
+
+#: includes/class-admin-page.php:173
+msgid "Use this logo"
+msgstr "Использовать этот логотип"
+
+#: includes/class-admin-page.php:185
+msgid "Settings"
+msgstr "Настройки"
+
+#: includes/class-admin-page.php:205
+msgid "Settings saved and pages regenerated."
+msgstr "Настройки сохранены, страницы созданы заново."
+
+#: includes/class-admin-page.php:218
+msgid "Pages regenerated."
+msgstr "Страницы созданы заново."
+
+#: includes/class-admin-page.php:230
+msgid "Pages removed from wp-content. They will be written again the next time you save or regenerate."
+msgstr "Страницы удалены из wp-content. Они будут записаны снова при следующем сохранении или пересоздании."
+
+#: includes/class-admin-page.php:246
+msgid "Sample error shown by the preview. Real errors appear here only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled."
+msgstr "Пример ошибки для предпросмотра. Настоящие ошибки появляются здесь, только когда включены WP_DEBUG и WP_DEBUG_DISPLAY."
+
+#: includes/class-admin-page.php:312
+msgid "Settings saved. No test was sent: enter a valid email address first."
+msgstr "Настройки сохранены. Тест не отправлен: сначала укажите действующий адрес email."
+
+#. translators: %s: email address.
+#: includes/class-admin-page.php:315
+#, php-format
+msgid "Settings saved. A test alert was handed to the server for %s. Check the inbox and the spam folder: if it never arrives, this host does not deliver the emails PHP sends by itself."
+msgstr "Настройки сохранены. Тестовое уведомление для %s передано серверу. Проверьте входящие и папку со спамом: если письмо так и не придёт, этот хостинг не доставляет письма, которые PHP отправляет сам."
+
+#: includes/class-admin-page.php:317
+msgid "Settings saved."
+msgstr "Настройки сохранены."
+
+#: includes/class-admin-page.php:318
+msgid "The server refused to send the test: the mail function of PHP does not work on this host, so no alert can be sent during an outage. The report sent once the site is back goes through WordPress and is not affected."
+msgstr "Сервер отказался отправить тест: функция mail в PHP не работает на этом хостинге, поэтому во время сбоя уведомление отправить не получится. Отчёт, который отправляется после восстановления сайта, идёт через WordPress и от этого не зависит."
+
+#: includes/class-admin-page.php:323
+msgid "The email alert itself is off, so nothing will be sent during an outage. Tick Email alert and save to turn it on."
+msgstr "Само уведомление по email выключено, поэтому во время сбоя ничего не будет отправлено. Отметьте Уведомление по email и сохраните, чтобы включить его."
+
+#: includes/class-admin-page.php:338
+msgid "History cleared."
+msgstr "История очищена."
+
+#. translators: 1: date and time the outage started, 2: duration, for example "about 15 mins".
+#: includes/class-admin-page.php:384
+#, php-format
+msgid "Offair: the database of this site could not be reached on %1$s (%2$s). Visitors saw the database error page."
+msgstr "Offair: база данных этого сайта была недоступна %1$s (%2$s). Посетители видели страницу ошибки базы данных."
+
+#: includes/class-admin-page.php:391
+msgid "See the history"
+msgstr "Посмотреть историю"
+
+#: includes/class-admin-page.php:393
+msgid "Dismiss"
+msgstr "Скрыть"
+
+#: includes/class-admin-page.php:418
+msgid "Branded pages shown to visitors when the database is unreachable, when WordPress updates itself and when a fatal PHP error occurs. WordPress loads them from wp-content before any plugin, so they work even when WordPress cannot load."
+msgstr "Страницы в цветах вашего сайта, которые видят посетители, когда база данных недоступна, когда WordPress обновляется и когда происходит фатальная ошибка PHP. WordPress загружает их из wp-content раньше любых плагинов, поэтому они работают, даже когда WordPress не может загрузиться."
+
+#: includes/class-admin-page.php:421
+msgid "On a network the three pages are shared by every site. These settings apply to the whole network."
+msgstr "В сети все сайты используют три общие страницы. Эти настройки действуют для всей сети."
+
+#: includes/class-admin-page.php:428
+msgid "General"
+msgstr "Общие"
+
+#: includes/class-admin-page.php:432
+msgid "History"
+msgstr "История"
+
+#: includes/class-admin-page.php:433
+msgid "Advanced"
+msgstr "Дополнительно"
+
+#: includes/class-admin-page.php:458
+msgid "Save and regenerate pages"
+msgstr "Сохранить и пересоздать страницы"
+
+#: includes/class-admin-page.php:509
+#: includes/class-admin-page.php:777
+#: includes/class-admin-page.php:973
+msgid "Page"
+msgstr "Страница"
+
+#: includes/class-admin-page.php:510
+msgid "File"
+msgstr "Файл"
+
+#: includes/class-admin-page.php:511
+msgid "State"
+msgstr "Состояние"
+
+#: includes/class-admin-page.php:525
+msgid "Added by another plugin or a person. It is never replaced without your say."
+msgstr "Добавлен другим плагином или человеком. Он никогда не заменяется без вашего согласия."
+
+#: includes/class-admin-page.php:530
+msgid "Blocked by the PHP configuration"
+msgstr "Заблокирована конфигурацией PHP"
+
+#: includes/class-admin-page.php:534
+msgid "Preview"
+msgstr "Предпросмотр"
+
+#: includes/class-admin-page.php:535
+msgid "Download"
+msgstr "Скачать"
+
+#: includes/class-admin-page.php:542
+msgid "The PHP error page cannot be shown with the current PHP configuration. Open the PHP error tab for the explanation and the fix."
+msgstr "Страницу ошибки PHP невозможно показать при текущей конфигурации PHP. Откройте вкладку Ошибка PHP, чтобы узнать причину и решение."
+
+#. translators: 1: number of sites with their page written, 2: number of sites of the network besides the main site.
+#: includes/class-admin-page.php:550
+#, php-format
+msgid "Each site of the network has its own page: %1$d of %2$d site written."
+msgid_plural "Each site of the network has its own page: %1$d of %2$d sites written."
+msgstr[0] "У каждого сайта сети своя страница: записано %1$d из %2$d сайта."
+msgstr[1] "У каждого сайта сети своя страница: записано %1$d из %2$d сайтов."
+msgstr[2] "У каждого сайта сети своя страница: записано %1$d из %2$d сайтов."
+
+#: includes/class-admin-page.php:557
+msgid "Some sites of the network do not have their page yet. A large network is written in the background, batch after batch. Regenerate from the Advanced tab to write them now."
+msgstr "У некоторых сайтов сети ещё нет своей страницы. Большая сеть записывается в фоне, партия за партией. Пересоздайте страницы на вкладке Дополнительно, чтобы записать их сразу."
+
+#: includes/class-admin-page.php:561
+msgid "The uploads folder of this site uses a custom path stored in the database. The pages cannot read their content from there and show a neutral English page instead."
+msgstr "Папка uploads этого сайта использует нестандартный путь, сохранённый в базе данных. Страницы не могут прочитать оттуда своё содержимое и вместо этого показывают нейтральную страницу на английском."
+
+#: includes/class-admin-page.php:564
+msgid "The uploads folder is not writable, so the content of the pages cannot be saved."
+msgstr "Папка uploads недоступна для записи, поэтому содержимое страниц невозможно сохранить."
+
+#: includes/class-admin-page.php:567
+msgid "The drop-ins are in wp-content and the content of the pages is updated whenever you save."
+msgstr "Drop-in файлы находятся в wp-content, а содержимое страниц обновляется при каждом сохранении."
+
+#: includes/class-admin-page.php:569
+msgid "wp-content is not writable, so the drop-ins cannot be added automatically. Download them from the table above and upload them to wp-content with FTP or SFTP. This is needed only once: your later changes are saved in the uploads folder."
+msgstr "Папка wp-content недоступна для записи, поэтому drop-in файлы невозможно добавить автоматически. Скачайте их из таблицы выше и загрузите в wp-content по FTP или SFTP. Это нужно сделать только один раз: дальнейшие изменения сохраняются в папке uploads."
+
+#: includes/class-admin-page.php:584
+msgid "Each site of the network shows its own page: its title, its logo or site icon, its language and its timezone. The design, the colors and the texts set here are shared by every site."
+msgstr "Каждый сайт сети показывает свою страницу: своё название, свой логотип или значок сайта, свой язык и свой часовой пояс. Оформление, цвета и тексты, заданные здесь, общие для всех сайтов."
+
+#: includes/class-admin-page.php:589
+msgid "Logo"
+msgstr "Логотип"
+
+#: includes/class-admin-page.php:593
+msgid "Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP. A site of the network with a logo or site icon of its own shows it instead."
+msgstr "Встраивается в страницы шириной не более 300 пикселей, чтобы отображаться, даже когда библиотека файлов недоступна. PNG, JPG, SVG и WebP. Сайт сети со своим логотипом или значком сайта показывает свой."
+
+#: includes/class-admin-page.php:594
+msgid "Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP."
+msgstr "Встраивается в страницы шириной не более 300 пикселей, чтобы отображаться, даже когда библиотека файлов недоступна. PNG, JPG, SVG и WebP."
+
+#: includes/class-admin-page.php:597
+msgid "Logo on dark backgrounds"
+msgstr "Логотип для тёмного фона"
+
+#: includes/class-admin-page.php:600
+msgid "Optional, usually a white version of the logo. It replaces the logo in dark mode and on a dark colored panel. Leave empty to keep the logo as it is everywhere."
+msgstr "Необязательно, обычно белая версия логотипа. Заменяет логотип в тёмном режиме и на тёмной цветной панели. Оставьте пустым, чтобы везде использовать логотип без изменений."
+
+#: includes/class-admin-page.php:603
+msgid "Displayed name"
+msgstr "Отображаемое название"
+
+#: includes/class-admin-page.php:609
+msgid "Shown above the title on the main site. Leave empty to use its title. The other sites of the network show their own title."
+msgstr "Показывается над заголовком на главном сайте. Оставьте пустым, чтобы использовать его название. Остальные сайты сети показывают своё название."
+
+#: includes/class-admin-page.php:610
+msgid "Shown above the title. Leave empty to use the site title."
+msgstr "Показывается над заголовком. Оставьте пустым, чтобы использовать название сайта."
+
+#: includes/class-admin-page.php:614
+msgid "Name display"
+msgstr "Показ названия"
+
+#: includes/class-admin-page.php:617
+msgid "Show the name above the title. Uncheck it when the logo already contains the name."
+msgstr "Показывать название над заголовком. Снимите отметку, если логотип уже содержит название."
+
+#: includes/class-admin-page.php:620
+msgid "Layout"
+msgstr "Макет"
+
+#: includes/class-admin-page.php:624
+msgid "Card: the message in a card centered on the background"
+msgstr "Карточка: сообщение в карточке по центру фона"
+
+#: includes/class-admin-page.php:625
+msgid "Minimal: the message right on the background, without a card"
+msgstr "Минимальный: сообщение прямо на фоне, без карточки"
+
+#: includes/class-admin-page.php:626
+msgid "Two columns: a panel in the primary color with the logo, the message beside it"
+msgstr "Две колонки: панель основного цвета с логотипом, сообщение рядом"
+
+#: includes/class-admin-page.php:627
+msgid "Banner: a band in the primary color with the logo, the message below"
+msgstr "Баннер: полоса основного цвета с логотипом, сообщение ниже"
+
+#: includes/class-admin-page.php:631
+msgid "Appearance"
+msgstr "Внешний вид"
+
+#: includes/class-admin-page.php:635
+msgid "Automatic: light or dark, as set on the device of the visitor"
+msgstr "Автоматически: светлый или тёмный, как настроено на устройстве посетителя"
+
+#: includes/class-admin-page.php:636
+msgid "Always light"
+msgstr "Всегда светлый"
+
+#: includes/class-admin-page.php:637
+msgid "Always dark"
+msgstr "Всегда тёмный"
+
+#: includes/class-admin-page.php:639
+msgid "In dark mode the background and the card turn dark, and the primary color is lightened where it colors text, so that it stays readable."
+msgstr "В тёмном режиме фон и карточка становятся тёмными, а основной цвет осветляется там, где он окрашивает текст, чтобы текст оставался читаемым."
+
+#: includes/class-admin-page.php:642
+msgid "Primary color"
+msgstr "Основной цвет"
+
+#: includes/class-admin-page.php:647
+msgid "Used for the name, the ornament and the button."
+msgstr "Используется для названия, украшения и кнопки."
+
+#: includes/class-admin-page.php:651
+msgid "Button text color"
+msgstr "Цвет текста кнопки"
+
+#: includes/class-admin-page.php:656
+msgid "Leave empty for an automatic choice: white text, on a slightly darkened button when a mid-tone color needs it, or dark text on a light color."
+msgstr "Оставьте пустым для автоматического выбора: белый текст, на слегка затемнённой кнопке, если этого требует цвет среднего тона, или тёмный текст на светлом цвете."
+
+#: includes/class-admin-page.php:660
+msgid "Background color"
+msgstr "Цвет фона"
+
+#: includes/class-admin-page.php:666
+msgid "Heading font"
+msgstr "Шрифт заголовков"
+
+#: includes/class-admin-page.php:670
+msgid "Serif (Georgia, Palatino)"
+msgstr "С засечками (Georgia, Palatino)"
+
+#: includes/class-admin-page.php:671
+msgid "Sans-serif (system font)"
+msgstr "Без засечек (системный шрифт)"
+
+#: includes/class-admin-page.php:673
+msgid "System fonts only: nothing is loaded from the network."
+msgstr "Только системные шрифты: ничего не загружается из сети."
+
+#: includes/class-admin-page.php:676
+msgid "Ornament"
+msgstr "Украшение"
+
+#: includes/class-admin-page.php:680
+msgid "Wave"
+msgstr "Волна"
+
+#: includes/class-admin-page.php:681
+msgid "Line"
+msgstr "Линия"
+
+#: includes/class-admin-page.php:682
+msgid "None"
+msgstr "Нет"
+
+#: includes/class-admin-page.php:686
+msgid "Contact line"
+msgstr "Строка контактов"
+
+#: includes/class-admin-page.php:690
+msgid "Need help? Write to hello@example.com"
+msgstr "Нужна помощь? Напишите на hello@example.com"
+
+#: includes/class-admin-page.php:691
+msgid "Plain text shown under the button. Email addresses and web addresses become links."
+msgstr "Простой текст под кнопкой. Адреса email и веб-адреса становятся ссылками."
+
+#: includes/class-admin-page.php:718
+msgid "Choose from the media library"
+msgstr "Выбрать из библиотеки файлов"
+
+#: includes/class-admin-page.php:719
+#: includes/class-admin-page.php:1039
+msgid "Remove"
+msgstr "Удалить"
+
+#. translators: %s: file size, for example 150 KB.
+#: includes/class-admin-page.php:727
+#, php-format
+msgid "This logo cannot be embedded, so the pages are shown without it. An SVG has to weigh less than %s, unless all it contains is one image. Try a PNG or JPG version of the logo."
+msgstr "Этот логотип невозможно встроить, поэтому страницы показываются без него. Файл SVG должен весить меньше %s, если только он не содержит одно-единственное изображение. Попробуйте версию логотипа в PNG или JPG."
+
+#: includes/class-admin-page.php:747
+msgid "Shown when WordPress cannot connect to the database. Answers with HTTP 503 so search engines treat the outage as temporary."
+msgstr "Показывается, когда WordPress не может подключиться к базе данных. Отвечает кодом HTTP 503, чтобы поисковые системы считали сбой временным."
+
+#: includes/class-admin-page.php:748
+msgid "Shown while WordPress updates itself, a theme or a plugin. Answers with HTTP 503."
+msgstr "Показывается, пока WordPress обновляет себя, тему или плагин. Отвечает кодом HTTP 503."
+
+#: includes/class-admin-page.php:749
+msgid "Shown when a fatal PHP error stops the page. Technical details are added only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled."
+msgstr "Показывается, когда фатальная ошибка PHP прерывает страницу. Технические подробности добавляются, только когда включены WP_DEBUG и WP_DEBUG_DISPLAY."
+
+#: includes/class-admin-page.php:754
+msgid "Leave empty to use the default text in the language of the site."
+msgstr "Оставьте пустым, чтобы использовать текст по умолчанию на языке сайта."
+
+#. translators: %s: path of the template file.
+#: includes/class-admin-page.php:767
+#, php-format
+msgid "The active theme replaces this page with its template %s. The settings below are passed to it, and the template decides what to show."
+msgstr "Активная тема заменяет эту страницу своим шаблоном %s. Настройки ниже передаются ему, и шаблон сам решает, что показывать."
+
+#. translators: %s: file name.
+#: includes/class-admin-page.php:781
+#, php-format
+msgid "Write wp-content/%s"
+msgstr "Записать wp-content/%s"
+
+#: includes/class-admin-page.php:784
+msgid "Title"
+msgstr "Заголовок"
+
+#: includes/class-admin-page.php:793
+msgid "Message"
+msgstr "Сообщение"
+
+#: includes/class-admin-page.php:796
+msgid "Plain text. Leave a blank line between paragraphs."
+msgstr "Простой текст. Оставляйте пустую строку между абзацами."
+
+#: includes/class-admin-page.php:800
+msgid "Retry button"
+msgstr "Кнопка Повторить"
+
+#: includes/class-admin-page.php:803
+msgid "Show a button that reloads the page"
+msgstr "Показывать кнопку, которая перезагружает страницу"
+
+#: includes/class-admin-page.php:806
+msgid "Button label"
+msgstr "Текст кнопки"
+
+#: includes/class-admin-page.php:815
+msgid "Automatic refresh"
+msgstr "Автообновление"
+
+#: includes/class-admin-page.php:822
+#: includes/class-admin-page.php:834
+msgid "seconds"
+msgstr "секунд"
+
+#: includes/class-admin-page.php:823
+msgid "The page reloads itself after this delay. 0 disables it."
+msgstr "Страница перезагружается сама через это время. 0 отключает перезагрузку."
+
+#: includes/class-admin-page.php:827
+msgid "Retry-After header"
+msgstr "Заголовок Retry-After"
+
+#: includes/class-admin-page.php:835
+msgid "Tells search engines and monitoring tools when to come back. 0 omits the header."
+msgstr "Сообщает поисковым системам и инструментам мониторинга, когда вернуться. 0 убирает заголовок."
+
+#: includes/class-admin-page.php:839
+msgid "Incident line"
+msgstr "Строка об инциденте"
+
+#: includes/class-admin-page.php:842
+msgid "Show the local time of the incident and the HTTP status under the message"
+msgstr "Показывать местное время инцидента и код HTTP под сообщением"
+
+#: includes/class-admin-page.php:846
+msgid "Email alert"
+msgstr "Уведомление по email"
+
+#: includes/class-admin-page.php:849
+msgid "Send an email when visitors see this page, and a report once the site is back"
+msgstr "Отправлять письмо, когда посетители видят эту страницу, и отчёт после восстановления сайта"
+
+#: includes/class-admin-page.php:852
+msgid "Alert recipient"
+msgstr "Получатель уведомления"
+
+#: includes/class-admin-page.php:858
+msgid "Leave empty to use the administration email address of the site."
+msgstr "Оставьте пустым, чтобы использовать адрес email администратора сайта."
+
+#: includes/class-admin-page.php:865
+#: includes/class-admin-page.php:976
+msgid "HTTP status"
+msgstr "Код HTTP"
+
+#: includes/class-admin-page.php:869
+msgid "503 Service Unavailable (recommended)"
+msgstr "503 Service Unavailable (рекомендуется)"
+
+#: includes/class-admin-page.php:870
+msgid "500 Internal Server Error (WordPress default)"
+msgstr "500 Internal Server Error (по умолчанию в WordPress)"
+
+#: includes/class-admin-page.php:872
+msgid "503 tells search engines the problem is temporary and sends Retry-After. 500 signals a permanent error."
+msgstr "503 сообщает поисковым системам, что проблема временная, и отправляет Retry-After. 500 означает постоянную ошибку."
+
+#: includes/class-admin-page.php:895
+msgid "Live preview"
+msgstr "Предпросмотр в реальном времени"
+
+#: includes/class-admin-page.php:897
+msgid "Desktop"
+msgstr "Компьютер"
+
+#: includes/class-admin-page.php:898
+msgid "Mobile"
+msgstr "Телефон"
+
+#: includes/class-admin-page.php:904
+msgid "Site shown:"
+msgstr "Показываемый сайт:"
+
+#: includes/class-admin-page.php:917
+msgid "The preview follows what you type. Nothing is saved, and the pages of the site are left untouched, until you save."
+msgstr "Предпросмотр следует за тем, что вы вводите. Ничего не сохраняется, и страницы сайта не меняются, пока вы не сохраните."
+
+#: includes/class-admin-page.php:918
+msgid "Open the saved page in a new tab"
+msgstr "Открыть сохранённую страницу в новой вкладке"
+
+#: includes/class-admin-page.php:931
+msgid "Test"
+msgstr "Тест"
+
+#: includes/class-admin-page.php:933
+msgid "Save and send a test alert"
+msgstr "Сохранить и отправить тестовое уведомление"
+
+#: includes/class-admin-page.php:934
+msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes."
+msgstr "Пока база данных недоступна, WordPress не может работать, поэтому уведомление отправляется функцией mail в PHP. Некоторые хостинги её блокируют, и письмо может попасть в спам: тест проходит точно тем же путём. Отчёт идёт через WordPress, как и другие его письма, когда страница ошибки не показывается уже пять минут."
+
+#: includes/class-admin-page.php:950
+msgid "Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site."
+msgstr "Каждый раз, когда посетитель видит одну из страниц, записываются дата, страница и код HTTP, не чаще раза в минуту. О посетителях ничего не сохраняется, и ничего не записывается, пока сайт никто не посещает."
+
+#: includes/class-admin-page.php:952
+msgid "Email alerts are off. Turn them on in the Database error tab to hear about an outage while it happens."
+msgstr "Уведомления по email выключены. Включите их на вкладке Ошибка базы данных, чтобы узнавать о сбое, пока он происходит."
+
+#: includes/class-admin-page.php:954
+msgid "Email alerts are on, but no valid address is set to receive them."
+msgstr "Уведомления по email включены, но не задан действующий адрес для их получения."
+
+#. translators: %s: email address.
+#: includes/class-admin-page.php:960
+#, php-format
+msgid "Email alerts about database outages go to %s."
+msgstr "Уведомления по email о сбоях базы данных отправляются на %s."
+
+#: includes/class-admin-page.php:968
+msgid "No page has been shown to visitors so far."
+msgstr "Пока ни одна страница не была показана посетителям."
+
+#: includes/class-admin-page.php:974
+msgid "Started"
+msgstr "Начало"
+
+#: includes/class-admin-page.php:975
+msgid "Observed duration"
+msgstr "Наблюдаемая длительность"
+
+#: includes/class-admin-page.php:990
+msgid "The duration runs from the first to the last page shown. The 50 most recent incidents are listed, and the history keeps 180 days."
+msgstr "Длительность считается от первой до последней показанной страницы. Показываются 50 последних инцидентов, а история хранится 180 дней."
+
+#: includes/class-admin-page.php:991
+msgid "Delete the whole history?"
+msgstr "Удалить всю историю?"
+
+#: includes/class-admin-page.php:994
+msgid "Clear the history"
+msgstr "Очистить историю"
+
+#: includes/class-admin-page.php:1010
+msgid "This page cannot be shown with the current PHP configuration."
+msgstr "Эту страницу невозможно показать при текущей конфигурации PHP."
+
+#: includes/class-admin-page.php:1015
+msgid "Current values:"
+msgstr "Текущие значения:"
+
+#: includes/class-admin-page.php:1030
+msgid "Regenerate"
+msgstr "Пересоздать"
+
+#: includes/class-admin-page.php:1031
+msgid "Saves the content of the pages again and restores missing drop-ins. Useful after changing the site title, the timezone or the logo file."
+msgstr "Заново сохраняет содержимое страниц и восстанавливает недостающие drop-in файлы. Полезно после изменения названия сайта, часового пояса или файла логотипа."
+
+#: includes/class-admin-page.php:1035
+msgid "Also replace files in wp-content that were not added by this plugin"
+msgstr "Заменять также файлы в wp-content, которые добавлены не этим плагином"
+
+#: includes/class-admin-page.php:1036
+msgid "Regenerate pages now"
+msgstr "Пересоздать страницы сейчас"
+
+#: includes/class-admin-page.php:1040
+msgid "Deletes the drop-ins added by this plugin. WordPress shows its default screens again until you save or regenerate."
+msgstr "Удаляет drop-in файлы, добавленные этим плагином. WordPress снова показывает свои стандартные экраны, пока вы не сохраните настройки или не пересоздадите страницы."
+
+#: includes/class-admin-page.php:1041
+msgid "Remove the drop-ins from wp-content?"
+msgstr "Удалить drop-in файлы из wp-content?"
+
+#: includes/class-admin-page.php:1044
+msgid "Remove drop-ins from wp-content"
+msgstr "Удалить drop-in файлы из wp-content"
+
+#: includes/class-admin-page.php:1047
+msgid "Manual installation"
+msgstr "Ручная установка"
+
+#: includes/class-admin-page.php:1048
+msgid "When wp-content is not writable, download the drop-ins and upload them to wp-content yourself. They are the same file under three names. The content of the pages is saved in the uploads folder, so later changes need no new upload."
+msgstr "Если папка wp-content недоступна для записи, скачайте drop-in файлы и загрузите их в wp-content сами. Это один и тот же файл под тремя именами. Содержимое страниц сохраняется в папке uploads, поэтому для дальнейших изменений повторная загрузка не нужна."
+
+#: includes/class-admin-page.php:1055
+msgid "Files"
+msgstr "Файлы"
+
+#: includes/class-admin-page.php:1056
+msgid "The drop-ins are copies of dropins/drop-in.php from the plugin folder. The content of the pages is saved here:"
+msgstr "Drop-in файлы являются копиями dropins/drop-in.php из папки плагина. Содержимое страниц сохраняется здесь:"
+
+#: includes/class-admin-page.php:1058
+msgid "The alert settings, the theme folders and the history are kept next to it, in a private folder whose name cannot be guessed, because anyone can read a file in uploads when they know its address."
+msgstr "Настройки уведомлений, папки темы и история хранятся рядом, в закрытой папке с именем, которое невозможно угадать, потому что любой может прочитать файл в uploads, если знает его адрес."
+
+#: includes/class-admin-page.php:1060
+msgid "WP-CLI"
+msgstr "WP-CLI"
+
+#: includes/class-admin-page.php:1067
+msgid "Deactivation and uninstall"
+msgstr "Деактивация и удаление"
+
+#: includes/class-admin-page.php:1068
+msgid "Deactivating the plugin removes the three drop-ins from wp-content and keeps your settings. Uninstalling also removes the settings and the content folder in uploads. Files not added by this plugin are never touched."
+msgstr "Деактивация плагина удаляет три drop-in файла из wp-content и сохраняет ваши настройки. Удаление плагина стирает также настройки и папку с содержимым в uploads. Файлы, добавленные не этим плагином, никогда не затрагиваются."
+
+#: includes/class-admin-page.php:1203
+msgid "You are not allowed to manage Offair."
+msgstr "У вас нет прав на управление Offair."
+
+#: includes/class-admin-page.php:1218
+msgid "Unknown page."
+msgstr "Неизвестная страница."
+
+#. translators: %s: site title.
+#: includes/class-alert.php:35
+#, php-format
+msgid "[%s] The database cannot be reached"
+msgstr "[%s] База данных недоступна"
+
+#. translators: 1: address of the site, 2: date and time of the page shown to a visitor.
+#: includes/class-alert.php:38
+#, php-format
+msgid "The database of %1$s could not be reached at %2$s. Visitors see the database error page instead of the site."
+msgstr "База данных %1$s была недоступна %2$s. Посетители видят страницу ошибки базы данных вместо сайта."
+
+#: includes/class-alert.php:39
+msgid "While the problem lasts, a new alert is sent at most once an hour. A report follows once the site is back."
+msgstr "Пока проблема не устранена, новое уведомление отправляется не чаще раза в час. После восстановления сайта придёт отчёт."
+
+#: includes/class-alert.php:40
+msgid "Sent by Offair from the database error page."
+msgstr "Отправлено Offair со страницы ошибки базы данных."
+
+#. translators: %s: subject of the alert.
+#: includes/class-alert.php:45
+#, php-format
+msgid "Test: %s"
+msgstr "Тест: %s"
+
+#: includes/class-alert.php:46
+msgid "This is a test sent from the settings of Offair. A real alert looks like this and travels the same way."
+msgstr "Это тест, отправленный из настроек Offair. Настоящее уведомление выглядит так же и проходит тем же путём."
+
+#. translators: %s: site title.
+#: includes/class-alert.php:97
+#, php-format
+msgid "[%s] The site is back"
+msgstr "[%s] Сайт снова работает"
+
+#. translators: 1: address of the site, 2: date and time of the first page shown, 3: time of the last page shown, 4: duration, for example "about 15 minutes".
+#: includes/class-alert.php:103
+#, php-format
+msgid "The database of %1$s could not be reached from %2$s to %3$s (%4$s). Offair showed the database error page to visitors during that time."
+msgstr "База данных %1$s была недоступна с %2$s до %3$s (%4$s). Всё это время Offair показывал посетителям страницу ошибки базы данных."
+
+#: includes/class-alert.php:109
+msgid "These times come from the pages shown to visitors: while nobody visits the site, an outage cannot be seen."
+msgstr "Это время взято из страниц, показанных посетителям: пока сайт никто не посещает, сбой невозможно заметить."
+
+#. translators: %s: address of the history in the settings.
+#: includes/class-alert.php:111
+#, php-format
+msgid "History of the outages: %s"
+msgstr "История сбоев: %s"
+
+#. translators: %s: file name.
+#: includes/class-dropins.php:130
+#, php-format
+msgid "wp-content/%s already exists and was not added by Offair, so it was left untouched. Use the Advanced tab to replace it."
+msgstr "Файл wp-content/%s уже существует и добавлен не Offair, поэтому он не был изменён. Воспользуйтесь вкладкой Дополнительно, чтобы заменить его."
+
+#. translators: %s: file name.
+#: includes/class-dropins.php:147
+#, php-format
+msgid "Could not copy wp-content/%s. Download it from the Advanced tab and upload it yourself."
+msgstr "Не удалось скопировать wp-content/%s. Скачайте файл на вкладке Дополнительно и загрузите его сами."
+
+#. translators: %s: file name.
+#: includes/class-dropins.php:176
+#, php-format
+msgid "wp-content/%s was not added by Offair and was left untouched."
+msgstr "Файл wp-content/%s добавлен не Offair и не был изменён."
+
+#. translators: %s: file name.
+#: includes/class-dropins.php:186
+#, php-format
+msgid "Could not delete wp-content/%s."
+msgstr "Не удалось удалить wp-content/%s."
+
+#: includes/class-environment.php:71
+msgid "PHP prints errors on screen because WP_DEBUG_DISPLAY is enabled in wp-config.php, and it does not buffer its output (the PHP directive output_buffering is off)."
+msgstr "PHP выводит ошибки на экран, потому что в wp-config.php включён WP_DEBUG_DISPLAY, и не буферизует свой вывод (директива PHP output_buffering выключена)."
+
+#: includes/class-environment.php:73
+msgid "PHP prints errors on screen (the PHP directive display_errors is on) and does not buffer its output (the PHP directive output_buffering is off)."
+msgstr "PHP выводит ошибки на экран (директива PHP display_errors включена) и не буферизует свой вывод (директива PHP output_buffering выключена)."
+
+#: includes/class-environment.php:78
+msgid "On a fatal error, PHP therefore sends the raw error message and the HTTP headers before WordPress runs its error handler, so WordPress never loads wp-content/php-error.php. Visitors see the raw PHP error with an HTTP 200 status instead of this page. The database and maintenance pages are not affected."
+msgstr "Поэтому при фатальной ошибке PHP отправляет необработанное сообщение об ошибке и заголовки HTTP раньше, чем WordPress запускает свой обработчик ошибок, и WordPress так и не загружает wp-content/php-error.php. Вместо этой страницы посетители видят необработанную ошибку PHP с кодом HTTP 200. Страниц базы данных и обслуживания это не касается."
+
+#: includes/class-environment.php:79
+msgid "To fix it, either disable WP_DEBUG_DISPLAY (recommended on a live site) or set output_buffering to 4096 in the PHP configuration (php.ini, .user.ini or the hosting panel)."
+msgstr "Чтобы это исправить, отключите WP_DEBUG_DISPLAY (рекомендуется на рабочем сайте) или задайте output_buffering равным 4096 в конфигурации PHP (php.ini, .user.ini или панель хостинга)."
+
+#: includes/class-journal.php:323
+msgid "less than a minute"
+msgstr "меньше минуты"
+
+#. translators: %s: duration, for example "15 mins".
+#: includes/class-journal.php:327
+#, php-format
+msgid "about %s"
+msgstr "около %s"
+
+#: includes/class-journal.php:339
+msgid "Every 15 minutes (Offair)"
+msgstr "Каждые 15 минут (Offair)"
+
+#. translators: %s: folder path.
+#: includes/class-pages.php:229
+#, php-format
+msgid "The page content could not be saved in %s. Check that the uploads folder is writable."
+msgstr "Не удалось сохранить содержимое страниц в %s. Проверьте, что папка uploads доступна для записи."
+
+#. translators: %s: folder path.
+#: includes/class-pages.php:270
+#, php-format
+msgid "The content of the sites of the network could not be saved in %s. Check that the uploads folder is writable."
+msgstr "Не удалось сохранить содержимое сайтов сети в %s. Проверьте, что папка uploads доступна для записи."
+
+#: includes/class-pages.php:718
+msgid "Database temporarily unavailable (HTTP 503)."
+msgstr "База данных временно недоступна (HTTP 503)."
+
+#: includes/class-pages.php:719
+msgid "Scheduled maintenance in progress (HTTP 503)."
+msgstr "Идут плановые работы (HTTP 503)."
+
+#. translators: %d: HTTP status code.
+#: includes/class-pages.php:721
+#, php-format
+msgid "Technical error (HTTP %d)."
+msgstr "Техническая ошибка (HTTP %d)."
+
+#. translators: 1: local time of the incident, filled in when the page is shown, 2: timezone name, 3: sentence describing the incident.
+#: includes/class-pages.php:728
+#, php-format
+msgid "Incident recorded at %1$s (%2$s). %3$s"
+msgstr "Инцидент зафиксирован в %1$s (%2$s). %3$s"
+
+#. translators: Must match, word for word, the sentence used near the end of the default database error and maintenance messages: it is removed from the page when the automatic refresh is turned off.
+#: includes/class-pages.php:741
+msgid "This page refreshes on its own."
+msgstr "Эта страница обновляется сама."
+
+#: includes/class-pages.php:752
+msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
+msgstr "Режим восстановления включён: расширение, вызвавшее эту ошибку, приостановлено. Подробности на экранах Плагины и Темы."
+
+#: includes/class-publisher.php:142
+msgid "Up to date"
+msgstr "Актуально"
+
+#: includes/class-publisher.php:143
+msgid "Needs regeneration"
+msgstr "Нужно пересоздать"
+
+#: includes/class-publisher.php:144
+msgid "Missing"
+msgstr "Отсутствует"
+
+#: includes/class-publisher.php:145
+msgid "Not added by this plugin"
+msgstr "Добавлен не этим плагином"
+
+#: includes/class-publisher.php:146
+msgid "Disabled"
+msgstr "Отключена"
+
+#: includes/class-settings.php:111
+msgid "Database error"
+msgstr "Ошибка базы данных"
+
+#: includes/class-settings.php:112
+msgid "Maintenance"
+msgstr "Обслуживание"
+
+#: includes/class-settings.php:113
+msgid "PHP error"
+msgstr "Ошибка PHP"
+
+#: includes/class-settings.php:128
+msgid "Try again"
+msgstr "Повторить"
+
+#: includes/class-settings.php:147
+msgid "We'll be right back"
+msgstr "Скоро вернёмся"
+
+#: includes/class-settings.php:148
+msgid ""
+"Our site is taking a short break because of a technical problem. It usually comes back within a few minutes.\n"
+"\n"
+"This page refreshes on its own. Thank you for your patience."
+msgstr ""
+"Наш сайт ненадолго прервался из-за технической проблемы. Обычно он возвращается в течение нескольких минут.\n"
+"\n"
+"Эта страница обновляется сама. Спасибо за терпение."
+
+#: includes/class-settings.php:159
+msgid "Back in a minute"
+msgstr "Вернёмся через минуту"
+
+#: includes/class-settings.php:160
+msgid ""
+"We are installing an update. The site will be back in a moment.\n"
+"\n"
+"This page refreshes on its own. Thank you for your patience."
+msgstr ""
+"Мы устанавливаем обновление. Сайт вернётся через мгновение.\n"
+"\n"
+"Эта страница обновляется сама. Спасибо за терпение."
+
+#: includes/class-settings.php:169
+msgid "Something went wrong"
+msgstr "Что-то пошло не так"
+
+#: includes/class-settings.php:170
+msgid ""
+"A technical error prevents us from displaying this page right now. Please try again in a few minutes.\n"
+"\n"
+"Thank you for your patience."
+msgstr ""
+"Техническая ошибка не позволяет нам показать эту страницу прямо сейчас. Попробуйте ещё раз через несколько минут.\n"
+"\n"
+"Спасибо за терпение."
+
+#. translators: 1: page name, 2: file name.
+#: includes/class-site-health.php:67
+#, php-format
+msgid "The %1$s page is enabled but wp-content/%2$s is missing."
+msgstr "Страница %1$s включена, но файл wp-content/%2$s отсутствует."
+
+#. translators: 1: page name, 2: file name.
+#: includes/class-site-health.php:71
+#, php-format
+msgid "wp-content/%2$s does not match the current settings of the %1$s page."
+msgstr "Файл wp-content/%2$s не соответствует текущим настройкам страницы %1$s."
+
+#. translators: %s: file name.
+#: includes/class-site-health.php:75
+#, php-format
+msgid "wp-content/%s was not added by Offair. The plugin leaves it untouched, so this page is not branded."
+msgstr "Файл wp-content/%s добавлен не Offair. Плагин его не трогает, поэтому эта страница не в цветах сайта."
+
+#: includes/class-site-health.php:82
+msgid "The PHP error page cannot be shown with the current PHP configuration."
+msgstr "Страницу ошибки PHP невозможно показать при текущей конфигурации PHP."
+
+#: includes/class-site-health.php:86
+msgid "The uploads folder uses a custom path stored in the database, so the pages cannot read their content and show a neutral English page instead."
+msgstr "Папка uploads использует нестандартный путь, сохранённый в базе данных, поэтому страницы не могут прочитать своё содержимое и вместо этого показывают нейтральную страницу на английском."
+
+#: includes/class-site-health.php:90
+msgid "wp-content is not writable, so the pages cannot be written automatically. Download them from the settings page and upload them yourself."
+msgstr "Папка wp-content недоступна для записи, поэтому страницы невозможно записать автоматически. Скачайте их на странице настроек и загрузите сами."
+
+#: includes/class-site-health.php:98
+msgid "Your downtime pages are in place"
+msgstr "Ваши страницы на случай сбоя на месте"
+
+#: includes/class-site-health.php:104
+msgid "Visitors see a branded page when the database is unreachable, during updates and on fatal errors."
+msgstr "Посетители видят страницу в цветах сайта, когда база данных недоступна, во время обновлений и при фатальных ошибках."
+
+#: includes/class-site-health.php:105
+msgid "Open the Offair settings"
+msgstr "Открыть настройки Offair"
+
+#: includes/class-site-health.php:110
+msgid "Some downtime pages need attention"
+msgstr "Некоторые страницы на случай сбоя требуют внимания"

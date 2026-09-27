@@ -30,7 +30,7 @@ Anyone can read a file in uploads when they know its address, and `pages.json` h
 - Automatic dark mode following the device of the visitor, or always light, or always dark. Brand colors used for text are lightened in dark mode to stay readable, and an optional logo for dark backgrounds replaces the logo there.
 - On a network, a page for each site with its own title, logo, language, timezone and theme templates.
 - Logo and colors detected from the theme, the site icon and Elementor global colors, editable at any time. Pale brand colors are darkened for text, and the button picks white or dark text by itself, slightly darkening a mid-tone color when needed, so the page stays readable.
-- Texts follow the language of the site until you customize them. French translation included.
+- Texts follow the language of the site until you customize them. Translations included: French, German, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian and Japanese.
 - Live preview beside the settings, rendered by the drop-in itself. It follows what you type: trying out colors, layouts or texts writes nothing until you save. It shows the page as a computer screen sees it, and a phone width is one click away.
 - Status box telling you whether each page is in place and up to date. A file the plugin did not add is never replaced without your say.
 - Email alert when the database goes down, off by default. The drop-in sends it with `mail()`, since WordPress cannot run during the outage, at most once an hour. Once the site is back, a scheduled check sends a report through `wp_mail()` with the duration of the outage.

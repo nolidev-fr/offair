@@ -35,7 +35,7 @@ The plugin copies one static file shipped in its own folder (`dropins/drop-in.ph
 * Four layouts for the three screens: card, minimal, two columns or banner. Each shows the logo, the site name, the title, the message, a retry button and an incident line with the local time.
 * Automatic dark mode: the pages follow the light or dark setting of the device of the visitor, with an optional logo for dark backgrounds. They can also stay always light or always dark.
 * Your logo and colors, detected from the theme, the site icon and Elementor global colors when available, editable at any time.
-* Texts in the language of the site until you customize them. French translation included.
+* Texts in the language of the site until you customize them. Translations included: French, German, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian and Japanese.
 * Correct HTTP answers: 503 with a Retry-After header for the database and update pages, 503 or 500 for PHP errors (your choice), plus no-cache headers so no cache ever keeps an error page.
 * No external dependency: system fonts, logo embedded in the content file, nothing loaded from the network.
 * A live preview beside the settings, rendered by the drop-in itself, exactly as visitors will see it. It follows what you type, and nothing is saved or written to your site until you save.
@@ -126,6 +126,7 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 = 1.2.0 =
 * New: the preview sits beside the settings and follows what you type. Trying out colors, layouts or texts no longer means saving and writing the pages of the site.
 * The preview shows the page as a computer screen sees it, or at phone width, and no longer reloads itself.
+* New: the plugin and its pages are translated into German, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian and Japanese, on top of French.
 
 = 1.1.0 =
 * New: email alert when the database goes down, and a report once the site is back. Off by default, with a test button.
@@ -160,7 +161,7 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 == Upgrade Notice ==
 
 = 1.2.0 =
-The preview now sits beside the settings and follows what you type, without saving. If you uploaded the drop-ins yourself, download them again.
+The preview now sits beside the settings and follows what you type, without saving. Eight new translations. If you uploaded the drop-ins yourself, download them again.
 
 = 1.1.0 =
 Email alert, outage history, theme templates, four layouts, dark mode and a page per site on networks. The pages now follow the dark mode of visitors: choose Always light to keep them light. If you uploaded the drop-ins yourself, download them again.
