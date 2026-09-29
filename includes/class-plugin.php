@@ -121,6 +121,11 @@ final class Plugin {
 
 		new Site_Health( $this );
 
+		// MainWP Child loads before plugins_loaded, when this constructor runs.
+		if ( defined( 'MAINWP_CHILD_FILE' ) ) {
+			new MainWP( $this );
+		}
+
 		if ( is_admin() ) {
 			new Admin_Page( $this );
 		}

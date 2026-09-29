@@ -47,6 +47,12 @@ The plugin copies one static file shipped in its own folder (`dropins/drop-in.ph
 
 The plugin never replaces a `db-error.php`, `maintenance.php` or `php-error.php` it did not add itself. If one already exists, it tells you and waits for your decision.
 
+= Works with MainWP =
+
+If you manage your sites with [MainWP](https://wordpress.org/plugins/mainwp/), the free [Offair for MainWP](https://wordpress.org/plugins/offair-for-mainwp/) extension shows in your MainWP Dashboard the outages your visitors ran into on all your sites, in one place. An uptime monitor checks your sites from the outside every few minutes. Offair sees the short database outages and the fatal errors on a single page that such checks miss.
+
+Nothing else is needed on the sites: when MainWP Child is active, Offair adds its outages to the regular MainWP synchronization, and only when the dashboard asks for it. The state of the pages already reaches MainWP through the Site Health test.
+
 = Developers =
 
 * `offair_settings` filters the settings before the page content is built.
@@ -111,6 +117,10 @@ The date, the page and the HTTP status, once a minute at most, each time a visit
 
 Yes. Add `offair/db-error.php`, `offair/maintenance.php` or `offair/php-error.php` to your theme or child theme. The page then uses your template instead of the built-in one. It receives the texts, colors and logo from the settings, the built-in markup and an escaping function. WordPress is not loaded when these pages are shown, so a template can only use plain PHP. If a template fails, the built-in page is shown instead.
 
+= Does it send data to MainWP? =
+
+Only if MainWP Child is active on the site and the MainWP Dashboard you connected yourself asks for it, which it does when the Offair for MainWP extension is installed there. The data travels in the synchronization MainWP already runs and authenticates. Offair makes no request of its own. It sends the version of the plugin and the outages of the last 90 days: the page, the start, the end and the HTTP status. The history holds nothing about your visitors.
+
 = Does it work on multisite? =
 
 Yes. The drop-ins are shared by every site of the network, so the settings live in the network admin under Settings, Offair. Each site still gets its own page, found from the address the visitor asked for: its title, its logo or site icon, its language, its timezone and the templates of its own theme. The design, the colors and the texts are shared by the network.
@@ -122,6 +132,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 3. One tab per page, with the live preview rendered exactly as visitors will see it.
 
 == Changelog ==
+
+= 1.3.0 =
+* New: works with MainWP. With the Offair for MainWP extension on the dashboard, the outages of all your sites appear in MainWP.
 
 = 1.2.1 =
 * New: the plugin and its pages are translated into German, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian and Japanese, on top of French.
@@ -161,6 +174,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Offair now works with MainWP: install Offair for MainWP on your dashboard to see the outages of all your sites.
 
 = 1.2.1 =
 The plugin and its pages now speak German, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian and Japanese.

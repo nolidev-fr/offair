@@ -118,6 +118,18 @@ If the template throws an error, has a syntax error or prints nothing, the built
 | `offair_data` | Filter | Page content before it is saved for the drop-in |
 | `offair_incident_resolved` | Action | Fires once a database outage is over, with an array holding `start` and `end` (Unix times of the first and last pages shown), `count` (minutes with a page shown) and `status` |
 
+## MainWP
+
+When MainWP Child is active, Offair answers the MainWP synchronization, but only when the dashboard puts `'offair_sync' => 'yes'` in its extra data (filter `mainwp_site_sync_others_data`). The [Offair for MainWP](https://wordpress.org/plugins/offair-for-mainwp/) extension does this and shows the outages of all the sites in the dashboard. The answer sits under the `offair` key:
+
+| Key | Content |
+| --- | --- |
+| `format` | Version of this format, `1` |
+| `version` | Version of Offair |
+| `incidents` | Outages of the last 90 days, 50 at most, most recent first: `screen`, `start`, `end`, `count`, `status` |
+
+The state of the pages is not sent: MainWP already reads it through the Site Health test of Offair.
+
 ## Limits worth knowing
 
 - Pages served from a full page cache (LiteSpeed Cache, WP Rocket, Cloudflare) keep being served normally during an outage. Only requests that reach PHP see the outage page, which is what you want.
