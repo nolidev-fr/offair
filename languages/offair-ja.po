@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Offair 1.4.0\n"
+"Project-Id-Version: Offair 1.5.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
 "Last-Translator: Nolidev <contact@nolidev.fr>\n"
 "Language-Team: Nolidev <contact@nolidev.fr>\n"
@@ -38,595 +38,602 @@ msgstr "Nolidev"
 msgid "https://nolidev.fr"
 msgstr "https://nolidev.fr"
 
+#: includes/class-admin-page.php:145
 #: includes/class-admin-page.php:146
-#: includes/class-admin-page.php:147
-#: includes/class-admin-page.php:417
+#: includes/class-admin-page.php:415
 #: includes/class-site-health.php:43
 #: includes/class-site-health.php:101
 msgid "Offair"
 msgstr "Offair"
 
-#: includes/class-admin-page.php:172
+#: includes/class-admin-page.php:171
 msgid "Choose a logo"
 msgstr "ロゴを選択"
 
-#: includes/class-admin-page.php:173
+#: includes/class-admin-page.php:172
 msgid "Use this logo"
 msgstr "このロゴを使用"
 
-#: includes/class-admin-page.php:185
+#: includes/class-admin-page.php:188
 msgid "Settings"
 msgstr "設定"
 
-#: includes/class-admin-page.php:205
+#: includes/class-admin-page.php:210
 msgid "Settings saved and pages regenerated."
 msgstr "設定を保存し、ページを再生成しました。"
 
-#: includes/class-admin-page.php:218
+#: includes/class-admin-page.php:223
 msgid "Pages regenerated."
 msgstr "ページを再生成しました。"
 
-#: includes/class-admin-page.php:230
+#: includes/class-admin-page.php:235
 msgid "Pages removed from wp-content. They will be written again the next time you save or regenerate."
 msgstr "wp-content からページを削除しました。次回の保存または再生成時に再び書き込まれます。"
 
-#: includes/class-admin-page.php:246
+#: includes/class-admin-page.php:251
 msgid "Sample error shown by the preview. Real errors appear here only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled."
 msgstr "プレビュー用のエラー例です。実際のエラーがここに表示されるのは、WP_DEBUG と WP_DEBUG_DISPLAY が有効な場合のみです。"
 
-#: includes/class-admin-page.php:312
+#: includes/class-admin-page.php:317
 msgid "Settings saved. No test was sent: enter a valid email address first."
 msgstr "設定を保存しました。テストは送信されていません。先に有効なメールアドレスを入力してください。"
 
 #. translators: %s: email address.
-#: includes/class-admin-page.php:315
+#: includes/class-admin-page.php:320
 #, php-format
 msgid "Settings saved. A test alert was handed to the server for %s. Check the inbox and the spam folder: if it never arrives, this host does not deliver the emails PHP sends by itself."
 msgstr "設定を保存しました。%s 宛てのテスト通知をサーバーに渡しました。受信トレイと迷惑メールフォルダーを確認してください。届かない場合、このホスティングは PHP が直接送信するメールを配信していません。"
 
-#: includes/class-admin-page.php:317
+#: includes/class-admin-page.php:322
+#: includes/class-history-page.php:121
 msgid "Settings saved."
 msgstr "設定を保存しました。"
 
-#: includes/class-admin-page.php:318
+#: includes/class-admin-page.php:323
 msgid "The server refused to send the test: the mail function of PHP does not work on this host, so no alert can be sent during an outage. The report sent once the site is back goes through WordPress and is not affected."
 msgstr "サーバーがテストの送信を拒否しました。このホスティングでは PHP の mail 関数が動作しないため、障害中に通知を送信できません。サイト復旧後に送られるレポートは WordPress 経由のため、影響を受けません。"
 
-#: includes/class-admin-page.php:323
+#: includes/class-admin-page.php:328
 msgid "The email alert itself is off, so nothing will be sent during an outage. Tick Email alert and save to turn it on."
 msgstr "メール通知自体がオフになっているため、障害中は何も送信されません。有効にするには「メール通知」にチェックを入れて保存してください。"
 
-#: includes/class-admin-page.php:338
+#: includes/class-history-page.php:105
 msgid "History cleared."
 msgstr "履歴を消去しました。"
 
 #. translators: 1: date and time the outage started, 2: duration, for example "about 15 mins".
-#: includes/class-admin-page.php:384
+#: includes/class-admin-page.php:382
 #, php-format
 msgid "Offair: the database of this site could not be reached on %1$s (%2$s). Visitors saw the database error page."
 msgstr "Offair: %1$s にこのサイトのデータベースに接続できませんでした (%2$s)。訪問者にはデータベースエラーのページが表示されました。"
 
-#: includes/class-admin-page.php:391
+#: includes/class-admin-page.php:389
+#: includes/class-dashboard-widget.php:153
 msgid "See the history"
 msgstr "履歴を見る"
 
-#: includes/class-admin-page.php:393
+#: includes/class-admin-page.php:391
 msgid "Dismiss"
 msgstr "非表示"
 
-#: includes/class-admin-page.php:418
+#: includes/class-admin-page.php:416
 msgid "Branded pages shown to visitors when the database is unreachable, when WordPress updates itself and when a fatal PHP error occurs. WordPress loads them from wp-content before any plugin, so they work even when WordPress cannot load."
 msgstr "データベースに接続できないとき、WordPress の更新中、PHP の致命的エラーが発生したときに、訪問者に表示されるサイトの色に合わせたページです。WordPress はどのプラグインよりも先に wp-content からこれらを読み込むため、WordPress が読み込めないときでも動作します。"
 
-#: includes/class-admin-page.php:421
+#: includes/class-admin-page.php:419
 msgid "On a network the three pages are shared by every site. These settings apply to the whole network."
 msgstr "ネットワークでは、3つのページはすべてのサイトで共通です。これらの設定はネットワーク全体に適用されます。"
 
-#: includes/class-admin-page.php:428
+#: includes/class-admin-page.php:426
 msgid "General"
 msgstr "一般"
 
-#: includes/class-admin-page.php:432
+#: includes/class-admin-page.php:189
+#: includes/class-admin-page.php:430
 msgid "History"
 msgstr "履歴"
 
-#: includes/class-admin-page.php:433
+#: includes/class-admin-page.php:431
 msgid "Advanced"
 msgstr "詳細設定"
 
-#: includes/class-admin-page.php:458
+#: includes/class-admin-page.php:456
 msgid "Save and regenerate pages"
 msgstr "保存してページを再生成"
 
-#: includes/class-admin-page.php:509
-#: includes/class-admin-page.php:777
-#: includes/class-admin-page.php:975
+#: includes/class-admin-page.php:503
+#: includes/class-admin-page.php:771
+#: includes/class-dashboard-widget.php:124
+#: includes/class-history-page.php:187
 msgid "Page"
 msgstr "ページ"
 
-#: includes/class-admin-page.php:510
+#: includes/class-admin-page.php:504
 msgid "File"
 msgstr "ファイル"
 
-#: includes/class-admin-page.php:511
+#: includes/class-admin-page.php:505
 msgid "State"
 msgstr "状態"
 
-#: includes/class-admin-page.php:525
+#: includes/class-admin-page.php:519
 msgid "Added by another plugin or a person. It is never replaced without your say."
 msgstr "ほかのプラグインまたは人によって追加されました。同意なしに置き換えられることはありません。"
 
-#: includes/class-admin-page.php:530
+#: includes/class-admin-page.php:524
 msgid "Blocked by the PHP configuration"
 msgstr "PHP の設定によりブロックされています"
 
-#: includes/class-admin-page.php:534
+#: includes/class-admin-page.php:528
 msgid "Preview"
 msgstr "プレビュー"
 
-#: includes/class-admin-page.php:535
+#: includes/class-admin-page.php:529
 msgid "Download"
 msgstr "ダウンロード"
 
-#: includes/class-admin-page.php:542
+#: includes/class-admin-page.php:536
 msgid "The PHP error page cannot be shown with the current PHP configuration. Open the PHP error tab for the explanation and the fix."
 msgstr "現在の PHP の設定では PHP エラーのページを表示できません。原因と対処法は「PHP エラー」タブを開いて確認してください。"
 
 #. translators: 1: number of sites with their page written, 2: number of sites of the network besides the main site.
-#: includes/class-admin-page.php:550
+#: includes/class-admin-page.php:544
 #, php-format
 msgid "Each site of the network has its own page: %1$d of %2$d site written."
 msgid_plural "Each site of the network has its own page: %1$d of %2$d sites written."
 msgstr[0] "ネットワークの各サイトに専用のページがあります: %2$d サイト中 %1$d サイトを書き込み済み。"
 
-#: includes/class-admin-page.php:557
+#: includes/class-admin-page.php:551
 msgid "Some sites of the network do not have their page yet. A large network is written in the background, batch after batch. Regenerate from the Advanced tab to write them now."
 msgstr "ネットワークの一部のサイトにはまだページがありません。大規模なネットワークはバックグラウンドで順番に書き込まれます。今すぐ書き込むには「詳細設定」タブから再生成してください。"
 
-#: includes/class-admin-page.php:561
+#: includes/class-admin-page.php:555
 msgid "The uploads folder of this site uses a custom path stored in the database. The pages cannot read their content from there and show a neutral English page instead."
 msgstr "このサイトの uploads フォルダーは、データベースに保存されたカスタムパスを使用しています。ページはそこから内容を読み込めないため、代わりに英語の汎用ページを表示します。"
 
-#: includes/class-admin-page.php:564
+#: includes/class-admin-page.php:558
 msgid "The uploads folder is not writable, so the content of the pages cannot be saved."
 msgstr "uploads フォルダーに書き込みできないため、ページの内容を保存できません。"
 
-#: includes/class-admin-page.php:567
+#: includes/class-admin-page.php:561
 msgid "The drop-ins are in wp-content and the content of the pages is updated whenever you save."
 msgstr "ドロップインは wp-content に配置済みで、保存するたびにページの内容が更新されます。"
 
-#: includes/class-admin-page.php:569
+#: includes/class-admin-page.php:563
 msgid "wp-content is not writable, so the drop-ins cannot be added automatically. Download them from the table above and upload them to wp-content with FTP or SFTP. This is needed only once: your later changes are saved in the uploads folder."
 msgstr "wp-content に書き込みできないため、ドロップインを自動で追加できません。上の表からダウンロードし、FTP または SFTP で wp-content にアップロードしてください。これは一度だけで大丈夫です。以降の変更は uploads フォルダーに保存されます。"
 
-#: includes/class-admin-page.php:584
+#: includes/class-admin-page.php:578
 msgid "Each site of the network shows its own page: its title, its logo or site icon, its language and its timezone. The design, the colors and the texts set here are shared by every site."
 msgstr "ネットワークの各サイトは、それぞれのタイトル、ロゴまたはサイトアイコン、言語、タイムゾーンで専用のページを表示します。ここで設定したデザイン、色、テキストはすべてのサイトで共通です。"
 
-#: includes/class-admin-page.php:589
+#: includes/class-admin-page.php:583
 msgid "Logo"
 msgstr "ロゴ"
 
-#: includes/class-admin-page.php:593
+#: includes/class-admin-page.php:587
 msgid "Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP. A site of the network with a logo or site icon of its own shows it instead."
 msgstr "最大幅 300 ピクセルでページに埋め込まれるため、メディアライブラリにアクセスできないときでも表示されます。PNG、JPG、SVG、WebP に対応。独自のロゴまたはサイトアイコンを持つネットワークのサイトでは、そちらが表示されます。"
 
-#: includes/class-admin-page.php:594
+#: includes/class-admin-page.php:588
 msgid "Embedded in the pages at 300 pixels wide at most, so it shows even when the media library is unreachable. PNG, JPG, SVG and WebP."
 msgstr "最大幅 300 ピクセルでページに埋め込まれるため、メディアライブラリにアクセスできないときでも表示されます。PNG、JPG、SVG、WebP に対応。"
 
-#: includes/class-admin-page.php:597
+#: includes/class-admin-page.php:591
 msgid "Logo on dark backgrounds"
 msgstr "暗い背景用のロゴ"
 
-#: includes/class-admin-page.php:600
+#: includes/class-admin-page.php:594
 msgid "Optional, usually a white version of the logo. It replaces the logo in dark mode and on a dark colored panel. Leave empty to keep the logo as it is everywhere."
 msgstr "任意。通常はロゴの白いバージョンです。ダークモードや暗い色のパネルの上でロゴの代わりに使われます。空欄のままにすると、どこでも元のロゴをそのまま使います。"
 
-#: includes/class-admin-page.php:603
+#: includes/class-admin-page.php:597
 msgid "Displayed name"
 msgstr "表示名"
 
-#: includes/class-admin-page.php:609
+#: includes/class-admin-page.php:603
 msgid "Shown above the title on the main site. Leave empty to use its title. The other sites of the network show their own title."
 msgstr "メインサイトのタイトルの上に表示されます。空欄にするとサイトのタイトルを使います。ネットワークのほかのサイトはそれぞれのタイトルを表示します。"
 
-#: includes/class-admin-page.php:610
+#: includes/class-admin-page.php:604
 msgid "Shown above the title. Leave empty to use the site title."
 msgstr "タイトルの上に表示されます。空欄にするとサイトのタイトルを使います。"
 
-#: includes/class-admin-page.php:614
+#: includes/class-admin-page.php:608
 msgid "Name display"
 msgstr "名前の表示"
 
-#: includes/class-admin-page.php:617
+#: includes/class-admin-page.php:611
 msgid "Show the name above the title. Uncheck it when the logo already contains the name."
 msgstr "タイトルの上に名前を表示します。ロゴに名前が含まれている場合はチェックを外してください。"
 
-#: includes/class-admin-page.php:620
+#: includes/class-admin-page.php:614
 msgid "Layout"
 msgstr "レイアウト"
 
-#: includes/class-admin-page.php:624
+#: includes/class-admin-page.php:618
 msgid "Card: the message in a card centered on the background"
 msgstr "カード: 背景の中央に置いたカードにメッセージを表示"
 
-#: includes/class-admin-page.php:625
+#: includes/class-admin-page.php:619
 msgid "Minimal: the message right on the background, without a card"
 msgstr "ミニマル: カードなしで背景に直接メッセージを表示"
 
-#: includes/class-admin-page.php:626
+#: includes/class-admin-page.php:620
 msgid "Two columns: a panel in the primary color with the logo, the message beside it"
 msgstr "2カラム: メインカラーのパネルにロゴ、その横にメッセージ"
 
-#: includes/class-admin-page.php:627
+#: includes/class-admin-page.php:621
 msgid "Banner: a band in the primary color with the logo, the message below"
 msgstr "バナー: メインカラーの帯にロゴ、その下にメッセージ"
 
-#: includes/class-admin-page.php:631
+#: includes/class-admin-page.php:625
 msgid "Appearance"
 msgstr "外観"
 
-#: includes/class-admin-page.php:635
+#: includes/class-admin-page.php:629
 msgid "Automatic: light or dark, as set on the device of the visitor"
 msgstr "自動: 訪問者の端末の設定に合わせてライトまたはダーク"
 
-#: includes/class-admin-page.php:636
+#: includes/class-admin-page.php:630
 msgid "Always light"
 msgstr "常にライト"
 
-#: includes/class-admin-page.php:637
+#: includes/class-admin-page.php:631
 msgid "Always dark"
 msgstr "常にダーク"
 
-#: includes/class-admin-page.php:639
+#: includes/class-admin-page.php:633
 msgid "In dark mode the background and the card turn dark, and the primary color is lightened where it colors text, so that it stays readable."
 msgstr "ダークモードでは背景とカードが暗くなり、メインカラーは文字に使われる部分で明るく調整され、読みやすさが保たれます。"
 
-#: includes/class-admin-page.php:642
+#: includes/class-admin-page.php:636
 msgid "Primary color"
 msgstr "メインカラー"
 
-#: includes/class-admin-page.php:647
+#: includes/class-admin-page.php:641
 msgid "Used for the name, the ornament and the button."
 msgstr "名前、飾り、ボタンに使われます。"
 
-#: includes/class-admin-page.php:651
+#: includes/class-admin-page.php:645
 msgid "Button text color"
 msgstr "ボタンの文字色"
 
-#: includes/class-admin-page.php:656
+#: includes/class-admin-page.php:650
 msgid "Leave empty for an automatic choice: white text, on a slightly darkened button when a mid-tone color needs it, or dark text on a light color."
 msgstr "空欄にすると自動で選択されます: 白い文字 (中間色の場合はボタンを少し暗くします)、または明るい色の上では暗い文字。"
 
-#: includes/class-admin-page.php:660
+#: includes/class-admin-page.php:654
 msgid "Background color"
 msgstr "背景色"
 
-#: includes/class-admin-page.php:666
+#: includes/class-admin-page.php:660
 msgid "Heading font"
 msgstr "見出しのフォント"
 
-#: includes/class-admin-page.php:670
+#: includes/class-admin-page.php:664
 msgid "Serif (Georgia, Palatino)"
 msgstr "セリフ (Georgia、Palatino)"
 
-#: includes/class-admin-page.php:671
+#: includes/class-admin-page.php:665
 msgid "Sans-serif (system font)"
 msgstr "サンセリフ (システムフォント)"
 
-#: includes/class-admin-page.php:673
+#: includes/class-admin-page.php:667
 msgid "System fonts only: nothing is loaded from the network."
 msgstr "システムフォントのみ: ネットワークからは何も読み込みません。"
 
-#: includes/class-admin-page.php:676
+#: includes/class-admin-page.php:670
 msgid "Ornament"
 msgstr "飾り"
 
-#: includes/class-admin-page.php:680
+#: includes/class-admin-page.php:674
 msgid "Wave"
 msgstr "波線"
 
-#: includes/class-admin-page.php:681
+#: includes/class-admin-page.php:675
 msgid "Line"
 msgstr "直線"
 
-#: includes/class-admin-page.php:682
+#: includes/class-admin-page.php:676
 msgid "None"
 msgstr "なし"
 
-#: includes/class-admin-page.php:686
+#: includes/class-admin-page.php:680
 msgid "Contact line"
 msgstr "連絡先の行"
 
-#: includes/class-admin-page.php:690
+#: includes/class-admin-page.php:684
 msgid "Need help? Write to hello@example.com"
 msgstr "お困りですか? hello@example.com までご連絡ください"
 
-#: includes/class-admin-page.php:691
+#: includes/class-admin-page.php:685
 msgid "Plain text shown under the button. Email addresses and web addresses become links."
 msgstr "ボタンの下に表示されるプレーンテキストです。メールアドレスとウェブアドレスはリンクになります。"
 
-#: includes/class-admin-page.php:718
+#: includes/class-admin-page.php:712
 msgid "Choose from the media library"
 msgstr "メディアライブラリから選択"
 
-#: includes/class-admin-page.php:719
-#: includes/class-admin-page.php:1084
+#: includes/class-admin-page.php:713
+#: includes/class-admin-page.php:973
 msgid "Remove"
 msgstr "削除"
 
 #. translators: %s: file size, for example 150 KB.
-#: includes/class-admin-page.php:727
+#: includes/class-admin-page.php:721
 #, php-format
 msgid "This logo cannot be embedded, so the pages are shown without it. An SVG has to weigh less than %s, unless all it contains is one image. Try a PNG or JPG version of the logo."
 msgstr "このロゴは埋め込めないため、ページはロゴなしで表示されます。SVG は画像を1つだけ含む場合を除き、%s 未満である必要があります。PNG または JPG 版のロゴをお試しください。"
 
-#: includes/class-admin-page.php:747
+#: includes/class-admin-page.php:741
 msgid "Shown when WordPress cannot connect to the database. Answers with HTTP 503 so search engines treat the outage as temporary."
 msgstr "WordPress がデータベースに接続できないときに表示されます。検索エンジンが障害を一時的なものとして扱うよう、HTTP 503 で応答します。"
 
-#: includes/class-admin-page.php:748
+#: includes/class-admin-page.php:742
 msgid "Shown while WordPress updates itself, a theme or a plugin. Answers with HTTP 503."
 msgstr "WordPress 本体、テーマ、プラグインの更新中に表示されます。HTTP 503 で応答します。"
 
-#: includes/class-admin-page.php:749
+#: includes/class-admin-page.php:743
 msgid "Shown when a fatal PHP error stops the page. Technical details are added only when WP_DEBUG and WP_DEBUG_DISPLAY are enabled."
 msgstr "PHP の致命的エラーでページが停止したときに表示されます。技術的な詳細は、WP_DEBUG と WP_DEBUG_DISPLAY が有効な場合のみ追加されます。"
 
-#: includes/class-admin-page.php:754
+#: includes/class-admin-page.php:748
 msgid "Leave empty to use the default text in the language of the site."
 msgstr "空欄にすると、サイトの言語のデフォルトテキストを使います。"
 
 #. translators: %s: path of the template file.
-#: includes/class-admin-page.php:767
+#: includes/class-admin-page.php:761
 #, php-format
 msgid "The active theme replaces this page with its template %s. The settings below are passed to it, and the template decides what to show."
 msgstr "有効化中のテーマが、このページをテンプレート %s で置き換えます。下の設定はテンプレートに渡され、何を表示するかはテンプレートが決めます。"
 
 #. translators: %s: file name.
-#: includes/class-admin-page.php:781
+#: includes/class-admin-page.php:775
 #, php-format
 msgid "Write wp-content/%s"
 msgstr "wp-content/%s を書き込む"
 
-#: includes/class-admin-page.php:784
+#: includes/class-admin-page.php:778
 msgid "Title"
 msgstr "タイトル"
 
-#: includes/class-admin-page.php:793
+#: includes/class-admin-page.php:787
 msgid "Message"
 msgstr "メッセージ"
 
-#: includes/class-admin-page.php:796
+#: includes/class-admin-page.php:790
 msgid "Plain text. Leave a blank line between paragraphs."
 msgstr "プレーンテキスト。段落の間は空行を入れてください。"
 
-#: includes/class-admin-page.php:800
+#: includes/class-admin-page.php:794
 msgid "Retry button"
 msgstr "再試行ボタン"
 
-#: includes/class-admin-page.php:803
+#: includes/class-admin-page.php:797
 msgid "Show a button that reloads the page"
 msgstr "ページを再読み込みするボタンを表示"
 
-#: includes/class-admin-page.php:806
+#: includes/class-admin-page.php:800
 msgid "Button label"
 msgstr "ボタンのラベル"
 
-#: includes/class-admin-page.php:815
+#: includes/class-admin-page.php:809
 msgid "Automatic refresh"
 msgstr "自動更新"
 
-#: includes/class-admin-page.php:822
-#: includes/class-admin-page.php:834
+#: includes/class-admin-page.php:816
+#: includes/class-admin-page.php:828
 msgid "seconds"
 msgstr "秒"
 
-#: includes/class-admin-page.php:823
+#: includes/class-admin-page.php:817
 msgid "The page reloads itself after this delay. 0 disables it."
 msgstr "この時間が経つとページが自動で再読み込みされます。0 で無効になります。"
 
-#: includes/class-admin-page.php:827
+#: includes/class-admin-page.php:821
 msgid "Retry-After header"
 msgstr "Retry-After ヘッダー"
 
-#: includes/class-admin-page.php:835
+#: includes/class-admin-page.php:829
 msgid "Tells search engines and monitoring tools when to come back. 0 omits the header."
 msgstr "検索エンジンや監視ツールに、いつ再訪すればよいかを伝えます。0 にするとヘッダーを省略します。"
 
-#: includes/class-admin-page.php:839
+#: includes/class-admin-page.php:833
 msgid "Incident line"
 msgstr "障害情報の行"
 
-#: includes/class-admin-page.php:842
+#: includes/class-admin-page.php:836
 msgid "Show the local time of the incident and the HTTP status under the message"
 msgstr "メッセージの下に障害発生時の現地時刻と HTTP ステータスを表示"
 
-#: includes/class-admin-page.php:846
+#: includes/class-admin-page.php:840
 msgid "Email alert"
 msgstr "メール通知"
 
-#: includes/class-admin-page.php:849
+#: includes/class-admin-page.php:843
 msgid "Send an email when visitors see this page, and a report once the site is back"
 msgstr "訪問者がこのページを見たときにメールを送り、サイト復旧後にレポートを送信"
 
-#: includes/class-admin-page.php:852
+#: includes/class-admin-page.php:846
 msgid "Alert recipient"
 msgstr "通知の宛先"
 
-#: includes/class-admin-page.php:858
+#: includes/class-admin-page.php:852
 msgid "Leave empty to use the administration email address of the site."
 msgstr "空欄にすると、サイトの管理者メールアドレスを使います。"
 
-#: includes/class-admin-page.php:865
-#: includes/class-admin-page.php:978
+#: includes/class-admin-page.php:859
+#: includes/class-history-page.php:190
 msgid "HTTP status"
 msgstr "HTTP ステータス"
 
-#: includes/class-admin-page.php:869
+#: includes/class-admin-page.php:863
 msgid "503 Service Unavailable (recommended)"
 msgstr "503 Service Unavailable (推奨)"
 
-#: includes/class-admin-page.php:870
+#: includes/class-admin-page.php:864
 msgid "500 Internal Server Error (WordPress default)"
 msgstr "500 Internal Server Error (WordPress の初期値)"
 
-#: includes/class-admin-page.php:872
+#: includes/class-admin-page.php:866
 msgid "503 tells search engines the problem is temporary and sends Retry-After. 500 signals a permanent error."
 msgstr "503 は問題が一時的であることを検索エンジンに伝え、Retry-After を送信します。500 は恒久的なエラーを示します。"
 
-#: includes/class-admin-page.php:895
+#: includes/class-admin-page.php:889
 msgid "Live preview"
 msgstr "ライブプレビュー"
 
-#: includes/class-admin-page.php:897
+#: includes/class-admin-page.php:891
 msgid "Desktop"
 msgstr "デスクトップ"
 
-#: includes/class-admin-page.php:898
+#: includes/class-admin-page.php:892
 msgid "Mobile"
 msgstr "モバイル"
 
-#: includes/class-admin-page.php:904
+#: includes/class-admin-page.php:898
 msgid "Site shown:"
 msgstr "表示するサイト:"
 
-#: includes/class-admin-page.php:917
+#: includes/class-admin-page.php:911
 msgid "The preview follows what you type. Nothing is saved, and the pages of the site are left untouched, until you save."
 msgstr "プレビューは入力内容に追従します。保存するまで何も保存されず、サイトのページも変更されません。"
 
-#: includes/class-admin-page.php:918
+#: includes/class-admin-page.php:912
 msgid "Open the saved page in a new tab"
 msgstr "保存済みのページを新しいタブで開く"
 
-#: includes/class-admin-page.php:931
+#: includes/class-admin-page.php:925
 msgid "Test"
 msgstr "テスト"
 
-#: includes/class-admin-page.php:933
+#: includes/class-admin-page.php:927
 msgid "Save and send a test alert"
 msgstr "保存してテスト通知を送信"
 
-#: includes/class-admin-page.php:934
+#: includes/class-admin-page.php:928
 msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes."
 msgstr "データベースが停止している間は WordPress が動作できないため、通知は PHP の mail 関数で送信されます。一部のホスティングではブロックされ、迷惑メールに振り分けられることもあります。テストもまったく同じ経路をたどります。レポートは、エラーページが5分間表示されなくなった時点で、ほかのメールと同様に WordPress 経由で送信されます。"
 
-#: includes/class-admin-page.php:951
+#: includes/class-history-page.php:163
 msgid "Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site."
 msgstr "訪問者がいずれかのページを見るたびに、日時、ページ、HTTP ステータスが記録されます (最大で1分に1回)。訪問者に関する情報は何も保存されず、誰もサイトを訪れていない間は何も記録されません。"
 
-#: includes/class-admin-page.php:954
+#: includes/class-history-page.php:166
 msgid "Email alerts are off. Turn them on in the Database error tab to hear about an outage while it happens."
 msgstr "メール通知はオフです。障害の発生中に知らせを受け取るには、「データベースエラー」タブで有効にしてください。"
 
-#: includes/class-admin-page.php:956
+#: includes/class-history-page.php:168
 msgid "Email alerts are on, but no valid address is set to receive them."
 msgstr "メール通知はオンですが、受信用の有効なアドレスが設定されていません。"
 
 #. translators: %s: email address.
-#: includes/class-admin-page.php:962
+#: includes/class-history-page.php:174
 #, php-format
 msgid "Email alerts about database outages go to %s."
 msgstr "データベース障害のメール通知は %s に送信されます。"
 
-#: includes/class-admin-page.php:970
+#: includes/class-history-page.php:182
 msgid "No page has been shown to visitors so far."
 msgstr "これまでに訪問者に表示されたページはありません。"
 
-#: includes/class-admin-page.php:976
+#: includes/class-dashboard-widget.php:125
+#: includes/class-history-page.php:188
 msgid "Started"
 msgstr "開始"
 
-#: includes/class-admin-page.php:977
+#: includes/class-dashboard-widget.php:126
+#: includes/class-history-page.php:189
 msgid "Observed duration"
 msgstr "観測された時間"
 
-#: includes/class-admin-page.php:993
+#: includes/class-history-page.php:205
 msgid "The duration runs from the first to the last page shown. The 50 most recent incidents are listed, and the history keeps 180 days."
 msgstr "時間は最初から最後に表示されたページまでです。最新の50件の障害が一覧表示され、履歴は180日間保存されます。"
 
-#: includes/class-admin-page.php:994
+#: includes/class-history-page.php:206
 msgid "Delete the whole history?"
 msgstr "履歴をすべて削除しますか?"
 
-#: includes/class-admin-page.php:997
+#: includes/class-history-page.php:209
 msgid "Clear the history"
 msgstr "履歴を消去"
 
-#: includes/class-admin-page.php:1055
+#: includes/class-admin-page.php:944
 msgid "This page cannot be shown with the current PHP configuration."
 msgstr "現在の PHP の設定では、このページを表示できません。"
 
-#: includes/class-admin-page.php:1060
+#: includes/class-admin-page.php:949
 msgid "Current values:"
 msgstr "現在の値:"
 
-#: includes/class-admin-page.php:1075
+#: includes/class-admin-page.php:964
 msgid "Regenerate"
 msgstr "再生成"
 
-#: includes/class-admin-page.php:1076
+#: includes/class-admin-page.php:965
 msgid "Saves the content of the pages again and restores missing drop-ins. Useful after changing the site title, the timezone or the logo file."
 msgstr "ページの内容を再保存し、不足しているドロップインを復元します。サイトのタイトル、タイムゾーン、ロゴファイルを変更した後に便利です。"
 
-#: includes/class-admin-page.php:1080
+#: includes/class-admin-page.php:969
 msgid "Also replace files in wp-content that were not added by this plugin"
 msgstr "このプラグインが追加していない wp-content 内のファイルも置き換える"
 
-#: includes/class-admin-page.php:1081
+#: includes/class-admin-page.php:970
 msgid "Regenerate pages now"
 msgstr "今すぐページを再生成"
 
-#: includes/class-admin-page.php:1085
+#: includes/class-admin-page.php:974
 msgid "Deletes the drop-ins added by this plugin. WordPress shows its default screens again until you save or regenerate."
 msgstr "このプラグインが追加したドロップインを削除します。保存または再生成するまで、WordPress は標準の画面を再び表示します。"
 
-#: includes/class-admin-page.php:1086
+#: includes/class-admin-page.php:975
 msgid "Remove the drop-ins from wp-content?"
 msgstr "wp-content からドロップインを削除しますか?"
 
-#: includes/class-admin-page.php:1089
+#: includes/class-admin-page.php:978
 msgid "Remove drop-ins from wp-content"
 msgstr "wp-content からドロップインを削除"
 
-#: includes/class-admin-page.php:1092
+#: includes/class-admin-page.php:981
 msgid "Manual installation"
 msgstr "手動インストール"
 
-#: includes/class-admin-page.php:1093
+#: includes/class-admin-page.php:982
 msgid "When wp-content is not writable, download the drop-ins and upload them to wp-content yourself. They are the same file under three names. The content of the pages is saved in the uploads folder, so later changes need no new upload."
 msgstr "wp-content に書き込みできない場合は、ドロップインをダウンロードして自分で wp-content にアップロードしてください。3つの名前を持つ同じファイルです。ページの内容は uploads フォルダーに保存されるため、以降の変更で再アップロードは不要です。"
 
-#: includes/class-admin-page.php:1100
+#: includes/class-admin-page.php:989
 msgid "Files"
 msgstr "ファイル"
 
-#: includes/class-admin-page.php:1101
+#: includes/class-admin-page.php:990
 msgid "The drop-ins are copies of dropins/drop-in.php from the plugin folder. The content of the pages is saved here:"
 msgstr "ドロップインは、プラグインフォルダー内の dropins/drop-in.php のコピーです。ページの内容はここに保存されます:"
 
-#: includes/class-admin-page.php:1103
+#: includes/class-admin-page.php:992
 msgid "The alert settings, the theme folders and the history are kept next to it, in a private folder whose name cannot be guessed, because anyone can read a file in uploads when they know its address."
 msgstr "通知の設定、テーマのフォルダー、履歴はその隣の、推測できない名前の非公開フォルダーに保存されます。uploads 内のファイルはアドレスを知っていれば誰でも読めるためです。"
 
-#: includes/class-admin-page.php:1105
+#: includes/class-admin-page.php:994
 msgid "WP-CLI"
 msgstr "WP-CLI"
 
-#: includes/class-admin-page.php:1112
+#: includes/class-admin-page.php:1001
 msgid "Deactivation and uninstall"
 msgstr "無効化とアンインストール"
 
-#: includes/class-admin-page.php:1113
+#: includes/class-admin-page.php:1002
 msgid "Deactivating the plugin removes the three drop-ins from wp-content and keeps your settings. Uninstalling also removes the settings and the content folder in uploads. Files not added by this plugin are never touched."
 msgstr "プラグインを無効化すると、3つのドロップインが wp-content から削除され、設定は保持されます。アンインストールすると、設定と uploads 内のコンテンツフォルダーも削除されます。このプラグインが追加していないファイルには一切触れません。"
 
-#: includes/class-admin-page.php:1248
+#: includes/class-admin-page.php:1137
+#: includes/class-history-page.php:309
 msgid "You are not allowed to manage Offair."
 msgstr "Offair を管理する権限がありません。"
 
-#: includes/class-admin-page.php:1263
+#: includes/class-admin-page.php:1152
 msgid "Unknown page."
 msgstr "不明なページです。"
 
@@ -893,6 +900,7 @@ msgstr "障害時のページは設置済みです"
 msgid "Visitors see a branded page when the database is unreachable, during updates and on fatal errors."
 msgstr "データベースに接続できないとき、更新中、致命的エラーの際に、訪問者にはサイトの色に合わせたページが表示されます。"
 
+#: includes/class-history-page.php:140
 #: includes/class-site-health.php:105
 msgid "Open the Offair settings"
 msgstr "Offair の設定を開く"
@@ -901,26 +909,86 @@ msgstr "Offair の設定を開く"
 msgid "Some downtime pages need attention"
 msgstr "確認が必要な障害時のページがあります"
 
-#: includes/class-admin-page.php:952
+#: includes/class-history-page.php:164
 msgid "For a PHP error, the error itself is kept too: its message, file and line, which usually name the plugin or theme in cause. Paths start from the WordPress folder."
 msgstr "PHP エラーの場合は、エラー自体 (メッセージ、ファイル、行) も保存されます。通常、原因となったプラグインやテーマがわかります。パスは WordPress のフォルダーを起点にしています。"
 
 #. translators: %d: number of distinct errors.
-#: includes/class-admin-page.php:1020
+#: includes/class-history-page.php:232
 #, php-format
 msgid "%d error recorded"
 msgid_plural "%d different errors recorded"
 msgstr[0] "%d 件のエラーを記録"
 
 #. translators: 1: path of the file, from the WordPress folder, 2: line number.
-#: includes/class-admin-page.php:1030
+#: includes/class-history-page.php:242
 #, php-format
 msgid "%1$s, line %2$d"
 msgstr "%1$s の %2$d 行目"
 
 #. translators: 1: number of minutes with this error, 2: date and time it was last recorded.
-#: includes/class-admin-page.php:1034
+#: includes/class-history-page.php:246
 #, php-format
 msgid "Recorded %1$d time, last on %2$s."
 msgid_plural "Recorded %1$d times, last on %2$s."
 msgstr[0] "%1$d 回記録、最終: %2$s。"
+
+#: includes/class-dashboard-widget.php:83
+msgid "Outages seen by visitors"
+msgstr "訪問者が見た障害"
+
+#: includes/class-dashboard-widget.php:111
+msgid "No outage in the last 30 days."
+msgstr "過去 30 日間に障害はありません。"
+
+#. translators: %d: number of outages.
+#: includes/class-dashboard-widget.php:116
+#, php-format
+msgid "%d outage in the last 30 days."
+msgid_plural "%d outages in the last 30 days."
+msgstr[0] "過去 30 日間の障害: %d 件。"
+
+#. translators: %d: number of maintenance pages.
+#: includes/class-dashboard-widget.php:146
+#, php-format
+msgid "Plus %d maintenance page shown less than a minute, during an update."
+msgid_plural "Plus %d maintenance pages shown less than a minute, during updates."
+msgstr[0] "ほかに、更新中に 1 分未満表示されたメンテナンスページが %d 件あります。"
+
+#: includes/class-history-page.php:74
+#: includes/class-history-page.php:75
+#: includes/class-history-page.php:139
+msgid "Outage history"
+msgstr "障害の履歴"
+
+#: includes/class-history-page.php:264
+msgid "Dashboard widget"
+msgstr "ダッシュボードウィジェット"
+
+#: includes/class-history-page.php:271
+msgid "Widget"
+msgstr "ウィジェット"
+
+#: includes/class-history-page.php:273
+msgid "Show the outages of the last 30 days on the dashboard"
+msgstr "過去 30 日間の障害をダッシュボードに表示"
+
+#: includes/class-history-page.php:277
+msgid "On a network, the widget sits on the dashboard of the network admin, for the network administrators."
+msgstr "ネットワークでは、ウィジェットはネットワーク管理のダッシュボードに表示され、ネットワーク管理者が見られます。"
+
+#: includes/class-history-page.php:279
+msgid "Off by default. Each user can still hide it from the Screen Options of the dashboard."
+msgstr "初期状態ではオフです。各ユーザーはダッシュボードの表示オプションから非表示にすることもできます。"
+
+#: includes/class-history-page.php:287
+msgid "Shown to"
+msgstr "表示する権限グループ"
+
+#: includes/class-history-page.php:294
+msgid "Only these roles see the widget. A user who cannot manage Offair sees the outages without the link to this page."
+msgstr "これらの権限グループだけがウィジェットを見られます。Offair を管理できないユーザーには、このページへのリンクなしで障害が表示されます。"
+
+#: includes/class-history-page.php:299
+msgid "Save"
+msgstr "保存"

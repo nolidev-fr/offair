@@ -108,7 +108,7 @@ class Alert {
 				),
 				__( 'These times come from the pages shown to visitors: while nobody visits the site, an outage cannot be seen.', 'offair' ),
 				/* translators: %s: address of the history in the settings. */
-				sprintf( __( 'History of the outages: %s', 'offair' ), Admin_Page::url( 'history' ) ),
+				sprintf( __( 'History of the outages: %s', 'offair' ), History_Page::url() ),
 			)
 		);
 

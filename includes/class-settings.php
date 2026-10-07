@@ -176,6 +176,11 @@ class Settings {
 				'show_meta'     => true,
 				'status_code'   => 503,
 			),
+			// Dashboard widget, off by default: the outages are for whoever runs the site.
+			'dashboard'   => array(
+				'widget' => false,
+				'roles'  => array( 'administrator' ),
+			),
 		);
 	}
 
@@ -337,6 +342,16 @@ class Settings {
 				$section['contact_line'] = sanitize_text_field( $general['contact_line'] );
 			}
 			unset( $section );
+		}
+
+		if ( isset( $input['dashboard'] ) && is_array( $input['dashboard'] ) ) {
+			$clean['dashboard']['widget'] = ! empty( $input['dashboard']['widget'] );
+
+			// The network admin has no roles to choose from: the roles stay as they are there.
+			if ( ! is_multisite() ) {
+				$roles                       = isset( $input['dashboard']['roles'] ) ? (array) $input['dashboard']['roles'] : array();
+				$clean['dashboard']['roles'] = array_values( array_intersect( array_map( 'sanitize_key', $roles ), array_keys( wp_roles()->get_names() ) ) );
+			}
 		}
 
 		foreach ( self::SCREENS as $key ) {

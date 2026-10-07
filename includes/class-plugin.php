@@ -128,6 +128,8 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			new Admin_Page( $this );
+			new History_Page( $this );
+			new Dashboard_Widget( $this );
 		}
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {

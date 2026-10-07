@@ -58,7 +58,6 @@ class Admin_Page {
 		add_action( 'admin_post_offair_preview', array( $this, 'handle_preview' ) );
 		add_action( 'admin_post_offair_download', array( $this, 'handle_download' ) );
 		add_action( 'admin_post_offair_test_alert', array( $this, 'handle_test_alert' ) );
-		add_action( 'admin_post_offair_clear_history', array( $this, 'handle_clear_history' ) );
 		add_action( 'admin_post_offair_dismiss_incident', array( $this, 'handle_dismiss_incident' ) );
 		add_action( is_multisite() ? 'network_admin_notices' : 'admin_notices', array( $this, 'render_incident_notice' ) );
 
@@ -77,7 +76,7 @@ class Admin_Page {
 	}
 
 	/**
-	 * URL of the settings page, also used outside the admin (in the report).
+	 * URL of the settings page, also used by the history page.
 	 *
 	 * @param string $tab Tab to open.
 	 * @return string
@@ -171,6 +170,8 @@ class Admin_Page {
 			array(
 				'chooseLogo' => __( 'Choose a logo', 'offair' ),
 				'useLogo'    => __( 'Use this logo', 'offair' ),
+				// The History tab became a page: former links to the tab land there.
+				'historyUrl' => History_Page::url(),
 			)
 		);
 	}
@@ -182,7 +183,11 @@ class Admin_Page {
 	 * @return string[]
 	 */
 	public function action_links( $links ) {
-		array_unshift( $links, '<a href="' . esc_url( $this->page_url() ) . '">' . esc_html__( 'Settings', 'offair' ) . '</a>' );
+		array_unshift(
+			$links,
+			'<a href="' . esc_url( $this->page_url() ) . '">' . esc_html__( 'Settings', 'offair' ) . '</a>',
+			'<a href="' . esc_url( History_Page::url() ) . '">' . esc_html__( 'History', 'offair' ) . '</a>'
+		);
 
 		return $links;
 	}
@@ -327,18 +332,6 @@ class Admin_Page {
 	}
 
 	/**
-	 * Deletes the history of the pages shown.
-	 */
-	public function handle_clear_history() {
-		$this->require_capability();
-		check_admin_referer( 'offair_clear_history' );
-
-		$this->plugin->journal->clear();
-
-		$this->finish( __( 'History cleared.', 'offair' ), array(), 'history' );
-	}
-
-	/**
 	 * Hides the outage notice for the current user, until the next outage.
 	 */
 	public function handle_dismiss_incident() {
@@ -353,7 +346,7 @@ class Admin_Page {
 
 		$referer = wp_get_referer();
 
-		wp_safe_redirect( $referer ? $referer : self::url( 'history' ) );
+		wp_safe_redirect( $referer ? $referer : History_Page::url() );
 		exit;
 	}
 
@@ -365,6 +358,11 @@ class Admin_Page {
 		$screen = get_current_screen();
 
 		if ( null === $screen || ! in_array( $screen->id, array( 'dashboard', 'dashboard-network' ), true ) || ! current_user_can( Settings::capability() ) ) {
+			return;
+		}
+
+		// The widget already shows the outage to this user.
+		if ( Dashboard_Widget::visible( $this->plugin->settings->get() ) ) {
 			return;
 		}
 
@@ -388,7 +386,7 @@ class Admin_Page {
 				?>
 			</p>
 			<p>
-				<a href="<?php echo esc_url( self::url( 'history' ) ); ?>"><?php esc_html_e( 'See the history', 'offair' ); ?></a>
+				<a href="<?php echo esc_url( History_Page::url() ); ?>"><?php esc_html_e( 'See the history', 'offair' ); ?></a>
 				&middot;
 				<a href="<?php echo esc_url( $dismiss ); ?>"><?php esc_html_e( 'Dismiss', 'offair' ); ?></a>
 			</p>
@@ -429,7 +427,7 @@ class Admin_Page {
 				<?php foreach ( Settings::SCREENS as $key ) : ?>
 				<a href="#offair-tab-<?php echo esc_attr( $key ); ?>" class="nav-tab"><?php echo esc_html( $labels[ $key ] ); ?></a>
 				<?php endforeach; ?>
-				<a href="#offair-tab-history" class="nav-tab"><?php esc_html_e( 'History', 'offair' ); ?></a>
+				<a href="<?php echo esc_url( History_Page::url() ); ?>" class="nav-tab"><?php esc_html_e( 'History', 'offair' ); ?></a>
 				<a href="#offair-tab-advanced" class="nav-tab"><?php esc_html_e( 'Advanced', 'offair' ); ?></a>
 			</h2>
 
@@ -458,10 +456,6 @@ class Admin_Page {
 					<button type="submit" class="button button-primary"><?php esc_html_e( 'Save and regenerate pages', 'offair' ); ?></button>
 				</p>
 			</form>
-
-			<div id="offair-tab-history" class="offair-panel">
-				<?php $this->render_history(); ?>
-			</div>
 
 			<div id="offair-tab-advanced" class="offair-panel">
 				<?php $this->render_advanced(); ?>
@@ -932,111 +926,6 @@ class Admin_Page {
 			<td>
 				<button type="submit" class="button" name="action" value="offair_test_alert"><?php esc_html_e( 'Save and send a test alert', 'offair' ); ?></button>
 				<p class="description"><?php esc_html_e( 'While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes.', 'offair' ); ?></p>
-			</td>
-		</tr>
-		<?php
-	}
-
-	/**
-	 * History tab: the pages shown to visitors, grouped into incidents.
-	 */
-	private function render_history() {
-		$incidents = $this->plugin->journal->incidents( 50 );
-		$errors    = $this->plugin->journal->errors();
-		$labels    = Settings::screen_labels();
-		$settings  = $this->plugin->settings->get();
-		$to        = Settings::alert_recipient( $settings['db'] );
-		$format    = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-		?>
-		<p class="offair-intro"><?php esc_html_e( 'Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site.', 'offair' ); ?></p>
-		<p class="offair-intro"><?php esc_html_e( 'For a PHP error, the error itself is kept too: its message, file and line, which usually name the plugin or theme in cause. Paths start from the WordPress folder.', 'offair' ); ?></p>
-		<?php if ( empty( $settings['db']['alert'] ) ) : ?>
-		<p><?php esc_html_e( 'Email alerts are off. Turn them on in the Database error tab to hear about an outage while it happens.', 'offair' ); ?></p>
-		<?php elseif ( '' === $to ) : ?>
-		<div class="notice notice-warning inline"><p><?php esc_html_e( 'Email alerts are on, but no valid address is set to receive them.', 'offair' ); ?></p></div>
-		<?php else : ?>
-		<p>
-			<?php
-			printf(
-				/* translators: %s: email address. */
-				esc_html__( 'Email alerts about database outages go to %s.', 'offair' ),
-				'<strong>' . esc_html( $to ) . '</strong>'
-			);
-			?>
-		</p>
-		<?php endif; ?>
-
-		<?php if ( ! $incidents ) : ?>
-		<p><em><?php esc_html_e( 'No page has been shown to visitors so far.', 'offair' ); ?></em></p>
-		<?php else : ?>
-		<table class="widefat striped offair-history">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Page', 'offair' ); ?></th>
-					<th><?php esc_html_e( 'Started', 'offair' ); ?></th>
-					<th><?php esc_html_e( 'Observed duration', 'offair' ); ?></th>
-					<th><?php esc_html_e( 'HTTP status', 'offair' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php foreach ( $incidents as $incident ) : ?>
-				<tr>
-					<td><?php echo esc_html( isset( $labels[ $incident['screen'] ] ) ? $labels[ $incident['screen'] ] : $incident['screen'] ); ?></td>
-					<td><?php echo esc_html( wp_date( $format, $incident['start'] ) ); ?></td>
-					<td><?php echo esc_html( Journal::duration( $incident ) ); ?></td>
-					<td><?php echo esc_html( (string) $incident['status'] ); ?></td>
-				</tr>
-				<?php $this->render_incident_errors( $this->plugin->journal->incident_errors( $incident, $errors ), $format ); ?>
-			<?php endforeach; ?>
-			</tbody>
-		</table>
-		<p class="description"><?php esc_html_e( 'The duration runs from the first to the last page shown. The 50 most recent incidents are listed, and the history keeps 180 days.', 'offair' ); ?></p>
-		<form method="post" action="<?php echo esc_url( $this->post_url() ); ?>" class="offair-confirm" data-confirm="<?php esc_attr_e( 'Delete the whole history?', 'offair' ); ?>">
-			<?php wp_nonce_field( 'offair_clear_history' ); ?>
-			<input type="hidden" name="action" value="offair_clear_history">
-			<p><button type="submit" class="button"><?php esc_html_e( 'Clear the history', 'offair' ); ?></button></p>
-		</form>
-		<?php endif; ?>
-		<?php
-	}
-
-	/**
-	 * Errors behind a PHP error incident, in a row under it, folded.
-	 *
-	 * @param array[] $errors Distinct errors of the incident.
-	 * @param string  $format Date and time format.
-	 */
-	private function render_incident_errors( array $errors, $format ) {
-		if ( ! $errors ) {
-			return;
-		}
-		?>
-		<tr class="offair-history-errors">
-			<td colspan="4">
-				<details>
-					<summary>
-						<?php
-						/* translators: %d: number of distinct errors. */
-						echo esc_html( sprintf( _n( '%d error recorded', '%d different errors recorded', count( $errors ), 'offair' ), count( $errors ) ) );
-						?>
-					</summary>
-					<?php foreach ( $errors as $error ) : ?>
-					<div class="offair-history-error">
-						<pre><?php echo esc_html( $error['message'] ); ?></pre>
-						<p>
-							<?php
-							if ( '' !== $error['file'] ) {
-								/* translators: 1: path of the file, from the WordPress folder, 2: line number. */
-								echo '<code>' . esc_html( sprintf( __( '%1$s, line %2$d', 'offair' ), $error['file'], $error['line'] ) ) . '</code> ';
-							}
-
-							/* translators: 1: number of minutes with this error, 2: date and time it was last recorded. */
-							echo esc_html( sprintf( _n( 'Recorded %1$d time, last on %2$s.', 'Recorded %1$d times, last on %2$s.', $error['count'], 'offair' ), $error['count'], wp_date( $format, $error['last'] ) ) );
-							?>
-						</p>
-					</div>
-					<?php endforeach; ?>
-				</details>
 			</td>
 		</tr>
 		<?php

@@ -2,8 +2,15 @@
 ( function ( $ ) {
 	'use strict';
 
+	// The History tab became a page of its own: former links to it go there.
+	if ( '#offair-tab-history' === window.location.hash && window.offairAdmin && offairAdmin.historyUrl ) {
+		window.location.replace( offairAdmin.historyUrl );
+		return;
+	}
+
 	$( function () {
-		var $tabs = $( '.offair-tabs .nav-tab' );
+		// Tabs of this page only, the History tab links to another page.
+		var $tabs = $( '.offair-tabs .nav-tab[href^="#"]' );
 		var $panels = $( '.offair-panel' );
 		var $save = $( '.offair-save' );
 		var $currentTab = $( '#offair-current-tab' );
@@ -93,7 +100,7 @@
 
 			$tabs.removeClass( 'nav-tab-active' ).filter( '[href="#' + id + '"]' ).addClass( 'nav-tab-active' );
 			$panels.hide().filter( '#' + id ).show();
-			$save.toggle( -1 === [ 'offair-tab-history', 'offair-tab-advanced' ].indexOf( id ) );
+			$save.toggle( 'offair-tab-advanced' !== id );
 			$currentTab.val( id.replace( 'offair-tab-', '' ) );
 
 			// The preview of the tab being opened is rendered from the current fields.

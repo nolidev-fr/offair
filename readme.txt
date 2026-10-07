@@ -40,7 +40,8 @@ The plugin copies one static file shipped in its own folder (`dropins/drop-in.ph
 * No external dependency: system fonts, logo embedded in the content file, nothing loaded from the network.
 * A live preview beside the settings, rendered by the drop-in itself, exactly as visitors will see it. It follows what you type, and nothing is saved or written to your site until you save.
 * An email alert when the database goes down, off by default. The page itself sends it while WordPress cannot run, and WordPress sends a report once the site is back, with the duration of the outage. A test button shows whether your host delivers it.
-* A history of the outages, in its own tab: the date, the page and the HTTP status, recorded once a minute at most. For a PHP error, the error itself too: its message, file and line, which usually name the plugin or theme in cause. Nothing about your visitors is recorded. A notice on the dashboard tells you about a database outage you missed.
+* A history of the outages, under Tools, Outage history: the date, the page and the HTTP status, recorded once a minute at most. For a PHP error, the error itself too: its message, file and line, which usually name the plugin or theme in cause. Nothing about your visitors is recorded.
+* A dashboard widget with the outages of the last 30 days, off by default, shown only to the roles you choose. Without it, a notice on the dashboard tells administrators about a database outage they missed.
 * Theme templates: a theme can design any of the three pages itself, with the texts, colors and logo from the settings.
 * A status box, a Site Health test and WP-CLI commands.
 * Clean removal: the drop-ins are removed when the plugin is deactivated, and everything is removed when it is uninstalled.
@@ -111,7 +112,7 @@ While the database is down WordPress cannot run, so the alert is sent with the m
 
 = What does the history record? =
 
-The date, the page and the HTTP status, once a minute at most, each time a visitor sees one of the pages. For a PHP error page, also the error behind it, as WordPress hands it over: its message, file and line, and the stack trace without the values passed to the functions. Paths start from the WordPress folder. Nothing about the visitors themselves. Only administrators see the history, in the History tab or with `wp offair history`. It is kept for 180 days and removed when the plugin is uninstalled. An outage while nobody visits the site cannot be seen.
+The date, the page and the HTTP status, once a minute at most, each time a visitor sees one of the pages. For a PHP error page, also the error behind it, as WordPress hands it over: its message, file and line, and the stack trace without the values passed to the functions. Paths start from the WordPress folder. Nothing about the visitors themselves. The full history, with the errors, is for administrators: Tools, Outage history, or `wp offair history`. The dashboard widget, off by default, shows the outages of the last 30 days to the roles you choose, without the errors. It is kept for 180 days and removed when the plugin is uninstalled. An outage while nobody visits the site cannot be seen.
 
 = Can my theme design the pages? =
 
@@ -132,6 +133,10 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 3. One tab per page, with the live preview rendered exactly as visitors will see it.
 
 == Changelog ==
+
+= 1.5.0 =
+* New: the history has a page of its own, under Tools, Outage history. The History tab of the settings and the plugins screen lead there.
+* New: optional dashboard widget with the outages of the last 30 days, off by default. Choose on the history page which roles see it.
 
 = 1.4.0 =
 * New: the History tab shows the error behind each PHP error incident, with its message, file and line, so you can tell which plugin or theme failed. `wp offair history` shows it too.
@@ -178,6 +183,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.5.0 =
+The history moves to Tools, Outage history, and an optional dashboard widget shows the outages of the last 30 days.
 
 = 1.4.0 =
 The History tab now shows the error behind each PHP error page. If you uploaded the drop-ins yourself, download them again.
