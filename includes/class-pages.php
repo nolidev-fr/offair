@@ -451,6 +451,10 @@ class Pages {
 		$found = glob( $dir . '/' . self::PRIVATE_PREFIX . '*', GLOB_ONLYDIR );
 
 		if ( is_array( $found ) && isset( $found[0] ) ) {
+			if ( $create ) {
+				self::deny_web_access( $found[0] );
+			}
+
 			return $found[0];
 		}
 
@@ -467,8 +471,29 @@ class Pages {
 		}
 
 		$filesystem->put_contents( $private . '/index.html', '', FS_CHMOD_FILE );
+		self::deny_web_access( $private );
 
 		return $private;
+	}
+
+	/**
+	 * Refuses web access to the private folder where the server reads
+	 * .htaccess files (Apache, LiteSpeed). The drop-in reads the folder from
+	 * the disk, so it is not affected. Elsewhere, the name that cannot be
+	 * guessed remains the protection.
+	 *
+	 * @param string $dir Private folder.
+	 */
+	private static function deny_web_access( $dir ) {
+		if ( file_exists( $dir . '/.htaccess' ) ) {
+			return;
+		}
+
+		$filesystem = Filesystem::get();
+
+		if ( null !== $filesystem ) {
+			$filesystem->put_contents( $dir . '/.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n", FS_CHMOD_FILE );
+		}
 	}
 
 	/**

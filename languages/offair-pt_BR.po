@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Offair 1.3.0\n"
+"Project-Id-Version: Offair 1.4.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
 "Last-Translator: Nolidev <contact@nolidev.fr>\n"
 "Language-Team: Nolidev <contact@nolidev.fr>\n"
@@ -140,7 +140,7 @@ msgstr "Salvar e regenerar as páginas"
 
 #: includes/class-admin-page.php:509
 #: includes/class-admin-page.php:777
-#: includes/class-admin-page.php:973
+#: includes/class-admin-page.php:975
 msgid "Page"
 msgstr "Página"
 
@@ -353,7 +353,7 @@ msgid "Choose from the media library"
 msgstr "Escolher na biblioteca de mídia"
 
 #: includes/class-admin-page.php:719
-#: includes/class-admin-page.php:1039
+#: includes/class-admin-page.php:1084
 msgid "Remove"
 msgstr "Remover"
 
@@ -461,7 +461,7 @@ msgid "Leave empty to use the administration email address of the site."
 msgstr "Deixe em branco para usar o endereço de e-mail de administração do site."
 
 #: includes/class-admin-page.php:865
-#: includes/class-admin-page.php:976
+#: includes/class-admin-page.php:978
 msgid "HTTP status"
 msgstr "Status HTTP"
 
@@ -513,121 +513,121 @@ msgstr "Salvar e enviar um alerta de teste"
 msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes."
 msgstr "Enquanto o banco de dados está fora do ar, o WordPress não consegue funcionar, então o alerta é enviado com a função mail do PHP. Algumas hospedagens a bloqueiam, e ele pode cair no spam: o teste segue exatamente o mesmo caminho. O relatório passa pelo WordPress, como os outros e-mails dele, quando a página de erro deixa de ser exibida por cinco minutos."
 
-#: includes/class-admin-page.php:950
+#: includes/class-admin-page.php:951
 msgid "Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site."
 msgstr "Cada vez que um visitante vê uma das páginas, a data, a página e o status HTTP são registrados, no máximo uma vez por minuto. Nada sobre os visitantes é guardado, e nada é registrado enquanto ninguém visita o site."
 
-#: includes/class-admin-page.php:952
+#: includes/class-admin-page.php:954
 msgid "Email alerts are off. Turn them on in the Database error tab to hear about an outage while it happens."
 msgstr "Os alertas por e-mail estão desativados. Ative-os na aba Erro de banco de dados para saber de uma queda enquanto ela acontece."
 
-#: includes/class-admin-page.php:954
+#: includes/class-admin-page.php:956
 msgid "Email alerts are on, but no valid address is set to receive them."
 msgstr "Os alertas por e-mail estão ativados, mas nenhum endereço válido foi definido para recebê-los."
 
 #. translators: %s: email address.
-#: includes/class-admin-page.php:960
+#: includes/class-admin-page.php:962
 #, php-format
 msgid "Email alerts about database outages go to %s."
 msgstr "Os alertas por e-mail sobre quedas do banco de dados vão para %s."
 
-#: includes/class-admin-page.php:968
+#: includes/class-admin-page.php:970
 msgid "No page has been shown to visitors so far."
 msgstr "Nenhuma página foi exibida aos visitantes até agora."
 
-#: includes/class-admin-page.php:974
+#: includes/class-admin-page.php:976
 msgid "Started"
 msgstr "Início"
 
-#: includes/class-admin-page.php:975
+#: includes/class-admin-page.php:977
 msgid "Observed duration"
 msgstr "Duração observada"
 
-#: includes/class-admin-page.php:990
+#: includes/class-admin-page.php:993
 msgid "The duration runs from the first to the last page shown. The 50 most recent incidents are listed, and the history keeps 180 days."
 msgstr "A duração vai da primeira à última página exibida. Os 50 incidentes mais recentes são listados, e o histórico guarda 180 dias."
 
-#: includes/class-admin-page.php:991
+#: includes/class-admin-page.php:994
 msgid "Delete the whole history?"
 msgstr "Excluir todo o histórico?"
 
-#: includes/class-admin-page.php:994
+#: includes/class-admin-page.php:997
 msgid "Clear the history"
 msgstr "Limpar o histórico"
 
-#: includes/class-admin-page.php:1010
+#: includes/class-admin-page.php:1055
 msgid "This page cannot be shown with the current PHP configuration."
 msgstr "Esta página não pode ser exibida com a configuração atual do PHP."
 
-#: includes/class-admin-page.php:1015
+#: includes/class-admin-page.php:1060
 msgid "Current values:"
 msgstr "Valores atuais:"
 
-#: includes/class-admin-page.php:1030
+#: includes/class-admin-page.php:1075
 msgid "Regenerate"
 msgstr "Regenerar"
 
-#: includes/class-admin-page.php:1031
+#: includes/class-admin-page.php:1076
 msgid "Saves the content of the pages again and restores missing drop-ins. Useful after changing the site title, the timezone or the logo file."
 msgstr "Salva novamente o conteúdo das páginas e restaura os drop-ins ausentes. Útil depois de mudar o título do site, o fuso horário ou o arquivo do logotipo."
 
-#: includes/class-admin-page.php:1035
+#: includes/class-admin-page.php:1080
 msgid "Also replace files in wp-content that were not added by this plugin"
 msgstr "Substituir também os arquivos em wp-content que não foram adicionados por este plugin"
 
-#: includes/class-admin-page.php:1036
+#: includes/class-admin-page.php:1081
 msgid "Regenerate pages now"
 msgstr "Regenerar as páginas agora"
 
-#: includes/class-admin-page.php:1040
+#: includes/class-admin-page.php:1085
 msgid "Deletes the drop-ins added by this plugin. WordPress shows its default screens again until you save or regenerate."
 msgstr "Exclui os drop-ins adicionados por este plugin. O WordPress volta a exibir as telas padrão dele até você salvar ou regenerar."
 
-#: includes/class-admin-page.php:1041
+#: includes/class-admin-page.php:1086
 msgid "Remove the drop-ins from wp-content?"
 msgstr "Remover os drop-ins de wp-content?"
 
-#: includes/class-admin-page.php:1044
+#: includes/class-admin-page.php:1089
 msgid "Remove drop-ins from wp-content"
 msgstr "Remover os drop-ins de wp-content"
 
-#: includes/class-admin-page.php:1047
+#: includes/class-admin-page.php:1092
 msgid "Manual installation"
 msgstr "Instalação manual"
 
-#: includes/class-admin-page.php:1048
+#: includes/class-admin-page.php:1093
 msgid "When wp-content is not writable, download the drop-ins and upload them to wp-content yourself. They are the same file under three names. The content of the pages is saved in the uploads folder, so later changes need no new upload."
 msgstr "Quando wp-content não tem permissão de escrita, baixe os drop-ins e envie-os você mesmo para wp-content. É o mesmo arquivo com três nomes. O conteúdo das páginas é salvo na pasta uploads, então as alterações seguintes não exigem um novo envio."
 
-#: includes/class-admin-page.php:1055
+#: includes/class-admin-page.php:1100
 msgid "Files"
 msgstr "Arquivos"
 
-#: includes/class-admin-page.php:1056
+#: includes/class-admin-page.php:1101
 msgid "The drop-ins are copies of dropins/drop-in.php from the plugin folder. The content of the pages is saved here:"
 msgstr "Os drop-ins são cópias de dropins/drop-in.php, da pasta do plugin. O conteúdo das páginas é salvo aqui:"
 
-#: includes/class-admin-page.php:1058
+#: includes/class-admin-page.php:1103
 msgid "The alert settings, the theme folders and the history are kept next to it, in a private folder whose name cannot be guessed, because anyone can read a file in uploads when they know its address."
 msgstr "As configurações do alerta, as pastas do tema e o histórico ficam ao lado, em uma pasta privada com um nome impossível de adivinhar, porque qualquer pessoa pode ler um arquivo em uploads se souber o endereço dele."
 
-#: includes/class-admin-page.php:1060
+#: includes/class-admin-page.php:1105
 msgid "WP-CLI"
 msgstr "WP-CLI"
 
-#: includes/class-admin-page.php:1067
+#: includes/class-admin-page.php:1112
 msgid "Deactivation and uninstall"
 msgstr "Desativação e desinstalação"
 
-#: includes/class-admin-page.php:1068
+#: includes/class-admin-page.php:1113
 msgid "Deactivating the plugin removes the three drop-ins from wp-content and keeps your settings. Uninstalling also removes the settings and the content folder in uploads. Files not added by this plugin are never touched."
 msgstr "Desativar o plugin remove os três drop-ins de wp-content e mantém as suas configurações. Desinstalá-lo remove também as configurações e a pasta de conteúdo em uploads. Os arquivos que não foram adicionados por este plugin nunca são alterados."
 
-#: includes/class-admin-page.php:1203
+#: includes/class-admin-page.php:1248
 msgid "You are not allowed to manage Offair."
 msgstr "Você não tem permissão para gerenciar o Offair."
 
-#: includes/class-admin-page.php:1218
+#: includes/class-admin-page.php:1263
 msgid "Unknown page."
 msgstr "Página desconhecida."
 
@@ -723,17 +723,17 @@ msgstr "Em um erro fatal, o PHP envia então a mensagem de erro bruta e os cabe�
 msgid "To fix it, either disable WP_DEBUG_DISPLAY (recommended on a live site) or set output_buffering to 4096 in the PHP configuration (php.ini, .user.ini or the hosting panel)."
 msgstr "Para corrigir, desative WP_DEBUG_DISPLAY (recomendado em um site em produção) ou defina output_buffering como 4096 na configuração do PHP (php.ini, .user.ini ou o painel da hospedagem)."
 
-#: includes/class-journal.php:323
+#: includes/class-journal.php:464
 msgid "less than a minute"
 msgstr "menos de um minuto"
 
 #. translators: %s: duration, for example "15 mins".
-#: includes/class-journal.php:327
+#: includes/class-journal.php:468
 #, php-format
 msgid "about %s"
 msgstr "cerca de %s"
 
-#: includes/class-journal.php:339
+#: includes/class-journal.php:480
 msgid "Every 15 minutes (Offair)"
 msgstr "A cada 15 minutos (Offair)"
 
@@ -749,32 +749,32 @@ msgstr "Não foi possível salvar o conteúdo das páginas em %s. Verifique se a
 msgid "The content of the sites of the network could not be saved in %s. Check that the uploads folder is writable."
 msgstr "Não foi possível salvar o conteúdo dos sites da rede em %s. Verifique se a pasta uploads tem permissão de escrita."
 
-#: includes/class-pages.php:718
+#: includes/class-pages.php:743
 msgid "Database temporarily unavailable (HTTP 503)."
 msgstr "Banco de dados temporariamente indisponível (HTTP 503)."
 
-#: includes/class-pages.php:719
+#: includes/class-pages.php:744
 msgid "Scheduled maintenance in progress (HTTP 503)."
 msgstr "Manutenção programada em andamento (HTTP 503)."
 
 #. translators: %d: HTTP status code.
-#: includes/class-pages.php:721
+#: includes/class-pages.php:746
 #, php-format
 msgid "Technical error (HTTP %d)."
 msgstr "Erro técnico (HTTP %d)."
 
 #. translators: 1: local time of the incident, filled in when the page is shown, 2: timezone name, 3: sentence describing the incident.
-#: includes/class-pages.php:728
+#: includes/class-pages.php:753
 #, php-format
 msgid "Incident recorded at %1$s (%2$s). %3$s"
 msgstr "Incidente registrado às %1$s (%2$s). %3$s"
 
 #. translators: Must match, word for word, the sentence used near the end of the default database error and maintenance messages: it is removed from the page when the automatic refresh is turned off.
-#: includes/class-pages.php:741
+#: includes/class-pages.php:766
 msgid "This page refreshes on its own."
 msgstr "Esta página se atualiza sozinha."
 
-#: includes/class-pages.php:752
+#: includes/class-pages.php:777
 msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
 msgstr "O modo de recuperação está ativo: a extensão que causou este erro foi pausada. Confira as telas Plugins e Temas para mais detalhes."
 
@@ -901,3 +901,29 @@ msgstr "Abrir as configurações do Offair"
 #: includes/class-site-health.php:110
 msgid "Some downtime pages need attention"
 msgstr "Algumas páginas de indisponibilidade precisam de atenção"
+
+#: includes/class-admin-page.php:952
+msgid "For a PHP error, the error itself is kept too: its message, file and line, which usually name the plugin or theme in cause. Paths start from the WordPress folder."
+msgstr "Em um erro de PHP, o próprio erro também é guardado: a mensagem, o arquivo e a linha, que geralmente apontam o plugin ou o tema responsável. Os caminhos partem da pasta do WordPress."
+
+#. translators: %d: number of distinct errors.
+#: includes/class-admin-page.php:1020
+#, php-format
+msgid "%d error recorded"
+msgid_plural "%d different errors recorded"
+msgstr[0] "%d erro registrado"
+msgstr[1] "%d erros diferentes registrados"
+
+#. translators: 1: path of the file, from the WordPress folder, 2: line number.
+#: includes/class-admin-page.php:1030
+#, php-format
+msgid "%1$s, line %2$d"
+msgstr "%1$s, linha %2$d"
+
+#. translators: 1: number of minutes with this error, 2: date and time it was last recorded.
+#: includes/class-admin-page.php:1034
+#, php-format
+msgid "Recorded %1$d time, last on %2$s."
+msgid_plural "Recorded %1$d times, last on %2$s."
+msgstr[0] "Registrado %1$d vez, a última em %2$s."
+msgstr[1] "Registrado %1$d vezes, a última em %2$s."

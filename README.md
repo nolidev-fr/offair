@@ -22,7 +22,7 @@ The content of the pages (texts in the language of the site, colors, logo as a d
 
 On a network, each site also gets `sites/<id>.json`, built in its own language with its title, logo and timezone, and `sites.json` lists the address of every site. WordPress has not worked out which site is asked for when the database is down, so the drop-in compares the address with that list and picks the page of the site, or the page of the main site for an unknown address.
 
-Anyone can read a file in uploads when they know its address, and `pages.json` has a known address. What visitors must not see (the alert recipient, the folders of the theme, the history) goes in `wp-content/uploads/offair/private-<random>/`, a folder whose name cannot be guessed. The drop-in finds it by its prefix.
+Anyone can read a file in uploads when they know its address, and `pages.json` has a known address. What visitors must not see (the alert recipient, the folders of the theme, the history) goes in `wp-content/uploads/offair/private-<random>/`, a folder whose name cannot be guessed. The drop-in finds it by its prefix. The folder also holds an `.htaccess` that refuses web access on Apache and LiteSpeed.
 
 ## Features
 
@@ -34,7 +34,7 @@ Anyone can read a file in uploads when they know its address, and `pages.json` h
 - Live preview beside the settings, rendered by the drop-in itself. It follows what you type: trying out colors, layouts or texts writes nothing until you save. It shows the page as a computer screen sees it, and a phone width is one click away.
 - Status box telling you whether each page is in place and up to date. A file the plugin did not add is never replaced without your say.
 - Email alert when the database goes down, off by default. The drop-in sends it with `mail()`, since WordPress cannot run during the outage, at most once an hour. Once the site is back, a scheduled check sends a report through `wp_mail()` with the duration of the outage.
-- History of the pages shown to visitors, in its own tab and with `wp offair history`: the time, the page and the HTTP status, once a minute at most per page. Nothing about the visitors is recorded. A dashboard notice reports a database outage an administrator missed.
+- History of the pages shown to visitors, in its own tab and with `wp offair history`: the time, the page and the HTTP status, once a minute at most per page. For a PHP error, the error itself is kept in `errors.log`: message, file and line, paths from the WordPress folder, stack trace without the values of the arguments. Nothing about the visitors is recorded. A dashboard notice reports a database outage an administrator missed.
 - Theme templates: a theme can replace any of the three pages with its own design (see below).
 - Site Health test, WP-CLI commands, filters and an action for developers.
 - Clean removal: drop-ins removed on deactivation, everything removed on uninstall.

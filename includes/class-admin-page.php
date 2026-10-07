@@ -942,12 +942,14 @@ class Admin_Page {
 	 */
 	private function render_history() {
 		$incidents = $this->plugin->journal->incidents( 50 );
+		$errors    = $this->plugin->journal->errors();
 		$labels    = Settings::screen_labels();
 		$settings  = $this->plugin->settings->get();
 		$to        = Settings::alert_recipient( $settings['db'] );
 		$format    = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 		?>
 		<p class="offair-intro"><?php esc_html_e( 'Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site.', 'offair' ); ?></p>
+		<p class="offair-intro"><?php esc_html_e( 'For a PHP error, the error itself is kept too: its message, file and line, which usually name the plugin or theme in cause. Paths start from the WordPress folder.', 'offair' ); ?></p>
 		<?php if ( empty( $settings['db']['alert'] ) ) : ?>
 		<p><?php esc_html_e( 'Email alerts are off. Turn them on in the Database error tab to hear about an outage while it happens.', 'offair' ); ?></p>
 		<?php elseif ( '' === $to ) : ?>
@@ -984,6 +986,7 @@ class Admin_Page {
 					<td><?php echo esc_html( Journal::duration( $incident ) ); ?></td>
 					<td><?php echo esc_html( (string) $incident['status'] ); ?></td>
 				</tr>
+				<?php $this->render_incident_errors( $this->plugin->journal->incident_errors( $incident, $errors ), $format ); ?>
 			<?php endforeach; ?>
 			</tbody>
 		</table>
@@ -994,6 +997,48 @@ class Admin_Page {
 			<p><button type="submit" class="button"><?php esc_html_e( 'Clear the history', 'offair' ); ?></button></p>
 		</form>
 		<?php endif; ?>
+		<?php
+	}
+
+	/**
+	 * Errors behind a PHP error incident, in a row under it, folded.
+	 *
+	 * @param array[] $errors Distinct errors of the incident.
+	 * @param string  $format Date and time format.
+	 */
+	private function render_incident_errors( array $errors, $format ) {
+		if ( ! $errors ) {
+			return;
+		}
+		?>
+		<tr class="offair-history-errors">
+			<td colspan="4">
+				<details>
+					<summary>
+						<?php
+						/* translators: %d: number of distinct errors. */
+						echo esc_html( sprintf( _n( '%d error recorded', '%d different errors recorded', count( $errors ), 'offair' ), count( $errors ) ) );
+						?>
+					</summary>
+					<?php foreach ( $errors as $error ) : ?>
+					<div class="offair-history-error">
+						<pre><?php echo esc_html( $error['message'] ); ?></pre>
+						<p>
+							<?php
+							if ( '' !== $error['file'] ) {
+								/* translators: 1: path of the file, from the WordPress folder, 2: line number. */
+								echo '<code>' . esc_html( sprintf( __( '%1$s, line %2$d', 'offair' ), $error['file'], $error['line'] ) ) . '</code> ';
+							}
+
+							/* translators: 1: number of minutes with this error, 2: date and time it was last recorded. */
+							echo esc_html( sprintf( _n( 'Recorded %1$d time, last on %2$s.', 'Recorded %1$d times, last on %2$s.', $error['count'], 'offair' ), $error['count'], wp_date( $format, $error['last'] ) ) );
+							?>
+						</p>
+					</div>
+					<?php endforeach; ?>
+				</details>
+			</td>
+		</tr>
 		<?php
 	}
 

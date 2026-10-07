@@ -561,6 +561,35 @@ CSS;
 	if ( false === $last || $last <= $now_ts - 60 ) {
 		@touch( $seen ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_touch
 		@file_put_contents( $private_dir . '/events.log', $now_ts . ' ' . $screen . ' ' . $status . "\n", FILE_APPEND | LOCK_EX ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+
+		/*
+		 * The error behind a PHP error page, for the administrators: its
+		 * message, file and line, with paths shortened from the WordPress
+		 * folder. Kept apart from events.log, whose format stays the same.
+		 */
+		if ( 'php' === $screen && is_array( $error ) && isset( $error['message'] ) ) {
+			$root  = str_replace( '\\', '/', rtrim( ABSPATH, '/\\' ) ) . '/';
+			$short = static function ( $value ) use ( $str, $root ) {
+				$value = str_replace( '\\', '/', $str( $value ) );
+
+				return '/' === $root ? $value : str_replace( array( $root, rtrim( $root, '/' ) ), '', $value );
+			};
+			// The arguments in the stack trace may hold private values: only the calls are kept.
+			$message = preg_replace( '/^(#\d+ [^\n]*?: [^\n(]+)\([^\n]*\)$/m', '$1()', $short( $error['message'] ) );
+			$detail  = json_encode( // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WordPress is not loaded.
+				array(
+					'type'    => isset( $error['type'] ) ? (int) $error['type'] : 0,
+					'message' => substr( is_string( $message ) ? $message : '', 0, 2000 ),
+					'file'    => $short( isset( $error['file'] ) ? $error['file'] : '' ),
+					'line'    => isset( $error['line'] ) ? (int) $error['line'] : 0,
+				),
+				JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+			);
+
+			if ( is_string( $detail ) ) {
+				@file_put_contents( $private_dir . '/errors.log', $now_ts . "\t" . $detail . "\n", FILE_APPEND | LOCK_EX ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			}
+		}
 	}
 
 	$alert = isset( $private['alert'] ) && is_array( $private['alert'] ) ? $private['alert'] : array();

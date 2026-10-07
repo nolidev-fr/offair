@@ -162,6 +162,9 @@ class CLI {
 	/**
 	 * Lists the incidents recorded when the pages were shown to visitors.
 	 *
+	 * For a PHP error incident, the error column holds the most frequent
+	 * error: the first line of its message, then its file and line.
+	 *
 	 * ## OPTIONS
 	 *
 	 * [--format=<format>]
@@ -183,9 +186,23 @@ class CLI {
 	 * @param array $assoc_args Named arguments.
 	 */
 	public function history( $args, $assoc_args ) {
-		$rows = array();
+		$rows   = array();
+		$errors = $this->plugin->journal->errors();
 
 		foreach ( $this->plugin->journal->incidents( 50 ) as $incident ) {
+			$found = $this->plugin->journal->incident_errors( $incident, $errors );
+			$error = '';
+
+			if ( $found ) {
+				$error = trim( strtok( $found[0]['message'], "\n" ) );
+				$where = $found[0]['file'] . ':' . $found[0]['line'];
+
+				// An uncaught exception already names its file and line in the message.
+				if ( '' !== $found[0]['file'] && false === strpos( $error, $where ) ) {
+					$error .= ' (' . $where . ')';
+				}
+			}
+
 			$rows[] = array(
 				'page'     => $incident['screen'],
 				'start'    => wp_date( 'Y-m-d H:i:s', $incident['start'] ),
@@ -193,6 +210,7 @@ class CLI {
 				'duration' => Journal::duration( $incident ),
 				'minutes'  => $incident['count'],
 				'status'   => $incident['status'],
+				'error'    => $error,
 			);
 		}
 
