@@ -80,7 +80,12 @@ class Dashboard_Widget {
 			return;
 		}
 
-		wp_add_dashboard_widget( self::ID, __( 'Outages seen by visitors', 'offair' ), array( $this, 'render' ) );
+		/*
+		 * At the top of the second column: it exists from 800 pixels wide, so the
+		 * widget is seen without scrolling, and the first column keeps the
+		 * widgets of WordPress. An order saved by the user still wins.
+		 */
+		wp_add_dashboard_widget( self::ID, __( 'Outages seen by visitors', 'offair' ), array( $this, 'render' ), null, null, 'side', 'high' );
 	}
 
 	/**
