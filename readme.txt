@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,10 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 == Changelog ==
 
+= 1.5.1 =
+* The dashboard widget now appears at the top of the second column, where it is seen without scrolling. A position you chose yourself is kept.
+* French translation reviewed: spelling and typography.
+
 = 1.5.0 =
 * New: the history has a page of its own, under Tools, Outage history. The History tab of the settings and the plugins screen lead there.
 * New: optional dashboard widget with the outages of the last 30 days, off by default. Choose on the history page which roles see it.
@@ -183,6 +187,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.5.1 =
+The dashboard widget is easier to find, and the French translation is reviewed.
 
 = 1.5.0 =
 The history moves to Tools, Outage history, and an optional dashboard widget shows the outages of the last 30 days.
