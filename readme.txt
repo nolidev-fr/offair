@@ -62,6 +62,10 @@ Nothing else is needed on the sites: when MainWP Child is active, Offair adds it
 * Theme templates: `offair/db-error.php`, `offair/maintenance.php` and `offair/php-error.php` in the active theme or its parent. The variables they receive are listed in the [documentation on GitHub](https://github.com/nolidev-fr/offair#theme-templates).
 * WP-CLI: `wp offair status`, `generate [--force]`, `remove [--force]`, `preview <db|maintenance|php>`, `history`.
 
+= About =
+
+Offair is developed and maintained by [Nolidev](https://nolidev.fr/), a WordPress studio in Vannes, France, which uses it on the sites it looks after.
+
 == Installation ==
 
 1. Install and activate the plugin from Plugins, Add New.
