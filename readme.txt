@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,7 +112,7 @@ Only if you turn on the email alert, and only to the address you choose. The ale
 
 = Why does the alert sometimes not arrive? =
 
-While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP, not through your email plugin. Some hosts block it and some inboxes file it as spam. Use the test button in the Database error tab: the test travels exactly the same way. The report sent once the site is back goes through WordPress, like your other emails. It leaves once the error page has not been shown for five minutes, at the next scheduled check or as soon as someone opens the admin.
+While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP, not through your email plugin. Some hosts block it and some inboxes file it as spam. Use the test button in the Database error tab: the test travels exactly the same way. The report sent once the site is back goes through WordPress, like your other emails. It leaves once the error page has not been shown for about ten minutes, at the next scheduled check or as soon as someone opens the admin.
 
 = What does the history record? =
 
@@ -137,6 +137,17 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 3. One tab per page, with the live preview rendered exactly as visitors will see it.
 
 == Changelog ==
+
+= 1.5.2 =
+* Fix: a WP-CLI command that crashed was recorded as an outage seen by visitors, and printed the HTML page in the terminal.
+* Fix: after a fatal error during a REST API or admin-ajax.php request, the block editor and other scripts received the HTML page. They now get JSON or plain text, as WordPress sends them.
+* Fix: on a network, the list of the sites and the page of each site were readable by anyone in the uploads folder. They now sit in the private folder.
+* Fix: on a network, the sites did not use the templates of their own theme, and the alert could carry the name of another site than the main one.
+* Fix: on a network, changing the email address or the language of the network now updates the pages.
+* Fix: the history files were only trimmed after a database outage. They are now trimmed every day.
+* Fix: an outage that came back shortly after its report could be reported twice. The report now leaves once the error page has not been shown for about ten minutes.
+* Uninstalling now also removes the scheduled tasks of a large network and the messages kept after saving.
+* With Offair for MainWP 0.2.2: the link to the settings works on a network, and the updates no longer push the real outages out of the list sent to MainWP.
 
 = 1.5.1 =
 * The dashboard widget now appears at the top of the second column, where it is seen without scrolling. A position you chose yourself is kept.
@@ -191,6 +202,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.5.2 =
+Fixes false outages recorded from WP-CLI, JSON answers after a fatal error in the block editor, and several network issues.
 
 = 1.5.1 =
 The dashboard widget is easier to find, and the French translation is reviewed.

@@ -2,15 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Offair - Branded Error Pages 1.5.1\n"
-"Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
-"Last-Translator: Nolidev <contact@nolidev.fr>\n"
-"Language-Team: Nolidev <contact@nolidev.fr>\n"
+"Project-Id-Version: Offair - Branded Error Pages 1.5.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/offair\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-07T16:31:25+00:00
-"
+"POT-Creation-Date: 2026-10-19T03:45:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: offair\n"
@@ -111,7 +110,7 @@ msgid "Offair: the database of this site could not be reached on %1$s (%2$s). Vi
 msgstr ""
 
 #: includes/class-admin-page.php:389
-#: includes/class-dashboard-widget.php:153
+#: includes/class-dashboard-widget.php:158
 msgid "See the history"
 msgstr ""
 
@@ -141,7 +140,7 @@ msgstr ""
 
 #: includes/class-admin-page.php:503
 #: includes/class-admin-page.php:771
-#: includes/class-dashboard-widget.php:124
+#: includes/class-dashboard-widget.php:129
 #: includes/class-history-page.php:187
 msgid "Page"
 msgstr ""
@@ -512,7 +511,7 @@ msgid "Save and send a test alert"
 msgstr ""
 
 #: includes/class-admin-page.php:928
-msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes."
+msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for about ten minutes."
 msgstr ""
 
 #: includes/class-admin-page.php:944
@@ -644,34 +643,34 @@ msgstr ""
 msgid "History of the outages: %s"
 msgstr ""
 
-#: includes/class-dashboard-widget.php:83
+#: includes/class-dashboard-widget.php:88
 msgid "Outages seen by visitors"
 msgstr ""
 
-#: includes/class-dashboard-widget.php:111
+#: includes/class-dashboard-widget.php:116
 msgid "No outage in the last 30 days."
 msgstr ""
 
 #. translators: %d: number of outages.
-#: includes/class-dashboard-widget.php:116
+#: includes/class-dashboard-widget.php:121
 #, php-format
 msgid "%d outage in the last 30 days."
 msgid_plural "%d outages in the last 30 days."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-dashboard-widget.php:125
+#: includes/class-dashboard-widget.php:130
 #: includes/class-history-page.php:188
 msgid "Started"
 msgstr ""
 
-#: includes/class-dashboard-widget.php:126
+#: includes/class-dashboard-widget.php:131
 #: includes/class-history-page.php:189
 msgid "Observed duration"
 msgstr ""
 
 #. translators: %d: number of maintenance pages.
-#: includes/class-dashboard-widget.php:146
+#: includes/class-dashboard-widget.php:151
 #, php-format
 msgid "Plus %d maintenance page shown less than a minute, during an update."
 msgid_plural "Plus %d maintenance pages shown less than a minute, during updates."
@@ -825,58 +824,58 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: includes/class-journal.php:464
+#: includes/class-journal.php:479
 msgid "less than a minute"
 msgstr ""
 
 #. translators: %s: duration, for example "15 mins".
-#: includes/class-journal.php:468
+#: includes/class-journal.php:483
 #, php-format
 msgid "about %s"
 msgstr ""
 
-#: includes/class-journal.php:480
+#: includes/class-journal.php:495
 msgid "Every 15 minutes (Offair)"
 msgstr ""
 
 #. translators: %s: folder path.
-#: includes/class-pages.php:229
+#: includes/class-pages.php:230
 #, php-format
 msgid "The page content could not be saved in %s. Check that the uploads folder is writable."
 msgstr ""
 
 #. translators: %s: folder path.
-#: includes/class-pages.php:270
+#: includes/class-pages.php:274
 #, php-format
 msgid "The content of the sites of the network could not be saved in %s. Check that the uploads folder is writable."
 msgstr ""
 
-#: includes/class-pages.php:743
+#: includes/class-pages.php:779
 msgid "Database temporarily unavailable (HTTP 503)."
 msgstr ""
 
-#: includes/class-pages.php:744
+#: includes/class-pages.php:780
 msgid "Scheduled maintenance in progress (HTTP 503)."
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: includes/class-pages.php:746
+#: includes/class-pages.php:782
 #, php-format
 msgid "Technical error (HTTP %d)."
 msgstr ""
 
 #. translators: 1: local time of the incident, filled in when the page is shown, 2: timezone name, 3: sentence describing the incident.
-#: includes/class-pages.php:753
+#: includes/class-pages.php:789
 #, php-format
 msgid "Incident recorded at %1$s (%2$s). %3$s"
 msgstr ""
 
 #. translators: Must match, word for word, the sentence used near the end of the default database error and maintenance messages: it is removed from the page when the automatic refresh is turned off.
-#: includes/class-pages.php:766
+#: includes/class-pages.php:802
 msgid "This page refreshes on its own."
 msgstr ""
 
-#: includes/class-pages.php:777
+#: includes/class-pages.php:813
 msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
 msgstr ""
 
