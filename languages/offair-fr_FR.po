@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Offair 1.5.1\n"
+"Project-Id-Version: Offair 1.5.2\n"
 "Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
 "Last-Translator: Nolidev <contact@nolidev.fr>\n"
 "Language-Team: Nolidev <contact@nolidev.fr>\n"
@@ -131,19 +131,19 @@ msgstr "La page d’erreur PHP ne peut pas s’afficher avec la configuration PH
 
 #: includes/class-admin-page.php:555
 msgid "The uploads folder of this site uses a custom path stored in the database. The pages cannot read their content from there and show a neutral English page instead."
-msgstr "Le dossier uploads de ce site utilise un chemin personnalisé enregistré dans la base de données. Les pages ne peuvent pas y lire leur contenu et affichent à la place une page neutre en anglais."
+msgstr "Le dossier de téléversement (uploads) de ce site utilise un chemin personnalisé enregistré dans la base de données. Les pages ne peuvent pas y lire leur contenu et affichent à la place une page neutre en anglais."
 
 #: includes/class-admin-page.php:558
 msgid "The uploads folder is not writable, so the content of the pages cannot be saved."
-msgstr "Le dossier uploads n’est pas inscriptible, le contenu des pages ne peut donc pas être enregistré."
+msgstr "Le dossier de téléversement (uploads) n’est pas accessible en écriture, le contenu des pages ne peut donc pas être enregistré."
 
 #: includes/class-admin-page.php:561
 msgid "The drop-ins are in wp-content and the content of the pages is updated whenever you save."
-msgstr "Les drop-ins sont en place dans wp-content et le contenu des pages est mis à jour à chaque enregistrement."
+msgstr "Les fonctionnalités avancées sont en place dans wp-content et le contenu des pages est mis à jour à chaque enregistrement."
 
 #: includes/class-admin-page.php:563
 msgid "wp-content is not writable, so the drop-ins cannot be added automatically. Download them from the table above and upload them to wp-content with FTP or SFTP. This is needed only once: your later changes are saved in the uploads folder."
-msgstr "wp-content n’est pas inscriptible, les drop-ins ne peuvent donc pas être ajoutés automatiquement. Téléchargez-les depuis le tableau ci-dessus et déposez-les dans wp-content par FTP ou SFTP. Une seule fois suffit : vos modifications suivantes sont enregistrées dans le dossier uploads."
+msgstr "wp-content n’est pas accessible en écriture, les fonctionnalités avancées ne peuvent donc pas être ajoutées automatiquement. Téléchargez-les depuis le tableau ci-dessus et téléversez-les dans wp-content par FTP ou SFTP. Une seule fois suffit : vos modifications suivantes sont enregistrées dans le dossier de téléversement (uploads)."
 
 #: includes/class-admin-page.php:583
 msgid "Logo"
@@ -188,7 +188,7 @@ msgstr "Utilisée pour le nom, l’ornement et le bouton."
 
 #: includes/class-admin-page.php:654
 msgid "Background color"
-msgstr "Couleur de fond"
+msgstr "Couleur d’arrière-plan"
 
 #: includes/class-admin-page.php:660
 msgid "Heading font"
@@ -282,7 +282,7 @@ msgstr "Texte du bouton"
 
 #: includes/class-admin-page.php:809
 msgid "Automatic refresh"
-msgstr "Rafraîchissement automatique"
+msgstr "Actualisation automatique"
 
 #: includes/class-admin-page.php:816
 #: includes/class-admin-page.php:828
@@ -291,11 +291,11 @@ msgstr "secondes"
 
 #: includes/class-admin-page.php:817
 msgid "The page reloads itself after this delay. 0 disables it."
-msgstr "La page se recharge toute seule après ce délai. 0 désactive le rafraîchissement."
+msgstr "La page se recharge toute seule après ce délai. 0 désactive l’actualisation."
 
 #: includes/class-admin-page.php:821
 msgid "Retry-After header"
-msgstr "En-tête Retry-After"
+msgstr "Entête Retry-After"
 
 #: includes/class-admin-page.php:829
 msgid "Tells search engines and monitoring tools when to come back. 0 omits the header."
@@ -340,7 +340,7 @@ msgstr "Régénérer"
 
 #: includes/class-admin-page.php:965
 msgid "Saves the content of the pages again and restores missing drop-ins. Useful after changing the site title, the timezone or the logo file."
-msgstr "Enregistre de nouveau le contenu des pages et rétablit les drop-ins manquants. Utile après un changement de titre du site, de fuseau horaire ou de fichier de logo."
+msgstr "Enregistre de nouveau le contenu des pages et rétablit les fonctionnalités avancées manquantes. Utile après un changement de titre du site, de fuseau horaire ou de fichier de logo."
 
 #: includes/class-admin-page.php:969
 msgid "Also replace files in wp-content that were not added by this plugin"
@@ -352,15 +352,15 @@ msgstr "Régénérer les pages maintenant"
 
 #: includes/class-admin-page.php:974
 msgid "Deletes the drop-ins added by this plugin. WordPress shows its default screens again until you save or regenerate."
-msgstr "Supprime les drop-ins ajoutés par cette extension. WordPress affiche de nouveau ses écrans par défaut jusqu’au prochain enregistrement ou à la prochaine régénération."
+msgstr "Supprime les fonctionnalités avancées ajoutées par cette extension. WordPress affiche de nouveau ses écrans par défaut jusqu’au prochain enregistrement ou à la prochaine régénération."
 
 #: includes/class-admin-page.php:975
 msgid "Remove the drop-ins from wp-content?"
-msgstr "Supprimer les drop-ins de wp-content ?"
+msgstr "Retirer les fonctionnalités avancées de wp-content ?"
 
 #: includes/class-admin-page.php:978
 msgid "Remove drop-ins from wp-content"
-msgstr "Supprimer les drop-ins de wp-content"
+msgstr "Retirer les fonctionnalités avancées de wp-content"
 
 #: includes/class-admin-page.php:981
 msgid "Manual installation"
@@ -368,7 +368,7 @@ msgstr "Installation manuelle"
 
 #: includes/class-admin-page.php:982
 msgid "When wp-content is not writable, download the drop-ins and upload them to wp-content yourself. They are the same file under three names. The content of the pages is saved in the uploads folder, so later changes need no new upload."
-msgstr "Quand wp-content n’est pas inscriptible, téléchargez les drop-ins et déposez-les vous-même dans wp-content. C’est le même fichier sous trois noms. Le contenu des pages est enregistré dans le dossier uploads, vos modifications suivantes ne demandent donc aucun nouveau dépôt."
+msgstr "Quand wp-content n’est pas accessible en écriture, téléchargez les fonctionnalités avancées et téléversez-les vous-même dans wp-content. C’est le même fichier sous trois noms. Le contenu des pages est enregistré dans le dossier de téléversement (uploads), vos modifications suivantes ne demandent donc aucun nouveau téléversement."
 
 #: includes/class-admin-page.php:989
 msgid "Files"
@@ -376,7 +376,7 @@ msgstr "Fichiers"
 
 #: includes/class-admin-page.php:990
 msgid "The drop-ins are copies of dropins/drop-in.php from the plugin folder. The content of the pages is saved here:"
-msgstr "Les drop-ins sont des copies de dropins/drop-in.php, dans le dossier de l’extension. Le contenu des pages est enregistré ici :"
+msgstr "Les fonctionnalités avancées sont des copies de dropins/drop-in.php, dans le dossier de l’extension. Le contenu des pages est enregistré ici :"
 
 #: includes/class-admin-page.php:994
 msgid "WP-CLI"
@@ -388,7 +388,7 @@ msgstr "Désactivation et désinstallation"
 
 #: includes/class-admin-page.php:1002
 msgid "Deactivating the plugin removes the three drop-ins from wp-content and keeps your settings. Uninstalling also removes the settings and the content folder in uploads. Files not added by this plugin are never touched."
-msgstr "Désactiver l’extension supprime les trois drop-ins de wp-content et conserve vos réglages. La désinstaller supprime aussi les réglages et le dossier de contenu dans uploads. Les fichiers qui n’ont pas été ajoutés par cette extension ne sont jamais touchés."
+msgstr "Désactiver l’extension supprime les trois fonctionnalités avancées de wp-content et conserve vos réglages. La désinstaller supprime aussi les réglages et son dossier de contenu dans le dossier de téléversement (uploads). Les fichiers qui n’ont pas été ajoutés par cette extension ne sont jamais touchés."
 
 #: includes/class-admin-page.php:1137
 #: includes/class-history-page.php:309
@@ -409,7 +409,7 @@ msgstr "wp-content/%s existe déjà et n’a pas été ajouté par Offair, il n�
 #: includes/class-dropins.php:147
 #, php-format
 msgid "Could not copy wp-content/%s. Download it from the Advanced tab and upload it yourself."
-msgstr "Impossible de copier wp-content/%s. Téléchargez-le depuis l’onglet Avancé et déposez-le vous-même."
+msgstr "Impossible de copier wp-content/%s. Téléchargez-le depuis l’onglet Avancé et téléversez-le vous-même."
 
 #. translators: %s: file name.
 #: includes/class-dropins.php:176
@@ -443,7 +443,7 @@ msgstr "Pour corriger cela, désactivez WP_DEBUG_DISPLAY (recommandé sur un sit
 #: includes/class-pages.php:229
 #, php-format
 msgid "The page content could not be saved in %s. Check that the uploads folder is writable."
-msgstr "Le contenu des pages n’a pas pu être enregistré dans %s. Vérifiez que le dossier uploads est inscriptible."
+msgstr "Le contenu des pages n’a pas pu être enregistré dans %s. Vérifiez que le dossier de téléversement (uploads) est accessible en écriture."
 
 #: includes/class-pages.php:743
 msgid "Database temporarily unavailable (HTTP 503)."
@@ -483,7 +483,7 @@ msgstr "Absent"
 
 #: includes/class-publisher.php:145
 msgid "Not added by this plugin"
-msgstr "Ajouté par un tiers"
+msgstr "Non ajouté par cette extension"
 
 #: includes/class-publisher.php:146
 msgid "Disabled"
@@ -517,7 +517,7 @@ msgid ""
 msgstr ""
 "Notre site fait une courte pause à cause d’un problème technique. Il revient en général au bout de quelques minutes.\n"
 "\n"
-"Cette page se rafraîchit toute seule. Merci de votre patience."
+"Cette page s’actualise toute seule. Merci de votre patience."
 
 #: includes/class-settings.php:159
 msgid "Back in a minute"
@@ -531,7 +531,7 @@ msgid ""
 msgstr ""
 "Nous installons une mise à jour. Le site revient dans un instant.\n"
 "\n"
-"Cette page se rafraîchit toute seule. Merci de votre patience."
+"Cette page s’actualise toute seule. Merci de votre patience."
 
 #: includes/class-settings.php:169
 msgid "Something went wrong"
@@ -571,11 +571,11 @@ msgstr "La page d’erreur PHP ne peut pas s’afficher avec la configuration PH
 
 #: includes/class-site-health.php:86
 msgid "The uploads folder uses a custom path stored in the database, so the pages cannot read their content and show a neutral English page instead."
-msgstr "Le dossier uploads utilise un chemin personnalisé enregistré dans la base de données, les pages ne peuvent donc pas lire leur contenu et affichent à la place une page neutre en anglais."
+msgstr "Le dossier de téléversement (uploads) utilise un chemin personnalisé enregistré dans la base de données, les pages ne peuvent donc pas lire leur contenu et affichent à la place une page neutre en anglais."
 
 #: includes/class-site-health.php:90
 msgid "wp-content is not writable, so the pages cannot be written automatically. Download them from the settings page and upload them yourself."
-msgstr "wp-content n’est pas inscriptible, les pages ne peuvent donc pas être écrites automatiquement. Téléchargez-les depuis la page de réglages et déposez-les vous-même."
+msgstr "wp-content n’est pas accessible en écriture, les pages ne peuvent donc pas être écrites automatiquement. Téléchargez-les depuis la page de réglages et téléversez-les vous-même."
 
 #: includes/class-site-health.php:98
 msgid "Your downtime pages are in place"
@@ -611,7 +611,7 @@ msgstr "Laissez vide pour un choix automatique : texte blanc, sur un bouton lé
 #. translators: Must match, word for word, the sentence used near the end of the default database error and maintenance messages: it is removed from the page when the automatic refresh is turned off.
 #: includes/class-pages.php:766
 msgid "This page refreshes on its own."
-msgstr "Cette page se rafraîchit toute seule."
+msgstr "Cette page s’actualise toute seule."
 
 #: includes/class-admin-page.php:317
 msgid "Settings saved. No test was sent: enter a valid email address first."
@@ -630,7 +630,7 @@ msgstr "Réglages enregistrés."
 
 #: includes/class-admin-page.php:323
 msgid "The server refused to send the test: the mail function of PHP does not work on this host, so no alert can be sent during an outage. The report sent once the site is back goes through WordPress and is not affected."
-msgstr "Le serveur a refusé d’envoyer le test : la fonction mail de PHP ne fonctionne pas chez cet hébergeur, aucune alerte ne pourra donc partir pendant une coupure. Le bilan envoyé au retour du site passe par WordPress et n’est pas concerné."
+msgstr "Le serveur a refusé d’envoyer le test : la fonction mail() de PHP ne fonctionne pas chez cet hébergeur, aucune alerte ne pourra donc partir pendant une coupure. Le bilan envoyé au retour du site passe par WordPress et n’est pas concerné."
 
 #: includes/class-history-page.php:105
 msgid "History cleared."
@@ -649,7 +649,7 @@ msgstr "Voir l’historique"
 
 #: includes/class-admin-page.php:391
 msgid "Dismiss"
-msgstr "Masquer"
+msgstr "Ignorer"
 
 #: includes/class-admin-page.php:189
 #: includes/class-admin-page.php:430
@@ -732,7 +732,7 @@ msgstr "Effacer l’historique"
 
 #: includes/class-admin-page.php:992
 msgid "The alert settings, the theme folders and the history are kept next to it, in a private folder whose name cannot be guessed, because anyone can read a file in uploads when they know its address."
-msgstr "Les réglages de l’alerte, les dossiers du thème et l’historique sont conservés à côté, dans un dossier privé au nom impossible à deviner, car n’importe qui peut lire un fichier de uploads s’il en connaît l’adresse."
+msgstr "Les réglages de l’alerte, les dossiers du thème et l’historique sont conservés à côté, dans un dossier privé au nom impossible à deviner, car n’importe qui peut lire un fichier du dossier de téléversement (uploads) s’il en connaît l’adresse."
 
 #. translators: %s: site title.
 #: includes/class-alert.php:35
@@ -805,8 +805,8 @@ msgid "The email alert itself is off, so nothing will be sent during an outage. 
 msgstr "L’alerte par e-mail elle-même est désactivée : rien ne partira pendant une coupure. Cochez Alerte par e-mail et enregistrez pour l’activer."
 
 #: includes/class-admin-page.php:928
-msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes."
-msgstr "Pendant la coupure de la base de données, WordPress ne peut pas fonctionner : l’alerte part donc avec la fonction mail de PHP. Certains hébergeurs la bloquent, et elle peut finir dans les indésirables : le test emprunte exactement le même chemin. Le bilan passe par WordPress, comme ses autres e-mails, une fois que la page d’erreur n’a plus été affichée depuis cinq minutes."
+msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for about ten minutes."
+msgstr "Pendant la coupure de la base de données, WordPress ne peut pas fonctionner : l’alerte part donc avec la fonction mail() de PHP. Certains hébergeurs la bloquent, et elle peut finir dans les indésirables : le test emprunte exactement le même chemin. Le bilan passe par WordPress, comme ses autres e-mails, une fois que la page d’erreur n’a plus été affichée depuis une dizaine de minutes."
 
 #. translators: 1: number of sites with their page written, 2: number of sites of the network besides the main site.
 #: includes/class-admin-page.php:544
@@ -830,7 +830,7 @@ msgstr "Embarqué dans les pages avec une largeur de 300 pixels au maximum, pour
 
 #: includes/class-admin-page.php:591
 msgid "Logo on dark backgrounds"
-msgstr "Logo sur fond sombre"
+msgstr "Logo sur arrière-plan sombre"
 
 #: includes/class-admin-page.php:594
 msgid "Optional, usually a white version of the logo. It replaces the logo in dark mode and on a dark colored panel. Leave empty to keep the logo as it is everywhere."
@@ -846,11 +846,11 @@ msgstr "Mise en page"
 
 #: includes/class-admin-page.php:618
 msgid "Card: the message in a card centered on the background"
-msgstr "Carte : le message dans une carte centrée sur le fond"
+msgstr "Carte : le message dans une carte centrée sur l’arrière-plan"
 
 #: includes/class-admin-page.php:619
 msgid "Minimal: the message right on the background, without a card"
-msgstr "Épurée : le message directement sur le fond, sans carte"
+msgstr "Épurée : le message directement sur l’arrière-plan, sans carte"
 
 #: includes/class-admin-page.php:620
 msgid "Two columns: a panel in the primary color with the logo, the message beside it"
@@ -866,7 +866,7 @@ msgstr "Apparence"
 
 #: includes/class-admin-page.php:629
 msgid "Automatic: light or dark, as set on the device of the visitor"
-msgstr "Automatique : claire ou sombre, selon le réglage de l’appareil du visiteur"
+msgstr "Automatique : claire ou sombre, selon le réglage de l’appareil de l’internaute"
 
 #: includes/class-admin-page.php:630
 msgid "Always light"
@@ -878,7 +878,7 @@ msgstr "Toujours sombre"
 
 #: includes/class-admin-page.php:633
 msgid "In dark mode the background and the card turn dark, and the primary color is lightened where it colors text, so that it stays readable."
-msgstr "En mode sombre, le fond et la carte deviennent sombres, et la couleur principale est éclaircie là où elle colore du texte, pour rester lisible."
+msgstr "En mode sombre, l’arrière-plan et la carte deviennent sombres, et la couleur principale est éclaircie là où elle colore du texte, pour rester lisible."
 
 #: includes/class-admin-page.php:898
 msgid "Site shown:"
@@ -888,7 +888,7 @@ msgstr "Site affiché :"
 #: includes/class-pages.php:270
 #, php-format
 msgid "The content of the sites of the network could not be saved in %s. Check that the uploads folder is writable."
-msgstr "Le contenu des sites du réseau n’a pas pu être enregistré dans %s. Vérifiez que le dossier uploads est inscriptible."
+msgstr "Le contenu des sites du réseau n’a pas pu être enregistré dans %s. Vérifiez que le dossier de téléversement (uploads) est accessible en écriture."
 
 #: includes/class-admin-page.php:889
 msgid "Live preview"
@@ -980,7 +980,7 @@ msgstr "Afficher les pannes des 30 derniers jours sur le tableau de bord"
 
 #: includes/class-history-page.php:277
 msgid "On a network, the widget sits on the dashboard of the network admin, for the network administrators."
-msgstr "Sur un réseau, le widget se trouve sur le tableau de bord de l’administration du réseau, pour les administrateurs du réseau."
+msgstr "Sur un réseau, le widget se trouve sur le tableau de bord de l’administration du réseau, pour les administrateurs et administratrices du réseau."
 
 #: includes/class-history-page.php:279
 msgid "Off by default. Each user can still hide it from the Screen Options of the dashboard."
