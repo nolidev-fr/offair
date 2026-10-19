@@ -20,7 +20,7 @@ The plugin copies one static file, [`dropins/drop-in.php`](dropins/drop-in.php),
 
 The content of the pages (texts in the language of the site, colors, logo as a data URI) is saved as JSON in `wp-content/uploads/offair/pages.json`, because the database may be the very thing that is down. When that file is missing, the drop-in shows a neutral English page.
 
-On a network, each site also gets `sites/<id>.json`, built in its own language with its title, logo and timezone, and `sites.json` lists the address of every site. WordPress has not worked out which site is asked for when the database is down, so the drop-in compares the address with that list and picks the page of the site, or the page of the main site for an unknown address.
+On a network, each site also gets `sites/<id>.json`, built in its own language with its title, logo and timezone, and `sites.json` lists the address of every site. Both sit in the private folder, since the list names every site of the network, including the private and archived ones. WordPress has not worked out which site is asked for when the database is down, so the drop-in compares the address with that list and picks the page of the site, or the page of the main site for an unknown address.
 
 Anyone can read a file in uploads when they know its address, and `pages.json` has a known address. What visitors must not see (the alert recipient, the folders of the theme, the history) goes in `wp-content/uploads/offair/private-<random>/`, a folder whose name cannot be guessed. The drop-in finds it by its prefix. The folder also holds an `.htaccess` that refuses web access on Apache and LiteSpeed.
 
@@ -70,7 +70,7 @@ wp-content/themes/your-theme/offair/maintenance.php
 wp-content/themes/your-theme/offair/php-error.php
 ```
 
-WordPress is not loaded when these pages are shown, so a template can only use plain PHP. The drop-in has already sent the HTTP status and the no-cache headers. The template prints the whole HTML document and receives one variable, `$offair`:
+WordPress is not loaded when these pages are shown, so a template can only use plain PHP. The drop-in has already sent the HTTP status and the no-cache headers. After a fatal error during a REST or admin-ajax.php request, the drop-in answers with JSON or plain text, as WordPress does, and the template is not used. The template prints the whole HTML document and receives one variable, `$offair`:
 
 | Key | Content |
 | --- | --- |
@@ -83,7 +83,7 @@ WordPress is not loaded when these pages are shown, so a template can only use p
 | `meta` | Incident line, with the local time filled in (empty when hidden) |
 | `notice`, `detail` | Recovery mode notice and technical details of a PHP error, when WordPress would show them |
 | `refresh` | Automatic refresh delay in seconds, 0 when off |
-| `logo`, `logo_dark`, `favicon` | Logo and logo for dark backgrounds (`src` data URI, `width`, `height`) or null, favicon data URI or empty |
+| `logo`, `logo_dark`, `favicon` | Logo and logo for dark backgrounds (`src` data URI, `width`, `height`) or null, favicon data URI or empty. An SVG logo is embedded as it is: show it in an `<img>` element, where its scripts do not run, never in `<object>` or `<iframe>` |
 | `colors` | `primary`, `primary_hover`, `primary_text` (readable on white), `primary_dark` (readable on the dark surface), `on_primary`, `background` |
 | `heading_font`, `ornament` | `serif` or `sans`, and `wave`, `line` or `none` |
 | `layout`, `color_scheme` | `card`, `minimal`, `split` or `banner`, and `auto`, `light` or `dark` |

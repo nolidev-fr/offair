@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Offair 1.5.1\n"
+"Project-Id-Version: Offair 1.5.2\n"
 "Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
 "Last-Translator: Nolidev <contact@nolidev.fr>\n"
 "Language-Team: Nolidev <contact@nolidev.fr>\n"
@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-09-23T10:53:45+00:00\n"
-"PO-Revision-Date: 2026-09-27 18:18+0200\n"
+"PO-Revision-Date: 2026-10-19 05:47+0200\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Domain: offair\n"
@@ -514,8 +514,8 @@ msgid "Save and send a test alert"
 msgstr "Guardar y enviar una alerta de prueba"
 
 #: includes/class-admin-page.php:928
-msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes."
-msgstr "Mientras la base de datos está caída, WordPress no puede funcionar, así que la alerta se envía con la función mail de PHP. Algunos alojamientos la bloquean, y puede acabar en spam: la prueba sigue exactamente el mismo camino. El informe pasa por WordPress, como sus demás correos, cuando la página de error lleva cinco minutos sin mostrarse."
+msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for about ten minutes."
+msgstr "Mientras la base de datos está caída, WordPress no puede funcionar, así que la alerta se envía con la función mail de PHP. Algunos alojamientos la bloquean, y puede acabar en spam: la prueba sigue exactamente el mismo camino. El informe pasa por WordPress, como sus demás correos, cuando la página de error lleva unos diez minutos sin mostrarse."
 
 #: includes/class-history-page.php:163
 msgid "Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site."

@@ -53,10 +53,20 @@ foreach ( array( 'offair_settings', 'offair_version', 'offair_logo_cache', 'offa
 	delete_site_option( $offair_option );
 }
 
-// Scheduled tasks, and the outage notice each user dismissed.
+// Scheduled tasks (each batch of sites has its own offset), and the outage notice each user dismissed.
 wp_clear_scheduled_hook( 'offair_check' );
-wp_clear_scheduled_hook( 'offair_write_sites' );
+wp_unschedule_hook( 'offair_write_sites' );
 delete_metadata( 'user', 0, 'offair_seen_incident', '', true );
+delete_site_transient( 'offair_pruned' );
+
+// Messages shown after saving, one per user, kept two minutes at most.
+global $wpdb;
+
+foreach ( array( 'offair_notice_', 'offair_history_notice_' ) as $offair_prefix ) {
+	foreach ( array( '_transient_', '_transient_timeout_' ) as $offair_kind ) {
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $offair_kind . $offair_prefix ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- One-time cleanup, no API deletes transients by prefix.
+	}
+}
 
 // On a network, each site keeps its own logo cache and refresh flag.
 if ( is_multisite() ) {

@@ -123,7 +123,8 @@ class CLI {
 		$force   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'force', false );
 		$results = $this->plugin->publisher->unpublish( $force );
 
-		$this->report( $results, 'removed' );
+		// A file another plugin added is left in place on purpose: not a failure.
+		$this->report( $results, 'removed', array( 'offair_foreign' ) );
 	}
 
 	/**
@@ -225,17 +226,20 @@ class CLI {
 	/**
 	 * Prints one line per page and exits with an error when something failed.
 	 *
-	 * @param array  $results Result per page.
-	 * @param string $verb    Past participle describing a success.
+	 * @param array    $results Result per page.
+	 * @param string   $verb    Past participle describing a success.
+	 * @param string[] $skipped Error codes reported as warnings without failing the command.
 	 */
-	private function report( array $results, $verb ) {
+	private function report( array $results, $verb, array $skipped = array() ) {
 		$failed = 0;
 
 		foreach ( $results as $key => $result ) {
 			$file = 'data' === $key ? wp_normalize_path( $this->plugin->pages->path() ) : 'wp-content/' . $this->plugin->dropins->file( $key );
 
 			if ( is_wp_error( $result ) ) {
-				++$failed;
+				if ( ! in_array( $result->get_error_code(), $skipped, true ) ) {
+					++$failed;
+				}
 				\WP_CLI::warning( $result->get_error_message() );
 			} elseif ( false === $result ) {
 				\WP_CLI::log( $file . ': nothing to do.' );

@@ -100,6 +100,13 @@ final class Plugin {
 		}
 		add_action( 'init', array( $this, 'refresh' ), 20 );
 
+		// On a network, the alert falls back to the email of the network and a
+		// site without a language of its own uses the language of the network.
+		if ( is_multisite() ) {
+			add_action( 'update_site_option_admin_email', array( $this, 'schedule_network_refresh' ) );
+			add_action( 'update_site_option_WPLANG', array( $this, 'schedule_network_refresh' ) );
+		}
+
 		// The logo chosen in the Customizer is a theme modification, stored per theme.
 		add_action( 'updated_option', array( $this, 'maybe_refresh_theme_mods' ) );
 		add_action( 'added_option', array( $this, 'maybe_refresh_theme_mods' ) );
@@ -145,6 +152,14 @@ final class Plugin {
 	public function schedule_refresh() {
 		// Each site of a network has its own page, so each keeps its own flag.
 		update_option( Settings::REFRESH_OPTION, 1 );
+	}
+
+	/**
+	 * Asks for the content of every site of the network to be saved again,
+	 * after a setting of the network it shows has changed.
+	 */
+	public function schedule_network_refresh() {
+		update_site_option( Settings::REFRESH_OPTION, 1 );
 	}
 
 	/**
@@ -197,6 +212,15 @@ final class Plugin {
 	 * only the page of the site that changed is written again.
 	 */
 	public function refresh() {
+		if ( is_multisite() && is_main_site() && get_site_option( Settings::REFRESH_OPTION ) ) {
+			delete_site_option( Settings::REFRESH_OPTION );
+
+			if ( file_exists( $this->pages->path() ) ) {
+				$this->pages->flush();
+				$this->pages->write();
+			}
+		}
+
 		if ( ! get_option( Settings::REFRESH_OPTION ) ) {
 			return;
 		}
@@ -266,6 +290,8 @@ final class Plugin {
 
 		Settings::delete_option( Settings::VERSION_OPTION );
 		Journal::unschedule();
-		wp_clear_scheduled_hook( Pages::SITES_CRON );
+
+		// Each batch of sites is scheduled with its own offset.
+		wp_unschedule_hook( Pages::SITES_CRON );
 	}
 }

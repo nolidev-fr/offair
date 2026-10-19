@@ -46,12 +46,13 @@ class Pages {
 	const PRIVATE_FILE = 'private.json';
 
 	/**
-	 * On a network: list of the sites and their addresses, read by the drop-in.
+	 * On a network: list of the sites and their addresses, read by the drop-in,
+	 * in the private folder.
 	 */
 	const SITES_MAP = 'sites.json';
 
 	/**
-	 * On a network: folder of the content of each site, public and private.
+	 * On a network: folder of the content of each site, in the private folder.
 	 */
 	const SITES_DIR = 'sites';
 
@@ -257,27 +258,30 @@ class Pages {
 	 * On a network, saves the list of the sites and the content of a batch of
 	 * sites. The next batch is left to a scheduled task.
 	 *
+	 * Everything goes in the private folder: the list names every site of the
+	 * network, including the private and archived ones.
+	 *
 	 * @param int $offset Number of sites already written in this round.
 	 * @return true|\WP_Error
 	 */
 	public function write_sites( $offset = 0 ) {
 		$filesystem = Filesystem::get();
-		$dir        = $this->dir();
+		$private    = $this->private_dir();
 		$error      = new \WP_Error(
 			'offair_sites_not_written',
 			sprintf(
 				/* translators: %s: folder path. */
 				__( 'The content of the sites of the network could not be saved in %s. Check that the uploads folder is writable.', 'offair' ),
-				$dir
+				$this->dir()
 			)
 		);
 
-		if ( null === $filesystem || ! $this->write_map() || ( ! is_dir( $dir . '/' . self::SITES_DIR ) && ! wp_mkdir_p( $dir . '/' . self::SITES_DIR ) ) ) {
+		if ( null === $filesystem || '' === $private || ! $this->write_map() || ( ! is_dir( $private . '/' . self::SITES_DIR ) && ! wp_mkdir_p( $private . '/' . self::SITES_DIR ) ) ) {
 			return $error;
 		}
 
-		if ( ! file_exists( $dir . '/' . self::SITES_DIR . '/index.html' ) ) {
-			$filesystem->put_contents( $dir . '/' . self::SITES_DIR . '/index.html', '', FS_CHMOD_FILE );
+		if ( ! file_exists( $private . '/' . self::SITES_DIR . '/index.html' ) ) {
+			$filesystem->put_contents( $private . '/' . self::SITES_DIR . '/index.html', '', FS_CHMOD_FILE );
 		}
 
 		$network = $this->network_logos();
@@ -299,14 +303,17 @@ class Pages {
 
 		if ( count( $ids ) === self::SITES_BATCH ) {
 			wp_schedule_single_event( time(), self::SITES_CRON, array( (int) $offset + self::SITES_BATCH ) );
+		} else {
+			// Every site now has its file in the private folder.
+			$this->delete_legacy();
 		}
 
 		return true;
 	}
 
 	/**
-	 * Saves the content of one site of a network, and the folders of its
-	 * theme in the private folder.
+	 * Saves the content of one site of a network, with the folders of its
+	 * theme, in the private folder.
 	 *
 	 * @param int        $blog_id Site ID.
 	 * @param array|null $network Logos of the network, worked out when null.
@@ -321,21 +328,25 @@ class Pages {
 		}
 
 		$network = is_array( $network ) ? $network : $this->network_logos();
-		$dir     = $this->dir() . '/' . self::SITES_DIR;
 		$private = $this->private_dir();
 
-		if ( ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) || '' === $private || ( ! is_dir( $private . '/' . self::SITES_DIR ) && ! wp_mkdir_p( $private . '/' . self::SITES_DIR ) ) ) {
+		if ( '' === $private || ( ! is_dir( $private . '/' . self::SITES_DIR ) && ! wp_mkdir_p( $private . '/' . self::SITES_DIR ) ) ) {
 			return false;
 		}
 
-		$data = wp_json_encode( $this->site_data( $blog_id, $network ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "\n";
+		$page = $this->site_data( $blog_id, $network );
 
+		// The templates come from the theme of the site itself.
 		switch_to_blog( $blog_id );
-		$themes = wp_json_encode( array( 'themes' => self::theme_dirs() ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n";
+		$themes = self::theme_dirs( false );
 		restore_current_blog();
 
-		return $filesystem->put_contents( $dir . '/' . $blog_id . '.json', $data, FS_CHMOD_FILE )
-			&& $filesystem->put_contents( $private . '/' . self::SITES_DIR . '/' . $blog_id . '.json', $themes, FS_CHMOD_FILE );
+		$data = array(
+			'themes' => $themes,
+			'page'   => $page,
+		);
+
+		return $filesystem->put_contents( $private . '/' . self::SITES_DIR . '/' . $blog_id . '.json', wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "\n", FS_CHMOD_FILE );
 	}
 
 	/**
@@ -347,6 +358,7 @@ class Pages {
 		$blog_id = (int) $blog_id;
 		$private = $this->private_dir( false );
 
+		// Left by versions up to 1.5.1.
 		wp_delete_file( $this->dir() . '/' . self::SITES_DIR . '/' . $blog_id . '.json' );
 
 		if ( '' !== $private ) {
@@ -362,10 +374,10 @@ class Pages {
 	 */
 	public function write_map() {
 		$filesystem = Filesystem::get();
-		$dir        = $this->dir();
+		$private    = $this->private_dir();
 		$map        = array();
 
-		if ( null === $filesystem || ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) ) {
+		if ( null === $filesystem || '' === $private ) {
 			return false;
 		}
 
@@ -377,7 +389,22 @@ class Pages {
 			);
 		}
 
-		return $filesystem->put_contents( $dir . '/' . self::SITES_MAP, wp_json_encode( $map, JSON_UNESCAPED_SLASHES ) . "\n", FS_CHMOD_FILE );
+		return $filesystem->put_contents( $private . '/' . self::SITES_MAP, wp_json_encode( $map, JSON_UNESCAPED_SLASHES ) . "\n", FS_CHMOD_FILE );
+	}
+
+	/**
+	 * Removes the list of the sites and their pages that versions up to 1.5.1
+	 * saved next to pages.json, where anyone could read them.
+	 */
+	public function delete_legacy() {
+		$filesystem = Filesystem::get();
+		$dir        = $this->dir();
+
+		wp_delete_file( $dir . '/' . self::SITES_MAP );
+
+		if ( null !== $filesystem && is_dir( $dir . '/' . self::SITES_DIR ) ) {
+			$filesystem->delete( $dir . '/' . self::SITES_DIR, true );
+		}
 	}
 
 	/**
@@ -386,7 +413,8 @@ class Pages {
 	 * @return array{sites: int, written: int}
 	 */
 	public function sites_status() {
-		$written = glob( $this->dir() . '/' . self::SITES_DIR . '/*.json' );
+		$private = $this->private_dir( false );
+		$written = '' === $private ? array() : glob( $private . '/' . self::SITES_DIR . '/*.json' );
 
 		return array(
 			'sites'   => max( 0, (int) get_sites( array( 'count' => true ) ) - 1 ),
@@ -527,7 +555,10 @@ class Pages {
 	 * @return array
 	 */
 	public function private_data() {
-		$switched = determine_locale() !== get_locale() && switch_to_locale( get_locale() );
+		// The alert names the main site, whichever site of a network saves the file.
+		$blog     = is_multisite() && ! is_main_site() && switch_to_blog( get_main_site_id() );
+		$locale   = is_multisite() ? self::site_locale() : get_locale();
+		$switched = determine_locale() !== $locale && switch_to_locale( $locale );
 		$settings = $this->settings->get();
 		$to       = Settings::alert_recipient( $settings['db'] );
 		$data     = array(
@@ -543,18 +574,23 @@ class Pages {
 			restore_previous_locale();
 		}
 
+		if ( $blog ) {
+			restore_current_blog();
+		}
+
 		return $data;
 	}
 
 	/**
-	 * Folders of the active theme and of its parent, on the main site.
+	 * Folders of the active theme and of its parent.
 	 *
+	 * @param bool $main Read them on the main site, rather than on the current site.
 	 * @return string[]
 	 */
-	public static function theme_dirs() {
+	public static function theme_dirs( $main = true ) {
 		$switched = false;
 
-		if ( is_multisite() && ! is_main_site() ) {
+		if ( $main && is_multisite() && ! is_main_site() ) {
 			switch_to_blog( get_main_site_id() );
 			$switched = true;
 		}

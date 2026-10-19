@@ -88,7 +88,21 @@ defined( 'ABSPATH' ) || exit;
 	$content_dir = defined( 'WP_CONTENT_DIR' ) ? WP_CONTENT_DIR : ABSPATH . 'wp-content';
 	$uploads_dir = defined( 'UPLOADS' ) ? ABSPATH . UPLOADS : $content_dir . '/uploads';
 	$data_file   = rtrim( $uploads_dir, '/\\' ) . '/offair/pages.json';
+	$data_dir    = dirname( $data_file );
 	$data        = array();
+
+	// Decoded content of a data file, null when it is missing or broken.
+	$read_json = static function ( $path ) {
+		if ( ! is_readable( $path ) ) {
+			return null;
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
+		$raw  = file_get_contents( $path );
+		$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
+
+		return is_array( $json ) ? $json : null;
+	};
 
 	/*
 	 * The settings page previews settings that are not saved yet: it hands the
@@ -97,27 +111,40 @@ defined( 'ABSPATH' ) || exit;
 	if ( defined( 'OFFAIR_PREVIEW_DATA' ) ) {
 		$json = json_decode( (string) OFFAIR_PREVIEW_DATA, true );
 		$data = is_array( $json ) ? $json : array();
-	} elseif ( is_readable( $data_file ) ) {
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
-		$raw  = file_get_contents( $data_file );
-		$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
-		$data = is_array( $json ) ? $json : array();
+	} else {
+		$json = $read_json( $data_file );
+		$data = null !== $json ? $json : array();
+	}
+
+	/*
+	 * Private folder, next to the data file: its name cannot be guessed, so
+	 * it is found by its prefix. It holds the alert settings, the folders of
+	 * the active theme, the history of the pages shown and, on a network, the
+	 * list of the sites with the page of each one.
+	 */
+	$private_dir = '';
+	$private     = array();
+	$found       = glob( $data_dir . '/private-*', defined( 'GLOB_ONLYDIR' ) ? GLOB_ONLYDIR : 0 );
+
+	if ( is_array( $found ) && isset( $found[0] ) && is_dir( $found[0] ) ) {
+		$private_dir = $found[0];
+		$json        = $read_json( $private_dir . '/private.json' );
+		$private     = null !== $json ? $json : array();
 	}
 
 	/*
 	 * On a network, each site has its own page. WordPress has not worked out
 	 * which site is asked for yet, so the address is compared with the list
-	 * of sites the plugin saves: same domain, longest matching path.
+	 * of sites the plugin saves: same domain, longest matching path. Versions
+	 * up to 1.5.1 saved that list and the pages next to pages.json.
 	 */
-	$site_id  = 0;
-	$data_dir = dirname( $data_file );
+	$site_id = 0;
 
 	if ( defined( 'OFFAIR_PREVIEW_SITE' ) ) {
 		$site_id = (int) OFFAIR_PREVIEW_SITE;
-	} elseif ( defined( 'MULTISITE' ) && MULTISITE && is_readable( $data_dir . '/sites.json' ) ) {
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
-		$raw   = file_get_contents( $data_dir . '/sites.json' );
-		$map   = is_string( $raw ) ? json_decode( $raw, true ) : null;
+	} elseif ( defined( 'MULTISITE' ) && MULTISITE ) {
+		$map   = '' !== $private_dir ? $read_json( $private_dir . '/sites.json' ) : null;
+		$map   = null !== $map ? $map : $read_json( $data_dir . '/sites.json' );
 		$host  = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( (string) $_SERVER['HTTP_HOST'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Only compared with the list of sites, WordPress is not loaded.
 		$hosts = array( $host, (string) preg_replace( '/:\d+$/', '', $host ) );
 		$path  = isset( $_SERVER['REQUEST_URI'] ) ? (string) parse_url( (string) $_SERVER['REQUEST_URI'], PHP_URL_PATH ) : '/'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput, WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Only compared with the list of sites, WordPress is not loaded.
@@ -135,42 +162,20 @@ defined( 'ABSPATH' ) || exit;
 		}
 	}
 
-	// The main site has no file of its own: its content is pages.json.
-	if ( ! defined( 'OFFAIR_PREVIEW_DATA' ) && $site_id > 0 && is_readable( $data_dir . '/sites/' . $site_id . '.json' ) ) {
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
-		$raw  = file_get_contents( $data_dir . '/sites/' . $site_id . '.json' );
-		$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
-		$data = is_array( $json ) ? $json : $data;
-	}
-
 	/*
-	 * Private folder, next to the data file: its name cannot be guessed, so
-	 * it is found by its prefix. It holds the alert settings, the folders of
-	 * the active theme and the history of the pages shown.
+	 * The main site has no file of its own: its content is pages.json. The
+	 * file of another site holds its page and the folders of its theme, where
+	 * its templates are looked for.
 	 */
-	$private_dir = '';
-	$private     = array();
-	$found       = glob( dirname( $data_file ) . '/private-*', defined( 'GLOB_ONLYDIR' ) ? GLOB_ONLYDIR : 0 );
+	if ( $site_id > 0 ) {
+		$site = '' !== $private_dir ? $read_json( $private_dir . '/sites/' . $site_id . '.json' ) : null;
+		$page = null !== $site && isset( $site['page'] ) && is_array( $site['page'] ) ? $site['page'] : $read_json( $data_dir . '/sites/' . $site_id . '.json' );
 
-	if ( is_array( $found ) && isset( $found[0] ) && is_dir( $found[0] ) ) {
-		$private_dir = $found[0];
-
-		if ( is_readable( $private_dir . '/private.json' ) ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
-			$raw     = file_get_contents( $private_dir . '/private.json' );
-			$json    = is_string( $raw ) ? json_decode( $raw, true ) : null;
-			$private = is_array( $json ) ? $json : array();
+		if ( ! defined( 'OFFAIR_PREVIEW_DATA' ) && null !== $page ) {
+			$data = $page;
 		}
-
-		// On a network, the templates come from the theme of the site asked for.
-		if ( $site_id > 0 && is_readable( $private_dir . '/sites/' . $site_id . '.json' ) ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file, WordPress is not loaded.
-			$raw  = file_get_contents( $private_dir . '/sites/' . $site_id . '.json' );
-			$json = is_string( $raw ) ? json_decode( $raw, true ) : null;
-
-			if ( is_array( $json ) && isset( $json['themes'] ) ) {
-				$private['themes'] = $json['themes'];
-			}
+		if ( null !== $site && isset( $site['themes'] ) ) {
+			$private['themes'] = $site['themes'];
 		}
 	}
 
@@ -202,9 +207,41 @@ defined( 'ABSPATH' ) || exit;
 	$retry_after = $num( $page['retry_after'], 0, 86400, 300 );
 	$refresh     = $num( $page['refresh'], 0, 3600, 60 );
 
+	$title = $str( $page['title'], $fallback_screens[ $screen ]['title'] );
+
 	// A preview sits in a frame of the settings page: it must not reload itself.
 	if ( defined( 'OFFAIR_PREVIEW' ) ) {
 		$refresh = 0;
+	}
+
+	/*
+	 * WP-CLI runs in a terminal, where an HTML page means nothing, and a
+	 * command that fails there is not an outage seen by a visitor: the title
+	 * is printed, and nothing is recorded or sent.
+	 */
+	if ( 'cli' === PHP_SAPI && ! defined( 'OFFAIR_PREVIEW' ) ) {
+		if ( defined( 'STDERR' ) ) {
+			fwrite( STDERR, $title . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- WordPress is not loaded.
+		}
+		return;
+	}
+
+	/*
+	 * After a fatal error, WordPress is loaded and knows what kind of request
+	 * failed. The block editor and other scripts expect JSON from the REST API
+	 * and a short text from admin-ajax.php, as WordPress sends them itself,
+	 * not a page.
+	 */
+	$api = '';
+	if ( 'php' === $screen && ! defined( 'OFFAIR_PREVIEW' ) ) {
+		if ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) {
+			$api = 'ajax';
+		} elseif ( ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || ( function_exists( 'wp_is_json_request' ) && wp_is_json_request() ) ) {
+			$api = 'json';
+		}
+	}
+	if ( '' !== $api ) {
+		$status = 500;
 	}
 
 	// A fatal error may leave partial output behind: start from a clean page.
@@ -218,11 +255,16 @@ defined( 'ABSPATH' ) || exit;
 		// Same status line as WordPress builds in status_header(), from a fixed list of protocols.
 		$protocols = array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0', 'HTTP/3' );
 		$protocol  = isset( $_SERVER['SERVER_PROTOCOL'] ) && in_array( $_SERVER['SERVER_PROTOCOL'], $protocols, true ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Compared against a fixed list, WordPress is not loaded.
+		$types     = array(
+			''     => 'text/html',
+			'ajax' => 'text/plain',
+			'json' => 'application/json',
+		);
 		header( $protocol . ' ' . ( 503 === $status ? '503 Service Unavailable' : '500 Internal Server Error' ), true, $status );
 		if ( 503 === $status && $retry_after > 0 ) {
 			header( 'Retry-After: ' . $retry_after );
 		}
-		header( 'Content-Type: text/html; charset=UTF-8' );
+		header( 'Content-Type: ' . $types[ $api ] . '; charset=UTF-8' );
 		header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
 		header( 'Pragma: no-cache' );
 		header( 'Expires: Wed, 11 Jan 1984 05:00:00 GMT' );
@@ -274,7 +316,6 @@ defined( 'ABSPATH' ) || exit;
 	$layout    = isset( $data['layout'] ) && in_array( $data['layout'], array( 'card', 'minimal', 'split', 'banner' ), true ) ? $data['layout'] : 'card';
 	$scheme    = isset( $data['color_scheme'] ) && in_array( $data['color_scheme'], array( 'auto', 'light', 'dark' ), true ) ? $data['color_scheme'] : 'auto';
 	$panel     = in_array( $layout, array( 'split', 'banner' ), true );
-	$title     = $str( $page['title'] );
 	$button    = $str( $page['button'] );
 	$meta      = str_replace( '{time}', $time, $str( $page['meta'] ) );
 	$image     = '#^data:image/(?:png|jpeg|gif|webp|svg\+xml|x-icon|vnd\.microsoft\.icon);base64,[a-z0-9+/=]+$#i';
@@ -467,7 +508,7 @@ CSS;
 	 * receives), the built-in markup and the stylesheet. If it fails or prints
 	 * nothing, the built-in page is shown instead.
 	 */
-	if ( '' !== $template ) {
+	if ( '' !== $template && '' === $api ) {
 		$render = static function ( $offair_template, $offair ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Read by the included template.
 			include $offair_template;
 		};
@@ -541,7 +582,21 @@ CSS;
 		) . "\n";
 	}
 
-	// Built-in markup escaped above, or the output of a template of the active theme.
+	// Same answers as WordPress gives itself: an error object for JSON, the bare message for admin-ajax.php.
+	if ( 'json' === $api ) {
+		$output = json_encode( // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WordPress may be half loaded.
+			array(
+				'code'    => 'internal_server_error',
+				'message' => $title,
+				'data'    => array( 'status' => 500 ),
+			),
+			JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+		);
+	} elseif ( 'ajax' === $api ) {
+		$output = $title;
+	}
+
+	// Built-in markup escaped above, the output of a template of the active theme, JSON or plain text.
 	echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 	/*

@@ -41,9 +41,9 @@ class Branding {
 	const MAX_FAVICON_BYTES = 12288;
 
 	/**
-	 * Encoded logos kept in the cache of each site.
+	 * Encoded logos and icons kept in the cache of each site.
 	 */
-	const CACHE_ENTRIES = 4;
+	const CACHE_ENTRIES = 5;
 
 	/**
 	 * Attachment ID of the theme logo, or of the site icon as a fallback.
@@ -106,8 +106,7 @@ class Branding {
 		// The cache lives in the options of the site that owns the file: on a
 		// network, each site has its own media library and caches its own logos.
 		$cache_key = md5( $attachment_id . '|' . filemtime( $file ) . '|' . self::MAX_LOGO_WIDTH . '|' . self::MAX_LOGO_BYTES . '|' . OFFAIR_VERSION );
-		$cached    = get_option( Settings::LOGO_CACHE, array() );
-		$entries   = is_array( $cached ) && isset( $cached['entries'] ) && is_array( $cached['entries'] ) ? $cached['entries'] : array();
+		$entries   = $this->cache_entries();
 
 		if ( array_key_exists( $cache_key, $entries ) ) {
 			return $entries[ $cache_key ];
@@ -116,12 +115,33 @@ class Branding {
 		$logo = $this->encode_logo( $file, (string) get_post_mime_type( $attachment_id ) );
 
 		// The logo and the logo for dark backgrounds share the cache.
-		$entries[ $cache_key ] = $logo;
-		$entries               = array_slice( $entries, -self::CACHE_ENTRIES, null, true );
-
-		update_option( Settings::LOGO_CACHE, array( 'entries' => $entries ), false );
+		$this->cache_store( $cache_key, $logo );
 
 		return $logo;
+	}
+
+	/**
+	 * Encoded images cached for this site.
+	 *
+	 * @return array
+	 */
+	private function cache_entries() {
+		$cached = get_option( Settings::LOGO_CACHE, array() );
+
+		return is_array( $cached ) && isset( $cached['entries'] ) && is_array( $cached['entries'] ) ? $cached['entries'] : array();
+	}
+
+	/**
+	 * Adds an encoded image to the cache, dropping the oldest entries.
+	 *
+	 * @param string $key   Cache key.
+	 * @param mixed  $value Encoded image.
+	 */
+	private function cache_store( $key, $value ) {
+		$entries         = $this->cache_entries();
+		$entries[ $key ] = $value;
+
+		update_option( Settings::LOGO_CACHE, array( 'entries' => array_slice( $entries, -self::CACHE_ENTRIES, null, true ) ), false );
 	}
 
 	/**
@@ -151,12 +171,22 @@ class Branding {
 
 		$mime = ! empty( $size['mime-type'] ) ? $size['mime-type'] : (string) get_post_mime_type( $icon_id );
 
-		// Formats the drop-in does not embed, such as AVIF, are converted to PNG.
-		if ( ! in_array( $mime, self::EMBEDDED_TYPES, true ) ) {
-			return $this->png_data_uri( $path, self::MAX_FAVICON_BYTES );
+		if ( in_array( $mime, self::EMBEDDED_TYPES, true ) ) {
+			return $this->data_uri( $path, $mime );
 		}
 
-		return $this->data_uri( $path, $mime );
+		// Formats the drop-in does not embed, such as AVIF, are converted to PNG, once.
+		$cache_key = md5( 'favicon|' . $icon_id . '|' . filemtime( $path ) . '|' . OFFAIR_VERSION );
+		$entries   = $this->cache_entries();
+
+		if ( array_key_exists( $cache_key, $entries ) ) {
+			return (string) $entries[ $cache_key ];
+		}
+
+		$src = $this->png_data_uri( $path, self::MAX_FAVICON_BYTES );
+		$this->cache_store( $cache_key, $src );
+
+		return $src;
 	}
 
 	/**

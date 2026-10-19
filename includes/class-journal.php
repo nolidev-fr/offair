@@ -45,9 +45,10 @@ class Journal {
 
 	/**
 	 * Time without a database error page, in seconds, after which the outage
-	 * is considered over.
+	 * is considered over. Longer than GAP, so that pages shown after the
+	 * report start a new incident instead of extending the one reported.
 	 */
-	const QUIET = 300;
+	const QUIET = 660;
 
 	/**
 	 * Lines older than this, in seconds, are dropped (180 days).
@@ -68,6 +69,11 @@ class Journal {
 	 * Last database outage, kept for the notice on the dashboard.
 	 */
 	const LAST_OPTION = 'offair_last_incident';
+
+	/**
+	 * Transient set when the history was last trimmed.
+	 */
+	const PRUNED = 'offair_pruned';
 
 	/**
 	 * Scheduled check for the end of an outage.
@@ -386,6 +392,17 @@ class Journal {
 	 * outage it belongs to is over and has not been reported yet.
 	 */
 	public function check() {
+		// The files are shared by the network, and admin-ajax.php runs admin_init on every heartbeat.
+		if ( ! is_main_site() || wp_doing_ajax() ) {
+			return;
+		}
+
+		// The history is trimmed once a day, whether the database went down or not.
+		if ( false === get_site_transient( self::PRUNED ) ) {
+			set_site_transient( self::PRUNED, 1, DAY_IN_SECONDS );
+			$this->prune();
+		}
+
 		$dir = $this->pages->private_dir( false );
 
 		if ( '' === $dir || ! is_file( $dir . '/seen-db' ) ) {
@@ -436,8 +453,6 @@ class Journal {
 		if ( ! empty( $settings['db']['alert'] ) && '' !== $to ) {
 			Alert::send_report( $incident, $to );
 		}
-
-		$this->prune();
 	}
 
 	/**

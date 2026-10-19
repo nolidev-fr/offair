@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Offair 1.5.1\n"
+"Project-Id-Version: Offair 1.5.2\n"
 "Report-Msgid-Bugs-To: https://github.com/nolidev-fr/offair/issues\n"
 "Last-Translator: Nolidev <contact@nolidev.fr>\n"
 "Language-Team: Nolidev <contact@nolidev.fr>\n"
@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-09-23T10:53:45+00:00\n"
-"PO-Revision-Date: 2026-09-27 18:21+0200\n"
+"PO-Revision-Date: 2026-10-19 05:47+0200\n"
 "Language: nl_NL\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Domain: offair\n"
@@ -514,8 +514,8 @@ msgid "Save and send a test alert"
 msgstr "Opslaan en een testmelding versturen"
 
 #: includes/class-admin-page.php:928
-msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for five minutes."
-msgstr "Zolang de database plat ligt, kan WordPress niet draaien, dus de melding wordt verzonden met de mail-functie van PHP. Sommige hosts blokkeren die, en ze kan in de spam belanden: de test volgt precies dezelfde weg. Het verslag gaat via WordPress, net als de andere e-mails ervan, zodra de foutpagina vijf minuten niet meer is getoond."
+msgid "While the database is down WordPress cannot run, so the alert is sent with the mail function of PHP. Some hosts block it, and it may land in spam: the test travels exactly the same way. The report goes through WordPress, like its other emails, once the error page has not been shown for about ten minutes."
+msgstr "Zolang de database plat ligt, kan WordPress niet draaien, dus de melding wordt verzonden met de mail-functie van PHP. Sommige hosts blokkeren die, en ze kan in de spam belanden: de test volgt precies dezelfde weg. Het verslag gaat via WordPress, net als de andere e-mails ervan, zodra de foutpagina ongeveer tien minuten niet meer is getoond."
 
 #: includes/class-history-page.php:163
 msgid "Each time a visitor sees one of the pages, the date, the page and the HTTP status are recorded, once a minute at most. Nothing about the visitors is kept, and nothing is recorded while nobody visits the site."
