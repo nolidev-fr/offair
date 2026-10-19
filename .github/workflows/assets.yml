@@ -1,0 +1,26 @@
+name: Update WordPress.org assets
+
+# Sends the banners, icons, screenshots and readme to the plugin directory
+# without a new version. Plugin files themselves go out with a version tag.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.wordpress-org/**'
+      - 'readme.txt'
+  workflow_dispatch:
+
+jobs:
+  assets:
+    name: Push the assets and readme to the plugin directory
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Update the SVN assets and readme
+        uses: 10up/action-wordpress-plugin-asset-update@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: offair
+          IGNORE_OTHER_FILES: true
