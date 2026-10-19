@@ -822,8 +822,8 @@ msgid "Try again"
 msgstr "Tentar novamente"
 
 #: includes/class-settings.php:147
-msgid "We'll be right back"
-msgstr "Voltamos já"
+msgid "This site is off air for a moment"
+msgstr "O site está fora do ar por um momento"
 
 #: includes/class-settings.php:148
 msgid ""

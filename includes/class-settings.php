@@ -144,7 +144,7 @@ class Settings {
 			),
 			'db'          => array(
 				'enabled'       => true,
-				'title'         => __( "We'll be right back", 'offair' ),
+				'title'         => __( 'This site is off air for a moment', 'offair' ),
 				'message'       => __( "Our site is taking a short break because of a technical problem. It usually comes back within a few minutes.\n\nThis page refreshes on its own. Thank you for your patience.", 'offair' ),
 				'button_label'  => $button,
 				'refresh_delay' => 60,

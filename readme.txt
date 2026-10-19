@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.2
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -138,6 +138,11 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 
 == Changelog ==
 
+= 1.6.0 =
+* New look for the pages: a plain background instead of a gradient, and a card with a thin border, a short shadow and smaller corners.
+* The default title of the database error page is now "This site is off air for a moment". A title you typed yourself is kept.
+* New plugin icon and banner.
+
 = 1.5.2 =
 * Fix: a WP-CLI command that crashed was recorded as an outage seen by visitors, and printed the HTML page in the terminal.
 * Fix: after a fatal error during a REST API or admin-ajax.php request, the block editor and other scripts received the HTML page. They now get JSON or plain text, as WordPress sends them.
@@ -202,6 +207,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.6.0 =
+A cleaner look for the error pages and a new default title for the database error page.
 
 = 1.5.2 =
 Fixes false outages recorded from WP-CLI, JSON answers after a fatal error in the block editor, and several network issues.

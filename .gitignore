@@ -10,9 +10,13 @@
 /composer.lock
 /.phpcs-cache
 /.wp-env.override.json
+/.impeccable/
 
 # Builds and system files.
 /*.zip
 /build/
 .DS_Store
 Thumbs.db
+
+# Brand identity sources, kept on the work machine.
+/brand/

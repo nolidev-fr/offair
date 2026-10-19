@@ -916,7 +916,7 @@ msgid "Try again"
 msgstr ""
 
 #: includes/class-settings.php:147
-msgid "We'll be right back"
+msgid "This site is off air for a moment"
 msgstr ""
 
 #: includes/class-settings.php:148

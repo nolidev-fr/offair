@@ -821,8 +821,8 @@ msgid "Try again"
 msgstr "再試行"
 
 #: includes/class-settings.php:147
-msgid "We'll be right back"
-msgstr "まもなく再開します"
+msgid "This site is off air for a moment"
+msgstr "ただいまサイトは一時的に停止しています"
 
 #: includes/class-settings.php:148
 msgid ""

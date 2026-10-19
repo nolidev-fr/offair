@@ -506,8 +506,8 @@ msgid "Try again"
 msgstr "Réessayer"
 
 #: includes/class-settings.php:147
-msgid "We'll be right back"
-msgstr "Nous revenons tout de suite"
+msgid "This site is off air for a moment"
+msgstr "Le site est momentanément hors antenne"
 
 #: includes/class-settings.php:148
 msgid ""

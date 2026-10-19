@@ -56,7 +56,7 @@ defined( 'ABSPATH' ) || exit;
 	// Neutral page used when the plugin data cannot be read.
 	$fallback_screens = array(
 		'db'          => array(
-			'title'      => "We'll be right back",
+			'title'      => 'This site is off air for a moment',
 			'paragraphs' => array( 'Our site is taking a short break because of a technical problem. It usually comes back within a few minutes.' ),
 			'meta'       => 'Incident recorded at {time} (UTC). Database temporarily unavailable (HTTP 503).',
 		),
@@ -305,7 +305,7 @@ defined( 'ABSPATH' ) || exit;
 	$on_primary = $hex( isset( $colors['on_primary'] ) ? $colors['on_primary'] : null, '#ffffff' );
 	$background = $hex( isset( $colors['background'] ) ? $colors['background'] : null, '#f5f4f0' );
 	$rgb        = sscanf( $primary, '#%02x%02x%02x' );
-	$shadow     = sprintf( 'rgba(%d, %d, %d, 0.12)', $rgb[0], $rgb[1], $rgb[2] );
+	$shadow     = sprintf( 'rgba(%d, %d, %d, 0.08)', $rgb[0], $rgb[1], $rgb[2] );
 
 	$lang      = $str( isset( $data['lang'] ) ? $data['lang'] : null, 'en' );
 	$lang      = preg_match( '/^[a-z]{2,3}(-[a-z0-9]{2,8})*$/i', $lang ) ? $lang : 'en';
@@ -420,14 +420,14 @@ defined( 'ABSPATH' ) || exit;
 :root{--offair-primary:%primary%;--offair-primary-hover:%hover%;--offair-on-primary:%on%;--offair-accent-light:%text%;--offair-accent-dark:%text_dark%;--offair-background:%background%;--offair-shadow-light:%shadow%}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0;min-height:100%}
-body{--offair-bg:var(--offair-background);--offair-glow:rgba(255,255,255,.85);--offair-surface:#fff;--offair-text:#555;--offair-title:#222;--offair-soft:#777;--offair-muted:#999;--offair-accent:var(--offair-accent-light);--offair-code-bg:#f4f4f4;--offair-code:#333;--offair-notice-bg:#fff6dd;--offair-notice:#7a4f00;--offair-shadow:var(--offair-shadow-light);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--offair-text);background-color:var(--offair-bg);background-image:linear-gradient(180deg,var(--offair-glow) 0%,rgba(255,255,255,0) 100%);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px 16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{--offair-bg:var(--offair-background);--offair-edge:rgba(0,0,0,.08);--offair-surface:#fff;--offair-text:#555;--offair-title:#222;--offair-soft:#777;--offair-muted:#999;--offair-accent:var(--offair-accent-light);--offair-code-bg:#f4f4f4;--offair-code:#333;--offair-notice-bg:#fff6dd;--offair-notice:#7a4f00;--offair-shadow:var(--offair-shadow-light);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--offair-text);background-color:var(--offair-bg);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px 16px;line-height:1.6;-webkit-font-smoothing:antialiased}
 .offair-scheme-dark{%dark%}
 .offair-font-serif .offair-brand,.offair-font-serif .offair-title{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Times New Roman",serif}
 .offair-font-sans .offair-brand,.offair-font-sans .offair-title{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
 .offair-page{width:100%}
-.offair-layout-card .offair-page{background:var(--offair-surface);max-width:520px;padding:48px 32px 36px;border-radius:16px;box-shadow:0 12px 40px var(--offair-shadow);text-align:center}
+.offair-layout-card .offair-page{background:var(--offair-surface);max-width:520px;padding:48px 32px 36px;border-radius:10px;box-shadow:0 0 0 1px var(--offair-edge),0 2px 6px var(--offair-shadow);text-align:center}
 .offair-layout-minimal .offair-page{max-width:560px;padding:16px 4px;text-align:center}
-.offair-layout-split .offair-page{display:grid;grid-template-columns:minmax(200px,5fr) 7fr;max-width:860px;background:var(--offair-surface);border-radius:16px;overflow:hidden;box-shadow:0 12px 40px var(--offair-shadow)}
+.offair-layout-split .offair-page{display:grid;grid-template-columns:minmax(200px,5fr) 7fr;max-width:860px;background:var(--offair-surface);border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--offair-edge),0 2px 6px var(--offair-shadow)}
 .offair-layout-split.offair-no-head .offair-page{grid-template-columns:1fr;max-width:560px}
 .offair-layout-split .offair-head{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center}
 .offair-layout-split .offair-content{padding:48px 40px 40px;text-align:left}
@@ -462,7 +462,7 @@ CSS;
 	$css = strtr(
 		$css,
 		array(
-			'%dark%'       => '--offair-bg:#131519;--offair-glow:rgba(255,255,255,.04);--offair-surface:#1c1f24;--offair-text:#c9cdd3;--offair-title:#f2f3f5;--offair-soft:#a4a9b1;--offair-muted:#8a9099;--offair-accent:var(--offair-accent-dark);--offair-code-bg:#121418;--offair-code:#d9dce1;--offair-notice-bg:#3a2f12;--offair-notice:#ffd98a;--offair-shadow:rgba(0,0,0,.45)',
+			'%dark%'       => '--offair-bg:#131519;--offair-edge:rgba(255,255,255,.08);--offair-surface:#1c1f24;--offair-text:#c9cdd3;--offair-title:#f2f3f5;--offair-soft:#a4a9b1;--offair-muted:#8a9099;--offair-accent:var(--offair-accent-dark);--offair-code-bg:#121418;--offair-code:#d9dce1;--offair-notice-bg:#3a2f12;--offair-notice:#ffd98a;--offair-shadow:rgba(0,0,0,.35)',
 			'%primary%'    => $primary,
 			'%hover%'      => $hover,
 			'%text%'       => $text_color,

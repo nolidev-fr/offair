@@ -823,8 +823,8 @@ msgid "Try again"
 msgstr "Spróbuj ponownie"
 
 #: includes/class-settings.php:147
-msgid "We'll be right back"
-msgstr "Zaraz wracamy"
+msgid "This site is off air for a moment"
+msgstr "Strona chwilowo zeszła z anteny"
 
 #: includes/class-settings.php:148
 msgid ""
