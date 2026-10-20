@@ -34,6 +34,17 @@ class Journal {
 	const ERRORS_FILE = 'errors.log';
 
 	/**
+	 * Previous errors file: the drop-in moves errors.log here past MAX_ERRORS_BYTES.
+	 */
+	const ERRORS_OLD = 'errors.old.log';
+
+	/**
+	 * Size of an errors file, in bytes (1 MB). The drop-in uses the same value,
+	 * and only the end of a larger file, left by an earlier version, is read.
+	 */
+	const MAX_ERRORS_BYTES = 1048576;
+
+	/**
 	 * Largest number of distinct errors listed for one incident.
 	 */
 	const MAX_ERRORS = 10;
@@ -56,7 +67,8 @@ class Journal {
 	const KEEP = 15552000;
 
 	/**
-	 * Largest number of lines kept.
+	 * Largest number of lines kept in the events file. The errors files are
+	 * limited by their size.
 	 */
 	const MAX_LINES = 20000;
 
@@ -159,17 +171,47 @@ class Journal {
 	 * @return array[] Each error has a time, a type, a message, a file and a line.
 	 */
 	public function errors() {
-		$dir  = $this->pages->private_dir( false );
-		$path = '' === $dir ? '' : $dir . '/' . self::ERRORS_FILE;
+		$dir    = $this->pages->private_dir( false );
+		$errors = array();
 
-		if ( '' === $path || ! is_readable( $path ) ) {
+		if ( '' === $dir ) {
+			return $errors;
+		}
+
+		foreach ( array( self::ERRORS_OLD, self::ERRORS_FILE ) as $name ) {
+			$errors = array_merge( $errors, self::read_errors( $dir . '/' . $name ) );
+		}
+
+		return $errors;
+	}
+
+	/**
+	 * Errors of one file, from its last MAX_ERRORS_BYTES at most.
+	 *
+	 * @param string $path    Absolute path.
+	 * @param bool   $partial Set to true when the start of the file was left out.
+	 * @return array[]
+	 */
+	private static function read_errors( $path, &$partial = false ) {
+		$partial = false;
+
+		if ( ! is_readable( $path ) ) {
 			return array();
 		}
 
-		$lines  = file( $path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
-		$errors = array();
+		$offset = max( 0, (int) filesize( $path ) - self::MAX_ERRORS_BYTES );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reads the end of a local file, which the filesystem API cannot do.
+		$raw     = file_get_contents( $path, false, null, $offset );
+		$lines   = is_string( $raw ) ? explode( "\n", $raw ) : array();
+		$errors  = array();
+		$partial = $offset > 0;
 
-		foreach ( is_array( $lines ) ? $lines : array() as $line ) {
+		// The first line read from the middle of the file is cut.
+		if ( $partial ) {
+			array_shift( $lines );
+		}
+
+		foreach ( $lines as $line ) {
 			$parts = explode( "\t", $line, 2 );
 			$data  = 2 === count( $parts ) && ctype_digit( $parts[0] ) ? json_decode( $parts[1], true ) : null;
 
@@ -177,16 +219,27 @@ class Journal {
 				continue;
 			}
 
+			// A message may carry what a visitor sent: control characters are left out, as the drop-in does when it writes.
 			$errors[] = array(
 				'time'    => (int) $parts[0],
 				'type'    => isset( $data['type'] ) ? (int) $data['type'] : 0,
-				'message' => $data['message'],
-				'file'    => isset( $data['file'] ) && is_string( $data['file'] ) ? $data['file'] : '',
+				'message' => self::printable( $data['message'] ),
+				'file'    => isset( $data['file'] ) && is_string( $data['file'] ) ? self::printable( $data['file'] ) : '',
 				'line'    => isset( $data['line'] ) ? (int) $data['line'] : 0,
 			);
 		}
 
 		return $errors;
+	}
+
+	/**
+	 * Text without control characters, line breaks apart.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
+	private static function printable( $text ) {
+		return (string) preg_replace( '/[\x00-\x09\x0B-\x1F\x7F]|\xC2[\x80-\x9F]/', '', $text );
 	}
 
 	/**
@@ -333,39 +386,44 @@ class Journal {
 	 * Drops the old errors, like the old lines of the history.
 	 */
 	private function prune_errors() {
-		$dir    = $this->pages->private_dir( false );
-		$errors = $this->errors();
-
-		if ( '' === $dir || ! $errors ) {
-			return;
-		}
-
-		$limit = time() - self::KEEP;
-		$kept  = array_values(
-			array_filter(
-				$errors,
-				static function ( $error ) use ( $limit ) {
-					return $error['time'] >= $limit;
-				}
-			)
-		);
-		$kept  = array_slice( $kept, -self::MAX_LINES );
-
-		if ( count( $kept ) === count( $errors ) ) {
-			return;
-		}
-
-		$lines = '';
-		foreach ( $kept as $error ) {
-			$time = $error['time'];
-			unset( $error['time'] );
-			$lines .= $time . "\t" . wp_json_encode( $error, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "\n";
-		}
-
+		$dir        = $this->pages->private_dir( false );
 		$filesystem = Filesystem::get();
+		$limit      = time() - self::KEEP;
 
-		if ( null !== $filesystem ) {
-			$filesystem->put_contents( $dir . '/' . self::ERRORS_FILE, $lines, FS_CHMOD_FILE );
+		if ( '' === $dir || null === $filesystem ) {
+			return;
+		}
+
+		foreach ( array( self::ERRORS_OLD, self::ERRORS_FILE ) as $name ) {
+			$path   = $dir . '/' . $name;
+			$errors = self::read_errors( $path, $partial );
+			$kept   = array_values(
+				array_filter(
+					$errors,
+					static function ( $error ) use ( $limit ) {
+						return $error['time'] >= $limit;
+					}
+				)
+			);
+
+			// A file larger than the limit, left by an earlier version, is cut down too.
+			if ( ! $partial && count( $kept ) === count( $errors ) ) {
+				continue;
+			}
+
+			if ( ! $kept ) {
+				wp_delete_file( $path );
+				continue;
+			}
+
+			$lines = '';
+			foreach ( $kept as $error ) {
+				$time = $error['time'];
+				unset( $error['time'] );
+				$lines .= $time . "\t" . wp_json_encode( $error, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "\n";
+			}
+
+			$filesystem->put_contents( $path, $lines, FS_CHMOD_FILE );
 		}
 	}
 
@@ -378,6 +436,7 @@ class Journal {
 		if ( '' !== $dir ) {
 			wp_delete_file( $dir . '/' . self::FILE );
 			wp_delete_file( $dir . '/' . self::ERRORS_FILE );
+			wp_delete_file( $dir . '/' . self::ERRORS_OLD );
 		}
 
 		Settings::delete_option( self::LAST_OPTION );

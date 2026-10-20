@@ -6,7 +6,6 @@
 	<exclude-pattern>/vendor/*</exclude-pattern>
 	<exclude-pattern>/node_modules/*</exclude-pattern>
 	<exclude-pattern>/tests/*</exclude-pattern>
-	<exclude-pattern>/db-error.php</exclude-pattern>
 
 	<arg name="extensions" value="php"/>
 	<arg name="colors"/>

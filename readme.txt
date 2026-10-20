@@ -4,7 +4,7 @@ Tags: error page, database, fatal error, downtime, 503
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,7 @@ This is not a maintenance mode or coming soon plugin. It does not take your site
 
 WordPress looks for three special files in `wp-content`, called drop-ins: `db-error.php`, `maintenance.php` and `php-error.php`. It loads them itself, before any plugin, which is the only way to show something when the database is down.
 
-The plugin copies one static file shipped in its own folder (`dropins/drop-in.php`) under these three names. No code is generated. The content of the pages (texts, colors, logo) is saved as a JSON file in `wp-content/uploads/offair/`, and the drop-in reads it when a page has to be shown. What visitors must not see, such as the alert recipient and the history, is kept next to it in a private folder whose name cannot be guessed.
+The plugin copies one static file shipped in its own folder (`dropins/drop-in.php`) under these three names. No code is generated. The content of the pages (texts, colors, logo) is saved as a JSON file in `wp-content/uploads/offair/`, and the drop-in reads it when a page has to be shown. What visitors must not see, such as the alert recipient and the history, is kept next to it in a private folder whose name cannot be guessed, with an .htaccess file that refuses web access on Apache and LiteSpeed. On Nginx, see the FAQ.
 
 = What you get =
 
@@ -116,7 +116,11 @@ While the database is down WordPress cannot run, so the alert is sent with the m
 
 = What does the history record? =
 
-The date, the page and the HTTP status, once a minute at most, each time a visitor sees one of the pages. For a PHP error page, also the error behind it, as WordPress hands it over: its message, file and line, and the stack trace without the values passed to the functions. Paths start from the WordPress folder. Nothing about the visitors themselves. The full history, with the errors, is for administrators: Tools, Outage history, or `wp offair history`. The dashboard widget, off by default, shows the outages of the last 30 days to the roles you choose, without the errors. It is kept for 180 days and removed when the plugin is uninstalled. An outage while nobody visits the site cannot be seen.
+The date, the page and the HTTP status, once a minute at most, each time a visitor sees one of the pages. For a PHP error page, also the error behind it, as WordPress hands it over: its message, file and line, and the stack trace without the values passed to the functions. Paths start from the WordPress folder. Offair records nothing about the visitors themselves, but an error message may repeat what a request sent when the plugin in cause puts it there: control characters are removed and each errors file is limited to 1 MB. The full history, with the errors, is for administrators: Tools, Outage history, or `wp offair history`. The dashboard widget, off by default, shows the outages of the last 30 days to the roles you choose, without the errors. It is kept for 180 days and removed when the plugin is uninstalled. An outage while nobody visits the site cannot be seen.
+
+= My server runs Nginx. Is the private folder protected? =
+
+Its name cannot be guessed, and it holds an .htaccess file that refuses web access, which Apache and LiteSpeed apply. Nginx ignores .htaccess files: add `location ~* /uploads/offair/private- { deny all; }` to the server block of the site. Tools, Site Health warns you when the folder can be read from the web.
 
 = Can my theme design the pages? =
 
@@ -137,6 +141,12 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 3. One tab per page, with the live preview rendered exactly as visitors will see it.
 
 == Changelog ==
+
+= 1.6.1 =
+* Security: the alert sent during a database outage now takes only its sender from the private folder. A changed file can no longer add recipients or headers.
+* Security: control characters are removed from the recorded PHP errors, so that a message cannot alter the terminal that shows `wp offair history`.
+* Fix: the PHP errors kept in the history now take 2 MB at most. A larger file left by an earlier version is trimmed, so the history and the daily check no longer need much memory.
+* New: Site Health warns when the private folder can be read from the web, as on Nginx, which ignores .htaccess files. The FAQ gives the rule to add.
 
 = 1.6.0 =
 * New look for the pages: a plain background instead of a gradient, and a card with a thin border, a short shadow and smaller corners.
@@ -207,6 +217,9 @@ Yes. The drop-ins are shared by every site of the network, so the settings live 
 * Site Health test and WP-CLI commands.
 
 == Upgrade Notice ==
+
+= 1.6.1 =
+Hardens the history and the outage alert, and warns in Site Health when the private folder can be read from the web.
 
 = 1.6.0 =
 A cleaner look for the error pages and a new default title for the database error page.

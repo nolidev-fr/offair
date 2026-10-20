@@ -525,6 +525,28 @@ class Pages {
 	}
 
 	/**
+	 * Web address of the private data file, to check that the server refuses it.
+	 *
+	 * @return string Empty when the private folder does not exist yet.
+	 */
+	public function private_url() {
+		$dir = $this->private_dir( false );
+
+		if ( '' === $dir ) {
+			return '';
+		}
+
+		$switched = is_multisite() && ! is_main_site() && switch_to_blog( get_main_site_id() );
+		$uploads  = wp_upload_dir( null, false );
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return trailingslashit( $uploads['baseurl'] ) . self::DIR_NAME . '/' . basename( $dir ) . '/' . self::PRIVATE_FILE;
+	}
+
+	/**
 	 * Absolute path of the private data file.
 	 *
 	 * @return string Empty when the private folder does not exist yet.

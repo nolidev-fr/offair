@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Offair - Branded Error Pages 1.5.2\n"
+"Project-Id-Version: Offair - Branded Error Pages 1.6.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/offair\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-19T03:45:57+00:00\n"
+"POT-Creation-Date: 2026-10-20T02:05:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: offair\n"
@@ -42,8 +42,8 @@ msgstr ""
 #: includes/class-admin-page.php:145
 #: includes/class-admin-page.php:146
 #: includes/class-admin-page.php:415
-#: includes/class-site-health.php:43
-#: includes/class-site-health.php:101
+#: includes/class-site-health.php:48
+#: includes/class-site-health.php:110
 msgid "Offair"
 msgstr ""
 
@@ -728,7 +728,7 @@ msgid "History cleared."
 msgstr ""
 
 #: includes/class-history-page.php:140
-#: includes/class-site-health.php:105
+#: includes/class-site-health.php:114
 msgid "Open the Offair settings"
 msgstr ""
 
@@ -824,17 +824,17 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: includes/class-journal.php:479
+#: includes/class-journal.php:538
 msgid "less than a minute"
 msgstr ""
 
 #. translators: %s: duration, for example "15 mins".
-#: includes/class-journal.php:483
+#: includes/class-journal.php:542
 #, php-format
 msgid "about %s"
 msgstr ""
 
-#: includes/class-journal.php:495
+#: includes/class-journal.php:554
 msgid "Every 15 minutes (Offair)"
 msgstr ""
 
@@ -850,32 +850,32 @@ msgstr ""
 msgid "The content of the sites of the network could not be saved in %s. Check that the uploads folder is writable."
 msgstr ""
 
-#: includes/class-pages.php:779
+#: includes/class-pages.php:801
 msgid "Database temporarily unavailable (HTTP 503)."
 msgstr ""
 
-#: includes/class-pages.php:780
+#: includes/class-pages.php:802
 msgid "Scheduled maintenance in progress (HTTP 503)."
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: includes/class-pages.php:782
+#: includes/class-pages.php:804
 #, php-format
 msgid "Technical error (HTTP %d)."
 msgstr ""
 
 #. translators: 1: local time of the incident, filled in when the page is shown, 2: timezone name, 3: sentence describing the incident.
-#: includes/class-pages.php:789
+#: includes/class-pages.php:811
 #, php-format
 msgid "Incident recorded at %1$s (%2$s). %3$s"
 msgstr ""
 
 #. translators: Must match, word for word, the sentence used near the end of the default database error and maintenance messages: it is removed from the page when the automatic refresh is turned off.
-#: includes/class-pages.php:802
+#: includes/class-pages.php:824
 msgid "This page refreshes on its own."
 msgstr ""
 
-#: includes/class-pages.php:813
+#: includes/class-pages.php:835
 msgid "Recovery mode is active: the extension that caused this error has been paused. Check the Plugins and Themes screens for details."
 msgstr ""
 
@@ -949,43 +949,47 @@ msgid ""
 msgstr ""
 
 #. translators: 1: page name, 2: file name.
-#: includes/class-site-health.php:67
+#: includes/class-site-health.php:72
 #, php-format
 msgid "The %1$s page is enabled but wp-content/%2$s is missing."
 msgstr ""
 
 #. translators: 1: page name, 2: file name.
-#: includes/class-site-health.php:71
+#: includes/class-site-health.php:76
 #, php-format
 msgid "wp-content/%2$s does not match the current settings of the %1$s page."
 msgstr ""
 
 #. translators: %s: file name.
-#: includes/class-site-health.php:75
+#: includes/class-site-health.php:80
 #, php-format
 msgid "wp-content/%s was not added by Offair. The plugin leaves it untouched, so this page is not branded."
 msgstr ""
 
-#: includes/class-site-health.php:82
+#: includes/class-site-health.php:87
 msgid "The PHP error page cannot be shown with the current PHP configuration."
 msgstr ""
 
-#: includes/class-site-health.php:86
+#: includes/class-site-health.php:91
 msgid "The uploads folder uses a custom path stored in the database, so the pages cannot read their content and show a neutral English page instead."
 msgstr ""
 
-#: includes/class-site-health.php:90
+#: includes/class-site-health.php:95
+msgid "The private folder of Offair, which holds the alert address and the outage history, can be read from the web: this server does not apply the .htaccess file that protects it, as is the case with Nginx. Deny access to wp-content/uploads/offair/private-* in the configuration of the server."
+msgstr ""
+
+#: includes/class-site-health.php:99
 msgid "wp-content is not writable, so the pages cannot be written automatically. Download them from the settings page and upload them yourself."
 msgstr ""
 
-#: includes/class-site-health.php:98
+#: includes/class-site-health.php:107
 msgid "Your downtime pages are in place"
 msgstr ""
 
-#: includes/class-site-health.php:104
+#: includes/class-site-health.php:113
 msgid "Visitors see a branded page when the database is unreachable, during updates and on fatal errors."
 msgstr ""
 
-#: includes/class-site-health.php:110
+#: includes/class-site-health.php:119
 msgid "Some downtime pages need attention"
 msgstr ""

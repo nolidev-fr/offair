@@ -11,10 +11,4 @@
 /tests
 /vendor
 /node_modules
-/BRIEF-*.md
-/db-error.php
-/db-error-desktop.png
-/db-error-mobile.png
 *.zip
-/brand
-/.impeccable

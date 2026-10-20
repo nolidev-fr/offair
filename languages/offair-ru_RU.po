@@ -886,6 +886,10 @@ msgstr "Файл wp-content/%s добавлен не Offair. Плагин его
 msgid "The PHP error page cannot be shown with the current PHP configuration."
 msgstr "Страницу ошибки PHP невозможно показать при текущей конфигурации PHP."
 
+#: includes/class-site-health.php:95
+msgid "The private folder of Offair, which holds the alert address and the outage history, can be read from the web: this server does not apply the .htaccess file that protects it, as is the case with Nginx. Deny access to wp-content/uploads/offair/private-* in the configuration of the server."
+msgstr "Закрытая папка Offair, где хранятся адрес для уведомлений и история сбоев, доступна для чтения из интернета: этот сервер не применяет защищающий её файл .htaccess, как и Nginx. Запретите доступ к wp-content/uploads/offair/private-* в настройках сервера."
+
 #: includes/class-site-health.php:86
 msgid "The uploads folder uses a custom path stored in the database, so the pages cannot read their content and show a neutral English page instead."
 msgstr "Папка uploads использует нестандартный путь, сохранённый в базе данных, поэтому страницы не могут прочитать своё содержимое и вместо этого показывают нейтральную страницу на английском."

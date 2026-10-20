@@ -886,6 +886,10 @@ msgstr "Plik wp-content/%s nie został dodany przez Offair. Wtyczka go nie rusza
 msgid "The PHP error page cannot be shown with the current PHP configuration."
 msgstr "Strony błędu PHP nie można wyświetlić przy obecnej konfiguracji PHP."
 
+#: includes/class-site-health.php:95
+msgid "The private folder of Offair, which holds the alert address and the outage history, can be read from the web: this server does not apply the .htaccess file that protects it, as is the case with Nginx. Deny access to wp-content/uploads/offair/private-* in the configuration of the server."
+msgstr "Prywatny folder Offair, który zawiera adres odbiorcy powiadomień i historię awarii, można odczytać z sieci: ten serwer nie stosuje chroniącego go pliku .htaccess, podobnie jak Nginx. Zablokuj dostęp do wp-content/uploads/offair/private-* w konfiguracji serwera."
+
 #: includes/class-site-health.php:86
 msgid "The uploads folder uses a custom path stored in the database, so the pages cannot read their content and show a neutral English page instead."
 msgstr "Folder uploads używa niestandardowej ścieżki zapisanej w bazie danych, więc strony nie mogą odczytać swojej treści i zamiast tego wyświetlają neutralną stronę w języku angielskim."

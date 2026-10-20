@@ -15,6 +15,11 @@ defined( 'ABSPATH' ) || exit;
 class Site_Health {
 
 	/**
+	 * Result of the last check of the private folder from the web.
+	 */
+	const PRIVATE_CHECK = 'offair_private_check';
+
+	/**
 	 * Plugin.
 	 *
 	 * @var Plugin
@@ -86,6 +91,10 @@ class Site_Health {
 			$problems[] = __( 'The uploads folder uses a custom path stored in the database, so the pages cannot read their content and show a neutral English page instead.', 'offair' );
 		}
 
+		if ( $this->private_readable() ) {
+			$problems[] = __( 'The private folder of Offair, which holds the alert address and the outage history, can be read from the web: this server does not apply the .htaccess file that protects it, as is the case with Nginx. Deny access to wp-content/uploads/offair/private-* in the configuration of the server.', 'offair' );
+		}
+
 		if ( ! $this->plugin->dropins->is_writable() && $problems ) {
 			$problems[] = __( 'wp-content is not writable, so the pages cannot be written automatically. Download them from the settings page and upload them yourself.', 'offair' );
 		}
@@ -113,5 +122,44 @@ class Site_Health {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Whether the web server hands out the private data file. The private
+	 * folder relies on .htaccess, which Nginx and some other servers ignore.
+	 * The answer is kept a day, an hour when the file is readable, so that
+	 * Site Health does not request the site each time it opens.
+	 *
+	 * @return bool False as well when the request fails.
+	 */
+	private function private_readable() {
+		$cached = get_site_transient( self::PRIVATE_CHECK );
+
+		if ( false !== $cached ) {
+			return 'yes' === $cached;
+		}
+
+		$url = $this->plugin->pages->private_url();
+
+		if ( '' === $url ) {
+			return false;
+		}
+
+		$response = wp_remote_get(
+			$url,
+			array(
+				'timeout'     => 5,
+				'redirection' => 0,
+				/** This filter is documented in wp-includes/class-wp-http-streams.php */
+				'sslverify'   => apply_filters( 'https_local_ssl_verify', false ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core hook, applied the way WordPress applies it to its own loopback requests.
+			)
+		);
+
+		// The body is checked too: some servers answer 200 with a page of their own.
+		$readable = ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) && false !== strpos( wp_remote_retrieve_body( $response ), '"format"' );
+
+		set_site_transient( self::PRIVATE_CHECK, $readable ? 'yes' : 'no', $readable ? HOUR_IN_SECONDS : DAY_IN_SECONDS );
+
+		return $readable;
 	}
 }

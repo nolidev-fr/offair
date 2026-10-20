@@ -884,6 +884,10 @@ msgstr "wp-content/%s は Offair が追加したものではありません。�
 msgid "The PHP error page cannot be shown with the current PHP configuration."
 msgstr "現在の PHP の設定では PHP エラーのページを表示できません。"
 
+#: includes/class-site-health.php:95
+msgid "The private folder of Offair, which holds the alert address and the outage history, can be read from the web: this server does not apply the .htaccess file that protects it, as is the case with Nginx. Deny access to wp-content/uploads/offair/private-* in the configuration of the server."
+msgstr "通知の宛先と障害の履歴を保存している Offair の非公開フォルダーが、Web から読み取れます。このサーバーは、Nginx と同じく、フォルダーを保護する .htaccess ファイルを適用していません。サーバーの設定で wp-content/uploads/offair/private-* へのアクセスを拒否してください。"
+
 #: includes/class-site-health.php:86
 msgid "The uploads folder uses a custom path stored in the database, so the pages cannot read their content and show a neutral English page instead."
 msgstr "uploads フォルダーがデータベースに保存されたカスタムパスを使用しているため、ページは内容を読み込めず、代わりに英語の汎用ページを表示します。"

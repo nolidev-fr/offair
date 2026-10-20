@@ -58,6 +58,7 @@ wp_clear_scheduled_hook( 'offair_check' );
 wp_unschedule_hook( 'offair_write_sites' );
 delete_metadata( 'user', 0, 'offair_seen_incident', '', true );
 delete_site_transient( 'offair_pruned' );
+delete_site_transient( 'offair_private_check' );
 
 // Messages shown after saving, one per user, kept two minutes at most.
 global $wpdb;

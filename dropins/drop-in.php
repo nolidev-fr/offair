@@ -629,20 +629,36 @@ CSS;
 
 				return '/' === $root ? $value : str_replace( array( $root, rtrim( $root, '/' ) ), '', $value );
 			};
+
+			/*
+			 * A message may carry what a visitor sent. Control characters could
+			 * rewrite the terminal of whoever reads the history with WP-CLI: only
+			 * the line breaks of the stack trace are kept.
+			 */
+			$control = static function ( $value ) {
+				return (string) preg_replace( '/[\x00-\x09\x0B-\x1F\x7F]|\xC2[\x80-\x9F]/', '', $value );
+			};
 			// The arguments in the stack trace may hold private values: only the calls are kept.
 			$message = preg_replace( '/^(#\d+ [^\n]*?: [^\n(]+)\([^\n]*\)$/m', '$1()', $short( $error['message'] ) );
 			$detail  = json_encode( // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- WordPress is not loaded.
 				array(
 					'type'    => isset( $error['type'] ) ? (int) $error['type'] : 0,
-					'message' => substr( is_string( $message ) ? $message : '', 0, 2000 ),
-					'file'    => $short( isset( $error['file'] ) ? $error['file'] : '' ),
+					'message' => substr( $control( is_string( $message ) ? $message : '' ), 0, 2000 ),
+					'file'    => $control( $short( isset( $error['file'] ) ? $error['file'] : '' ) ),
 					'line'    => isset( $error['line'] ) ? (int) $error['line'] : 0,
 				),
 				JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
 			);
 
 			if ( is_string( $detail ) ) {
-				@file_put_contents( $private_dir . '/errors.log', $now_ts . "\t" . $detail . "\n", FILE_APPEND | LOCK_EX ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+				$errors_log = $private_dir . '/errors.log';
+
+				// Past 1 MB the file replaces errors.old.log: two files at most, however often the error comes back.
+				if ( @filesize( $errors_log ) > 1048576 ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+					@rename( $errors_log, $private_dir . '/errors.old.log' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
+				}
+
+				@file_put_contents( $errors_log, $now_ts . "\t" . $detail . "\n", FILE_APPEND | LOCK_EX ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 			}
 		}
 	}
@@ -651,6 +667,24 @@ CSS;
 
 	if ( 'db' !== $screen || ! function_exists( 'mail' ) || ! isset( $alert['to'], $alert['subject'], $alert['body'], $alert['headers'] ) || ! is_string( $alert['to'] ) || ! filter_var( $alert['to'], FILTER_VALIDATE_EMAIL ) ) {
 		return;
+	}
+
+	/*
+	 * The private folder can be written by the web server. Only the sender is
+	 * taken from the file, once checked, and the other headers are fixed here,
+	 * so that a changed file cannot add recipients to the alert.
+	 */
+	$subject = (string) $alert['subject'];
+	$from    = preg_match( '/^From: ([^\r\n]+)\r?$/m', (string) $alert['headers'], $match ) ? trim( $match[1] ) : '';
+	$address = preg_match( '/<([^<>]+)>$/', $from, $match ) ? $match[1] : $from;
+
+	if ( preg_match( '/[\r\n]/', $subject ) ) {
+		return;
+	}
+
+	$headers = array( 'MIME-Version: 1.0', 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit' );
+	if ( filter_var( $address, FILTER_VALIDATE_EMAIL ) ) {
+		array_unshift( $headers, 'From: ' . $from );
 	}
 
 	// One alert an hour at most. The lock keeps two visitors arriving together from both sending it.
@@ -693,5 +727,5 @@ CSS;
 	}
 
 	// WordPress cannot run while the database is down, so wp_mail() is not available.
-	@mail( $alert['to'], (string) $alert['subject'], str_replace( '{time}', $when, (string) $alert['body'] ), (string) $alert['headers'] ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+	@mail( $alert['to'], $subject, str_replace( '{time}', $when, (string) $alert['body'] ), implode( "\r\n", $headers ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 } )( isset( $error ) ? $error : null, isset( $handled ) ? $handled : null );
